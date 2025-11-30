@@ -11,7 +11,7 @@ Route::post('/register',[authController::class,'register'])->name('register');
 
 //protected routes
 Route::middleware('auth:sanctum')->group(function(){
-    Route::get('/profile', function (Request $request) {
+    Route::get('/check', function (Request $request) {
         return $request->user();   // <-- Returns DB user data
     });
 });

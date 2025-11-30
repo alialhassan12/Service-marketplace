@@ -23,6 +23,7 @@ export default function LoginPage(){
     const handleSubmit=(e)=>{
         e.preventDefault();
         login(formData);
+        // console.log(formData);
     }
 
     return(
@@ -47,7 +48,7 @@ export default function LoginPage(){
                         {/* password Field */}
                         <TextField id="outlined-basic" label="Password" variant="outlined" value={formData.password} onChange={handlePasswordChange} />
                         {/* login Btn */}
-                        <Button variant="contained" onClick={handleSubmit}>Login</Button>
+                        <Button disabled={isLogging} variant="contained" onClick={handleSubmit}>Login</Button>
                         {/* divider */}
                         <Divider variant="fullWidth" >
                             <p>Or</p>

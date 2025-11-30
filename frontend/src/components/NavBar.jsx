@@ -1,6 +1,8 @@
 import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "../store/authStore";
 
 export default function NavBar(){
+    const {authUser}=useAuthStore();
     const navigate = useNavigate();
     return(
         <div className="flex justify-between items-center ">
