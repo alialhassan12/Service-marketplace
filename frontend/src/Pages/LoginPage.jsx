@@ -46,9 +46,11 @@ export default function LoginPage(){
                         {/* email Field */}
                         <TextField sx={{width:"100%"}} id="outlined-basic" label="Email" variant="outlined" value={formData.email} onChange={handleEmailChange} />
                         {/* password Field */}
-                        <TextField id="outlined-basic" label="Password" variant="outlined" value={formData.password} onChange={handlePasswordChange} />
+                        <TextField id="outlined-basic" label="Password" type='password' variant="outlined" value={formData.password} onChange={handlePasswordChange} />
                         {/* login Btn */}
-                        <Button disabled={isLogging} variant="contained" onClick={handleSubmit}>Login</Button>
+                        <Button disabled={isLogging} variant="contained" onClick={handleSubmit}>
+                            {isLogging ? <span className="loading loading-infinity loading-xl text-blue-500"></span> : "Login"}
+                        </Button>
                         {/* divider */}
                         <Divider variant="fullWidth" >
                             <p>Or</p>

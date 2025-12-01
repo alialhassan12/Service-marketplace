@@ -40,5 +40,19 @@ export const useAuthStore=create((set)=>({
             console.log(error);
             toast.error(error.response.data.message);
         }
+    },
+    register:async(formData)=>{
+        set({isLogging:true});
+        try {
+            const response=await axiosInstance.post("/register",formData);
+            set({authUser:response.data.user});
+            localStorage.setItem("token",response.data.token);
+            toast.success(response.data.message);
+        } catch (error) {
+            console.log(error);
+            toast.error(error.response.data.message);
+        } finally {
+            set({isLogging:false});
+        }
     }
 }));

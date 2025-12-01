@@ -8,6 +8,10 @@ import LoginPage from './Pages/LoginPage';
 import RegisterPage from './Pages/RegisterPage';
 import { useEffect } from 'react';
 import { useAuthStore } from './store/authStore';
+import ClientDashboard from './Pages/ClientDashboard';
+import ProviderDashboard from './Pages/ProviderDashboard';
+import AdminDashboard from './Pages/AdminDashboard';
+
 function App() {
   const {check,authUser}=useAuthStore();
     useEffect(()=>{
@@ -23,8 +27,13 @@ function App() {
     <>
       <Routes>
         <Route path="/" element={<LandingPage/>}/>
-        <Route path="/login" element={authUser?<Navigate to="/"/>:<LoginPage/>}/>
-        <Route path="/register" element={authUser?<Navigate to="/"/>:<RegisterPage/>}/>
+        <Route path="/login" element={authUser?<Navigate to="/dashboard"/>:<LoginPage/>}/>
+        <Route path="/register" element={authUser?<Navigate to="/dashboard"/>:<RegisterPage/>}/>
+        
+        <Route path='/dashboard' element={authUser?.role === 'client'?<ClientDashboard/>
+                                          :authUser?.role === 'provider'?<ProviderDashboard/>
+                                          :authUser?.role === 'admin'?<AdminDashboard/>
+                                          :<Navigate to="/"/>}/>
       </Routes>
     </>
   )

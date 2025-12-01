@@ -5,9 +5,11 @@ import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import { RadioCards,Flex,Text } from '@radix-ui/themes';
 import { useState } from 'react';
+import { useAuthStore } from '../store/authStore';
 
 export default function RegisterPage() {
-    // const [role,setRole]=useState("client");
+    const {register,isLogging}=useAuthStore();
+
     const [formData,setFormData]=useState({
         name:"",
         email:"",
@@ -40,7 +42,7 @@ export default function RegisterPage() {
 
     const handleSubmit=(e)=>{
         e.preventDefault();
-        console.log(formData);
+        register(formData);
     }
 
     return (
@@ -88,7 +90,7 @@ export default function RegisterPage() {
                         <TextField sx={{width:"100%"}} label="Email" variant="outlined" 
                             value={formData.email} onChange={(e)=>handleEmailChange(e)} />
                         {/* password Field */}
-                        <TextField sx={{width:"100%"}} label="Password" variant="outlined" 
+                        <TextField sx={{width:"100%"}} label="Password" type='password' variant="outlined" 
                             value={formData.password} onChange={(e)=>handlePasswordChange(e)} />
                         {/* phone number Field */}
                         <TextField sx={{width:"100%"}} label="Phone Number" variant="outlined" 
@@ -97,7 +99,9 @@ export default function RegisterPage() {
                         <TextField sx={{width:"100%"}} label="Location" variant="outlined" 
                             value={formData.location} onChange={(e)=>handleLocationChange(e)} />
                         {/* create Btn */}
-                        <Button variant="contained" onClick={handleSubmit}>Create Account</Button>
+                        <Button variant="contained" disabled={isLogging} onClick={handleSubmit}>
+                            {isLogging ? <span className="loading loading-infinity loading-xl text-blue-500"></span> : "Create Account"}
+                        </Button>
                         {/* divider */}
                         <Divider variant="fullWidth" >
                             <p>Or</p>
