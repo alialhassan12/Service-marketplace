@@ -15,7 +15,7 @@ export default function ClientSideBar(){
     
     const active=page;
 
-    const {authUser,logout,isLoggingIn}=useAuthStore();
+    const {authUser,logout,isLoggingOut}=useAuthStore();
     //handlers
     const handleLogout=()=>{
         logout();
@@ -56,7 +56,7 @@ export default function ClientSideBar(){
                     <div className="flex flex-col space-y-1">
                         {/* logout */}
                         <li><a onClick={handleLogout} className={active==="logout"? "bg-blue-200 text-blue-500" : ""}>
-                            {isLoggingIn ? <span className="loading loading-infinity loading-xl text-blue-500"></span> : <><LogoutIcon/><p>Logout</p></>}
+                            {isLoggingOut ? <p>Logging out...<span className="loading loading-infinity loading-xl text-blue-500 text-center"></span></p>: <><LogoutIcon/><p>Logout</p></>}
                         </a></li>
                         {/* user profile */}
                         <li><a onClick={()=>setPage("userProfile")} className={active==="userProfile"? "bg-blue-200 text-blue-500" : ""}>

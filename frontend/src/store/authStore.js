@@ -5,6 +5,7 @@ import {toast} from "react-hot-toast";
 export const useAuthStore=create((set)=>({
     authUser:null,
     isLogging:false,
+    isLoggingOut:false,
     isChecking:false,
 
     check:async()=>{
@@ -34,7 +35,7 @@ export const useAuthStore=create((set)=>({
         }
     },
     logout:async()=>{
-        set({isLogging:true});
+        set({isLoggingOut:true});
         try {
             await axiosInstance.post("/logout");
             set({authUser:null});
@@ -44,7 +45,7 @@ export const useAuthStore=create((set)=>({
             console.log(error);
             toast.error(error.response.data.message);
         }finally{
-            set({isLogging:false});
+            set({isLoggingOut:false});
         }
     },
     register:async(formData)=>{
