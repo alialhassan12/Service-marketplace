@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\authController;
+use App\Http\Controllers\jobsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -13,5 +14,9 @@ Route::post('/register',[authController::class,'register'])->name('register');
 Route::middleware('auth:sanctum')->group(function(){
     Route::get('/check', function (Request $request) {
         return $request->user();   // <-- Returns DB user data
-    });
+    })->name('checkForUser');
+    Route::post('/logout',[authController::class,'logout'])->name('logout');
+    
+    Route::post('/jobs',[jobsController::class,'addJob'])->name('addJob');
+    Route::get('/jobs',[jobsController::class,'getJobs'])->name('getJobs');
 });

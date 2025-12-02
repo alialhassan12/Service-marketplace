@@ -13,10 +13,17 @@ import ProviderDashboard from './Pages/ProviderDashboard';
 import AdminDashboard from './Pages/AdminDashboard';
 
 function App() {
-  const {check,authUser}=useAuthStore();
+  const {check,authUser,isChecking}=useAuthStore();
     useEffect(()=>{
       check();
     },[check]);
+
+    //loading animation
+    if(isChecking){
+      return <div className='flex justify-center items-center h-screen'>
+        <span className="loading loading-ring loading-xl"></span>
+      </div>
+    }
 
   //intialize aos for the fade animation
     AOS.init({
@@ -26,7 +33,11 @@ function App() {
   return (
     <>
       <Routes>
-        <Route path="/" element={<LandingPage/>}/>
+        <Route path="/" element={authUser?.role === 'client'||
+                                authUser?.role === 'provider'||
+                                authUser?.role === 'admin'?
+                                <Navigate to="/dashboard"/>:<LandingPage/>}/>
+
         <Route path="/login" element={authUser?<Navigate to="/dashboard"/>:<LoginPage/>}/>
         <Route path="/register" element={authUser?<Navigate to="/dashboard"/>:<RegisterPage/>}/>
         
