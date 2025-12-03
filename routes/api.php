@@ -15,5 +15,5 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('/check', function (Request $request) {
         return $request->user();   // <-- Returns DB user data
     });
+    Route::post('/provider-profile', [ProviderProfileController::class, 'store']);
 });
-Route::post('/provider-profile', [ProviderProfileController::class, 'store']);
