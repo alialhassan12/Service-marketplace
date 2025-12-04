@@ -46,4 +46,28 @@ class jobsController extends Controller
             'jobs' => $jobs
         ], 200);
     }
+
+    public function getJob(Request $request, $id)
+    {
+        try {
+            $job = Job::findOrFail($id);
+            $proposals=$job->proposals()->get();
+
+            if ($job->client_id !== $request->user()->id) {
+                return response()->json([
+                    'message' => 'Unauthorized'
+                ], 403);
+            }
+
+            return response()->json([
+                'message' => 'Job fetched successfully',
+                'job' => $job,
+                'proposals'=>$proposals
+            ], 200);
+        } catch (Exception $th) {
+            return response()->json([
+                'message' => 'Job not found'
+            ], 404);
+        }
+    }
 }

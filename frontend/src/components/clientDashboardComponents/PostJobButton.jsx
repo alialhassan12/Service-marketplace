@@ -80,9 +80,17 @@ export default function PostJobButton(){
                         value={formData.description}
                         onChange={(e)=>setFormData({...formData,description:e.target.value})}
                     />
+                    {/* is remote */}
+                    <FormControlLabel
+                        value={formData.is_remote}
+                        control={<Switch color="primary" />}
+                        label="Remote"
+                        labelPlacement="end"
+                        onChange={(e)=>setFormData({...formData,is_remote:e.target.checked})}
+                    />
                     {/* job location */}
                     <TextField
-                        autoFocus
+                        disabled={formData.is_remote}
                         required
                         margin="dense"
                         label="Job Location"
@@ -91,14 +99,6 @@ export default function PostJobButton(){
                         variant="standard"
                         value={formData.location}
                         onChange={(e)=>setFormData({...formData,location:e.target.value})}
-                    />
-                    {/* is remote */}
-                    <FormControlLabel
-                        value={formData.is_remote}
-                        control={<Switch color="primary" />}
-                        label="Remote"
-                        labelPlacement="end"
-                        onChange={(e)=>setFormData({...formData,is_remote:e.target.checked})}
                     />
                     {/* budget */}
                     <FormControl fullWidth sx={{ m: 1 }} variant="standard">

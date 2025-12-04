@@ -38,6 +38,24 @@ const useClientDashboardStore=create((set)=>({
             set({addingJob:false})
         }
     },
+    job:null,
+    proposals:[],
+    gettingJob:false,
+    getJob:async (id)=>{
+        set({gettingJob:true});
+        try {
+            const response=await axiosInstance.get(`/jobs/${id}`);
+            set({job:response.data.job});
+            set({proposals:response.data.proposals});
+            return true;
+        } catch (error) {
+            console.log(error);
+            toast.error(error.response?.data?.message);
+            return false;
+        }finally{
+            set({gettingJob:false})
+        }
+    },
 
 }));
 

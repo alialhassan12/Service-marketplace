@@ -1,10 +1,12 @@
 import PostJobButton from './PostJobButton';
 import useClientDashboardStore from '../../store/clientDashboardStore';
+import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import Button from '@mui/material/Button';
 
 export default function ClientMyJobs(){
     const {getMyJobs,myJobs,gettingMyJobs,addedJob}=useClientDashboardStore();
+    const navigate = useNavigate();
 
     useEffect(()=>{
         getMyJobs();
@@ -38,7 +40,7 @@ export default function ClientMyJobs(){
                                     {job.status === "closed" && <div className="badge badge-soft badge-error">Closed</div>}
                                 </div>
                                 <div>
-                                    <Button variant="contained">View job</Button>
+                                    <Button variant="contained" onClick={()=>navigate(`/job/${job.id}`)}>View job</Button>
                                 </div>
                             </div>
                         ))
