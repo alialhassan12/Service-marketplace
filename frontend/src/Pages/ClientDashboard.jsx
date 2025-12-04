@@ -1,7 +1,18 @@
+import ClientSideBar from "../components/clientDashboardComponents/ClientSideBar";
+import ClientHome from "../components/clientDashboardComponents/ClientHome";
+import ClientMyJobs from "../components/clientDashboardComponents/ClientMyJobs";
+import useClientDashboardStore from "../store/clientDashboardStore";
+
 export default function ClientDashboard(){
+    const {page}=useClientDashboardStore();
     return(
-        <div>
-            <h1>Client Dashboard</h1>
+        <div className="flex  bg-gray-100">
+            <ClientSideBar/>
+            {/* page content */}
+            <div className="w-full bg-gray-100 ">
+                {page==="home" && <ClientHome/>}
+                {page==="myJobs" && <ClientMyJobs/>}
+            </div>
         </div>
     )
 }

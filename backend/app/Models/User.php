@@ -50,4 +50,11 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function jobs(){
+        return $this->hasMany(Job::class,'client_id');
+    }
+    public function proposals(){
+        return $this->hasMany(Proposal::class,'provider_id');
+    }
 }
