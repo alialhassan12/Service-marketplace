@@ -12,6 +12,7 @@ import ClientDashboard from './Pages/ClientDashboard';
 import ProviderDashboard from './Pages/ProviderDashboard';
 import AdminDashboard from './Pages/AdminDashboard';
 import JobDetailsPage from './Pages/JobDetailsPage';
+import { Toaster } from 'react-hot-toast';
 
 function App() {
   const {check,authUser,isChecking}=useAuthStore();
@@ -46,8 +47,11 @@ function App() {
                                           :authUser?.role === 'provider'?<ProviderDashboard/>
                                           :authUser?.role === 'admin'?<AdminDashboard/>
                                           :<Navigate to="/"/>}/>
+
         <Route path="/job/:id" element={authUser?<JobDetailsPage/>:<Navigate to="/login"/>}/>
       </Routes>
+      
+      <Toaster position="top-center" reverseOrder={false}/>
     </>
   )
 }

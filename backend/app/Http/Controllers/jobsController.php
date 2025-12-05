@@ -14,7 +14,7 @@ class jobsController extends Controller
             $request->validate([
                 'title' => 'required|string',
                 'description' => 'required|string',
-                'location' => 'required|string',
+                'location' => 'string',
                 'is_remote' => 'required|boolean',
                 'budget' => 'required|numeric',
             ]);
@@ -68,6 +68,37 @@ class jobsController extends Controller
             return response()->json([
                 'message' => 'Job not found'
             ], 404);
+        }
+    }
+
+    public function updateJob(Request $request){
+        try {
+            $request->validate([
+                'title' => 'required|string',
+                'description' => 'required|string',
+                'location' => 'string',
+                'is_remote' => 'required|boolean',
+                'budget' => 'required|numeric',
+                'status' => 'required|string',
+            ]);
+
+            $job = Job::findOrFail($request->id);
+            $job->title = $request->title;
+            $job->description = $request->description;
+            $job->location = $request->location;
+            $job->is_remote = $request->is_remote;
+            $job->budget = $request->budget;
+            $job->status = $request->status;
+            $job->save();
+            
+            return response()->json([
+                'message' => 'Job updated successfully',
+                'job' => $job
+            ], 200);
+        } catch (Exception $th) {
+            return response()->json([
+                'message' => $th->getMessage()
+            ], 500);
         }
     }
 }
