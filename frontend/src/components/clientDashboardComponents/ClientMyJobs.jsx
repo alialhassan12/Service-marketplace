@@ -22,7 +22,7 @@ export default function ClientMyJobs(){
                 <h1 className="text-2xl font-bold ">My Jobs</h1>
                 <PostJobButton/>
             </div>
-            <div className='flex justify-between items-center text-center w-[100%] mt-5'>
+            <div className='flex justify-center items-center mt-5'>
                 <ToggleButtonGroup
                     color="primary"
                     value={status}
