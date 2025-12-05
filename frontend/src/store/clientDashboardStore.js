@@ -56,6 +56,23 @@ const useClientDashboardStore=create((set)=>({
             set({gettingJob:false})
         }
     },
+    updatingJob:false,
+    updatedJob:null,
+    updateJob:async(id,formData)=>{
+        set({updatingJob:true});
+        try {
+            const response=await axiosInstance.put(`/jobs/${id}`,formData);
+            set({updatedJob:response.data.job});
+            toast.success(response.data.message);
+            return true;
+        } catch (error) {
+            console.log(error);
+            toast.error(error.response?.data?.message);
+            return false;
+        }finally{
+            set({updatingJob:false})
+        }
+    }
 
 }));
 

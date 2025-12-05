@@ -4,7 +4,6 @@ import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Switch from '@mui/material/Switch';
 import { useState } from "react";
@@ -18,6 +17,7 @@ import useClientDashboardStore from "../../store/clientDashboardStore";
 export default function PostJobButton(){
     const {addJob,addingJob}=useClientDashboardStore();
     const [open, setOpen] = useState(false);
+    
     const [formData,setFormData]=useState({
         title:"",
         description:"",
@@ -33,6 +33,9 @@ export default function PostJobButton(){
     }
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if(formData.is_remote){
+            formData.location="Remote";
+        }
         const success = await addJob(formData);
         if(success){
             handleClose();
