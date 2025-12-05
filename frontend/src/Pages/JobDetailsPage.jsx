@@ -23,11 +23,15 @@ const JobDetailsPage = () => {
     const navigate = useNavigate();
     const { getJob, job, gettingJob,proposals,updateJob,updatingJob,updatedJob } = useClientDashboardStore();
     const [openEdit,setOpenEdit]=useState(false);
-    const[status,setStatus]=useState(job?.status);
+    const[status,setStatus]=useState("");
     
     useEffect(() => {
         getJob(id);
     }, [getJob,updatedJob]);
+    
+    useEffect(() => {
+        setStatus(job?.status);
+    }, [job]);
 
     const [formData,setFormData]=useState({
         title:"",
