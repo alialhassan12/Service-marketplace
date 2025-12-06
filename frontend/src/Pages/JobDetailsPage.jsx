@@ -17,6 +17,7 @@ import InputLabel from '@mui/material/InputLabel';
 import Input from '@mui/material/Input';
 import InputAdornment from '@mui/material/InputAdornment';
 import { Select } from '@radix-ui/themes';
+import { Text, Skeleton } from "@radix-ui/themes";
 
 const JobDetailsPage = () => {
     const { id } = useParams();
@@ -68,8 +69,16 @@ const JobDetailsPage = () => {
 
     if (gettingJob) {
         return (
-            <div className="flex justify-center items-center h-screen">
-                <span className="loading loading-spinner loading-lg"></span>
+            <div className="flex flex-col w-full p-10 max-w-4xl mx-auto">
+                {/* <span className="loading loading-spinner loading-lg"></span> */}
+                <div className="flex justify-between items-center mb-6 w-full">
+                    <Skeleton width="150px" height="48px" />
+                    <Skeleton width="150px" height="48px" />
+                </div>
+                <Skeleton width="100%" height="400px" />
+                <Skeleton width="150px" height="28px" className='mt-6' />
+                <Skeleton width="100%" height="400px" className='mt-2' />
+
             </div>
         );
     }
@@ -150,7 +159,7 @@ const JobDetailsPage = () => {
                 </Button>
             </div>
             {/* proposals */}
-            <div className='mt-6' data-aos="fade-up">
+            <div className='mt-6'>
                 <h3 className="text-lg font-semibold mb-2">Proposals</h3>
                 <div className="grid grid-cols-2 gap-4 text-sm bg-white border-2 border-gray-200 rounded-xl p-8 shadow-sm space-y-6">
                     {proposals.map((proposal) => (

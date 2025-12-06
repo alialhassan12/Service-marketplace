@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import { Text, Skeleton } from "@radix-ui/themes";
+
 
 export default function ClientMyJobs(){
     const {getMyJobs,myJobs,gettingMyJobs,addedJob}=useClientDashboardStore();
@@ -42,12 +44,18 @@ export default function ClientMyJobs(){
                 </ToggleButtonGroup>
             </div>
             {/* jobs */}
-            <div className="flex flex-col w-full mt-5">
+            <div className="flex flex-col w-full mt-5" data-aos="fade-up">
                 {gettingMyJobs
                 ?
-                    <div className="flex justify-center items-center w-full h-[200px]">
-                        <span className="loading loading-spinner loading-lg"></span>
+                    <div className='space-y-5'>
+                        <Skeleton width="100%" height="100px" />
+                        <Skeleton width="100%" height="100px" />
+                        <Skeleton width="100%" height="100px" />
                     </div>
+                    
+                    // <div className="flex justify-center items-center w-full h-[200px]">
+                    //     <span className="loading loading-spinner loading-lg"></span>
+                    // </div>
                 :   
                     myJobs.length === 0 ? (
                         <p className='text-center text-xl text-gray-500 font-bold'>Post a job to get started</p>
@@ -55,7 +63,7 @@ export default function ClientMyJobs(){
                         myJobs.map((job) =>{
                             if(status === "all" || job.status === status){
                                 return(
-                                    <div data-aos="fade-up" key={job.id} className="flex justify-between items-center w-full p-5 mb-3 bg-white border-2 border-gray-200 rounded-xl">
+                                    <div key={job.id} className="flex justify-between items-center w-full p-5 mb-3 bg-white border-2 border-gray-200 rounded-xl">
                                         <div className='space-y-1'>
                                             <h1 className="text-2xl font-bold ">{job.title}</h1>
                                             {job.status === "open" && <div className="badge badge-soft badge-info">Open</div>}
