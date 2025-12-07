@@ -65,8 +65,8 @@ export default function ProviderSideBar(){
                             {isLoggingOut ? <p>Logging out...<span className="loading loading-infinity loading-xl text-blue-500 text-center"></span></p>: <><LogoutIcon/><p>Logout</p></>}
                         </a></li>
                         {/* user profile */}
-                        <li><a onClick={()=>setPage("userProfile")} className={active==="userProfile"? "bg-blue-200 text-blue-500" : ""}>
-                            {authUser?.image ? <Avatar className="w-10 h-10" src={authUser?.image} /> : <Avatar className="w-10 h-10">{authUser?.name[0]}</Avatar>}
+                        <li><a onClick={()=>setPage("profile")} className={active==="profile"? "bg-blue-200 text-blue-500" : ""}>
+                            {authUser?.profile_picture ? <Avatar className="w-10 h-10" src={`http://localhost:8000/storage/${authUser?.profile_picture}`} /> : <Avatar className="w-10 h-10">{authUser?.name[0]}</Avatar>}
                             <div className="flex flex-col">
                                 <p className="font-semibold">{authUser?.name}</p>
                                 <p className="text-xs text-gray-500">{authUser?.email}</p>

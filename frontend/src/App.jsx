@@ -1,6 +1,7 @@
 import AOS from 'aos';
 import {Routes,Route,Navigate} from 'react-router-dom';
 import "@radix-ui/themes/styles.css";
+import { Toaster } from 'react-hot-toast';
 
 //components
 import LandingPage from './Pages/LandingPage';
@@ -12,7 +13,7 @@ import ClientDashboard from './Pages/ClientDashboard';
 import ProviderDashboard from './Pages/ProviderDashboard';
 import AdminDashboard from './Pages/AdminDashboard';
 import JobDetailsPage from './Pages/JobDetailsPage';
-import { Toaster } from 'react-hot-toast';
+import ProviderUpdateProfile from './components/providerDashboardComponents/ProviderUpdateProfile';
 
 function App() {
   const {check,authUser,isChecking}=useAuthStore();
@@ -49,6 +50,8 @@ function App() {
                                           :<Navigate to="/"/>}/>
 
         <Route path="/job/:id" element={authUser?<JobDetailsPage/>:<Navigate to="/login"/>}/>
+        
+        <Route path="/provider/update-profile" element={authUser?.role === 'provider'?<ProviderUpdateProfile/>:<Navigate to="/"/>}/>
       </Routes>
       
       <Toaster position="top-center" reverseOrder={false}/>
