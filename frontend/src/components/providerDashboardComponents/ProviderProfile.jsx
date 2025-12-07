@@ -1,119 +1,121 @@
-import { useRef, useState } from "react";
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import PhoneIcon from '@mui/icons-material/Phone';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import EmailIcon from '@mui/icons-material/Email';
+import Avatar from "@mui/material/Avatar";
 import { useAuthStore } from "../../store/authStore";
-import { Button, TextArea, TextField,Badge, IconButton, Flex, Text } from "@radix-ui/themes";
-import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
-import { Cross2Icon } from "@radix-ui/react-icons";
+import { Badge, Button, Card, Flex, Text, Heading, Separator } from '@radix-ui/themes';
+import { useNavigate } from "react-router-dom";
 
 export default function ProviderProfile(){
-    const [skills, setSkills] = useState(["Laravel", "React"]);
-    const [inputValue, setInputValue] = useState("");
-
     const {authUser}=useAuthStore();
-    const profileImageRef=useRef();
-    const [profileImage,setProfileImage]=useState(authUser.profile_picture);
+    const navigate = useNavigate();
     
-    const handleProfileImageChange=async(e)=>{
-        const file=e.target.files[0];
-        if(file){
-            const reader=new FileReader();
-            reader.readAsDataURL(file);
-            reader.onloadend=()=>{
-                setProfileImage(reader.result);
-            }
+    // Safe skills parsing
+    const skills = (() => {
+        if (!authUser?.skills) return [];
+        if (Array.isArray(authUser.skills)) return authUser.skills;
+        try {
+            return JSON.parse(authUser.skills);
+        } catch (e) {
+            return [];
         }
-    }
-    const addSkill = () => {
-        const value = inputValue.trim();
-        if (value.length === 0) return;
-        if (!skills.includes(value)) {
-        setSkills([...skills, value]);
-        }
-        setInputValue("");
-    };
-
-    const removeSkill = (skill) => {
-        setSkills(skills.filter((s) => s !== skill));
-    };
+    })();
 
     return(
-        <div className="flex flex-col w-full p-10" data-aos="fade-up">
-            <h1 className="text-2xl font-bold">Profile Setup</h1>
-            <div className="flex flex-col w-full mt-5 gap-2">
-                {/* profile image */}
-                <div className="flex flex-col gap-2">
-                    <p>Profile Picture</p>
-                    <div className="flex items-center gap-2">
-                        {profileImage!=undefined?
-                        (<img src={profileImage} className="w-24 h-24 rounded-full" />):
-                        <div className="flex items-center justify-center text-2xl w-24 h-24 rounded-full bg-gray-200">{authUser.name.charAt(0)}</div>}
-                        <Button variant="soft"  onClick={()=>profileImageRef.current.click()}>Upload Photo</Button>
-                        <input type="file" ref={profileImageRef} onChange={handleProfileImageChange} hidden />
-                    </div>
-                </div>
-                {/* name */}
-                <div className="flex flex-col gap-2">
-                    <p>Name</p>
-                    <TextField.Root variant="soft" size="3" placeholder="e.g. John Doe" value={authUser.name}>
-                        <TextField.Slot>
-                            <MagnifyingGlassIcon height="16" width="16" />
-                        </TextField.Slot>
-                    </TextField.Root>
-                </div>
-                {/* bio */}
-                <div className="flex flex-col gap-2">
-                    <p>Bio</p>
-                    <TextArea variant="soft" size="3" placeholder="Tell us about yourself" />
-                </div>
-                {/* Skills */}
-                <div className="flex flex-col gap-2">
-                    <p>Skills</p>
-                    <div className="flex items-center flex-wrap gap-2 p-2 border rounded-xl">
-                        {/* Tags */}
-                        {skills.map((skill) => (
-                        <Badge
-                            key={skill}
-                            color="gray"
-                            radius="full"
-                            variant="soft"
-                            className="flex items-center gap-1 pr-1"
-                        >
-                            {skill}
-                            <IconButton
-                                variant="ghost"
-                                color="gray"
-                                radius="full"
-                                size="1"
-                                onClick={() => removeSkill(skill)}
-                            >
-                                <Cross2Icon />
-                            </IconButton>
-                        </Badge>
-                        ))}
+        <div className="flex flex-col w-full p-4 md:p-8 gap-6" data-aos="fade-up">
+            <div className="flex justify-between items-center">
+                <Heading size="8" className="text-gray-800">My Profile</Heading>
+                <Button 
+                    size="3" 
+                    variant="solid" 
+                    className="cursor-pointer shadow-md hover:bg-teal-600 transition-all font-medium"
+                    onClick={()=>{navigate('/provider/update-profile')}}
+                >
+                    Edit Profile
+                </Button>
+            </div>
 
-                        {/* Add Skill Input */}
-                        <TextField.Root
-                            placeholder="Add a skill"
-                            value={inputValue}
-                            onChange={(e) => setInputValue(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === "Enter") {
-                                e.preventDefault();
-                                addSkill();
-                                }
-                            }}
-                            className="min-w-[120px] w-auto"
-                            variant="soft"
-                            size="2"
-                        />
+            <div className="flex flex-col lg:flex-row gap-6">
+                {/* Left Column: Identity Card */}
+                <div className="w-full lg:w-1/3 flex flex-col gap-6">
+                    <div className="bg-white gap-2 rounded-3xl p-8 shadow-[0_2px_12px_rgba(0,0,0,0.08)] flex flex-col items-center text-center border border-gray-100">
+                        <div className="relative group">
+                            {authUser?.profile_picture ? (
+                                <Avatar 
+                                    sx={{ width: 140, height: 140 }} 
+                                    className="rounded-full shadow-lg border-4 border-white ring-2 ring-gray-100 object-cover" 
+                                    src={`http://localhost:8000/storage/${authUser?.profile_picture}`}
+                                />
+                            ) : (
+                                <Avatar 
+                                    sx={{ width: 140, height: 140 }} 
+                                    className="rounded-full shadow-lg border-4 border-white ring-2 ring-gray-100 bg-linear-to-br from-teal-400 to-blue-500 text-5xl text-white font-bold"
+                                >
+                                    {authUser?.name?.charAt(0)}
+                                </Avatar>
+                            )}
+                        </div>
+                        
+                        <Heading size="6" className="mt-4 text-gray-900">{authUser?.name}</Heading>
+                        <Text size="2" color="gray" className="font-medium">Service Provider</Text>
+                        
+                        <Separator size="4" className="my-1 w-full" />
+                        
+                        <div className="flex flex-col gap-2 w-full">
+                            <div className="flex items-center gap-3 text-gray-600 bg-gray-50 p-3 rounded-xl border border-gray-100">
+                                <EmailIcon className="text-teal-600" fontSize="small" />
+                                <Text size="2" className="break-all">{authUser?.email}</Text>
+                            </div>
+                            <div className="flex items-center gap-3 text-gray-600 bg-gray-50 p-3 rounded-xl border border-gray-100">
+                                <PhoneIcon className="text-teal-600" fontSize="small" />
+                                <Text size="2">{authUser?.phone_number || "No phone added"}</Text>
+                            </div>
+                            <div className="flex items-center gap-3 text-gray-600 bg-gray-50 p-3 rounded-xl border border-gray-100">
+                                <LocationOnIcon className="text-teal-600" fontSize="small" />
+                                <Text size="2">{authUser?.location || "No location added"}</Text>
+                            </div>
+                            <div className="flex items-center gap-3 text-gray-600 bg-gray-50 p-3 rounded-xl border border-gray-100">
+                                <CalendarMonthIcon className="text-teal-600" fontSize="small" />
+                                <Text size="2">Joined {new Date(authUser?.created_at).toLocaleDateString()}</Text>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                {/* location */}
-                <div className="flex flex-col gap-2">
-                    <p>Location</p>
-                    <TextField.Root variant="soft" size="3" placeholder="e.g. New York, USA" value={authUser.location} />
+
+                {/* Right Column: Details */}
+                <div className="w-full lg:w-2/3 flex flex-col gap-6">
+                    {/* Bio Section */}
+                    <div className="bg-white gap-2 rounded-3xl p-8 shadow-[0_2px_12px_rgba(0,0,0,0.08)] border border-gray-100 h-fit">
+                        <Heading size="5" className="mb-4 text-gray-800 flex items-center gap-2">
+                            About Me
+                        </Heading>
+                        <Text as="p" size="3" className="text-gray-600 leading-relaxed whitespace-pre-wrap">
+                            {authUser?.bio || "No bio information provided yet."}
+                        </Text>
+                    </div>
+
+                    {/* Skills Section */}
+                    <div className="bg-white  rounded-3xl p-8 shadow-[0_2px_12px_rgba(0,0,0,0.08)] border border-gray-100 h-fit">
+                        <Heading size="5" className="mb-4 text-gray-800">Skills & Expertise</Heading>
+                        <div className="flex flex-wrap gap-2 mt-2">
+                            {skills.length > 0 ? (
+                                skills.map((skill, index) => (
+                                    <Badge 
+                                        key={index} 
+                                        color="teal" 
+                                        variant="soft" 
+                                        className="px-4 py-1.5 text-sm font-medium rounded-full border border-teal-100"
+                                    >
+                                        {skill}
+                                    </Badge>
+                                ))
+                            ) : (
+                                <Text size="3" color="gray" className="italic">No skills listed yet.</Text>
+                            )}
+                        </div>
+                    </div>
                 </div>
-                {/* save button */}
-                <Button variant="soft" color="teal" size="3" className="mt-5">Save Changes</Button>
             </div>
         </div>
     )

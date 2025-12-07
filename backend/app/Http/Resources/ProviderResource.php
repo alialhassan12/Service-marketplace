@@ -19,14 +19,16 @@ class ProviderResource extends JsonResource
             : null;
 
         return [
-            'id' => $user->id,
-            'name' => $user->name,
-            'email' => $user->email,
-            'phone_number' => $user->phone_number,
-            'location' => $user->location,
+            'id' => $this->id,
+            'name' => $this->name,
+            'email' => $this->email,
+            'phone_number' => $this->phone_number,
+            'location' => $this->location,
             'profile_picture' => $profilePictureUrl,
-            'created_at' => $user->created_at->format('Y-m-d H:i:s'),
+            'bio' => $this->bio,
+            'role'=>$this->role,
+            'skills' => $this->skills,
+            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
         ];
-
     }
 }
