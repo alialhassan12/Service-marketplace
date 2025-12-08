@@ -22,9 +22,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/jobs', [jobsController::class, 'getJobs'])->name('getJobs');
     Route::get('/jobs/{id}', [jobsController::class, 'getJob'])->name('getJob');
     Route::put('/jobs/{id}', [jobsController::class, 'updateJob'])->name('updateJob');
+    Route::put('/provider/profile', [ProviderProfileController::class, 'update']);
+    Route::get('/provider/profile', [ProviderProfileController::class, 'show']);
+
 });
 
 Route::middleware(['auth:sanctum', 'checkRole:provider'])->prefix('provider')->group(function () {
-    Route::get('/profile', [ProviderProfileController::class, 'show']);
-    Route::put('/profile', [ProviderProfileController::class, 'update']);
 });

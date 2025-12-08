@@ -61,5 +61,6 @@ export const useAuthStore=create((set)=>({
         } finally {
             set({isLogging:false});
         }
-    }
+    },
+    setUser: (user) => set({ authUser: user }),
 }));
