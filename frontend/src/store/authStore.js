@@ -11,10 +11,18 @@ export const useAuthStore=create((set)=>({
     check:async()=>{
         set({isChecking:true});
         try {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                set({authUser:null});
+                return;
+            }
             const response=await axiosInstance.get("/check");
             set({authUser:response.data});
         } catch (error) {
-            console.log(error);
+            // If check fails (no token, invalid token, or server error), clear auth state
+            set({authUser:null});
+            localStorage.removeItem("token");
+            console.log("Auth check failed:", error);
         } finally {
             set({isChecking:false});
         }
@@ -27,9 +35,11 @@ export const useAuthStore=create((set)=>({
             set({authUser:response.data.user});
             localStorage.setItem("token",response.data.token);
             toast.success(response.data.message);
+            return {success:true, user:response.data.user};
         } catch (error) {
             // console.log(error);
-            toast.error(error.response.data.message);
+            toast.error(error.response?.data?.message || "Login failed");
+            return {success:false, error:error.response?.data?.message};
         } finally {
             set({isLogging:false});
         }
@@ -55,9 +65,11 @@ export const useAuthStore=create((set)=>({
             set({authUser:response.data.user});
             localStorage.setItem("token",response.data.token);
             toast.success(response.data.message);
+            return {success:true, user:response.data.user};
         } catch (error) {
             console.log(error);
-            toast.error(error.response.data.message);
+            toast.error(error.response?.data?.message || "Registration failed");
+            return {success:false, error:error.response?.data?.message};
         } finally {
             set({isLogging:false});
         }

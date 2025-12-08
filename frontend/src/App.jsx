@@ -1,7 +1,6 @@
-import AOS from 'aos';
-import {Routes,Route,Navigate} from 'react-router-dom';
+import AOS from "aos";
+import { Routes, Route, Navigate } from "react-router-dom";
 import "@radix-ui/themes/styles.css";
-import { Toaster } from 'react-hot-toast';
 
 //components
 import LandingPage from './Pages/LandingPage';
@@ -13,50 +12,81 @@ import ClientDashboard from './Pages/ClientDashboard';
 import ProviderDashboard from './Pages/ProviderDashboard';
 import AdminDashboard from './Pages/AdminDashboard';
 import JobDetailsPage from './Pages/JobDetailsPage';
+import { Toaster } from 'react-hot-toast';
+import { ThemeProvider } from "./contexts/ThemeContext";
 import ProviderUpdateProfile from './components/providerDashboardComponents/ProviderUpdateProfile';
 
 function App() {
-  const {check,authUser,isChecking}=useAuthStore();
-    useEffect(()=>{
-      check();
-    },[check]);
+  const { check, authUser, isChecking } = useAuthStore();
+  useEffect(() => {
+    check();
+  }, [check]);
 
-    //loading animation
-    if(isChecking){
-      return <div className='flex justify-center items-center h-screen'>
+  //loading animation
+  if (isChecking) {
+    return (
+      <div className="flex justify-center items-center h-screen">
         <span className="loading loading-ring loading-xl"></span>
       </div>
-    }
+    );
+  }
 
   //intialize aos for the fade animation
-    AOS.init({
-      duration:1000
-    });
+  AOS.init({
+    duration: 1000,
+  });
+
+  // Normalize role to lowercase for comparison
+  const userRole = authUser?.role?.toLowerCase();
 
   return (
-    <>
-      <Routes>
-        <Route path="/" element={authUser?.role === 'client'||
-                                authUser?.role === 'provider'||
-                                authUser?.role === 'admin'?
-                                <Navigate to="/dashboard"/>:<LandingPage/>}/>
+  
+      <ThemeProvider>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              userRole === "client" ||
+              userRole === "provider" ||
+              userRole === "admin" ? (
+                <Navigate to="/dashboard" />
+              ) : (
+                <LandingPage />
+              )
+            }
+          />
 
-        <Route path="/login" element={authUser?<Navigate to="/dashboard"/>:<LoginPage/>}/>
-        <Route path="/register" element={authUser?<Navigate to="/dashboard"/>:<RegisterPage/>}/>
-        
-        <Route path='/dashboard' element={authUser?.role === 'client'?<ClientDashboard/>
-                                          :authUser?.role === 'provider'?<ProviderDashboard/>
-                                          :authUser?.role === 'admin'?<AdminDashboard/>
-                                          :<Navigate to="/"/>}/>
+          <Route
+            path="/login"
+            element={authUser ? <Navigate to="/dashboard" /> : <LoginPage />}
+          />
+          <Route
+            path="/register"
+            element={authUser ? <Navigate to="/dashboard" /> : <RegisterPage />}
+          />
+
+          <Route
+            path="/dashboard/*"
+            element={
+              userRole === "client" ? (
+                <ClientDashboard />
+              ) : userRole === "provider" ? (
+                <ProviderDashboard />
+              ) : userRole === "admin" ? (
+                <AdminDashboard />
+              ) : (
+                <Navigate to="/" />
+              )
+            }
+          />
 
         <Route path="/job/:id" element={authUser?<JobDetailsPage/>:<Navigate to="/login"/>}/>
-        
         <Route path="/provider/update-profile" element={authUser?.role === 'provider'?<ProviderUpdateProfile/>:<Navigate to="/"/>}/>
       </Routes>
       
       <Toaster position="top-center" reverseOrder={false}/>
-    </>
-  )
+    
+  </ThemeProvider>);
 }
 
-export default App
+export default App;
