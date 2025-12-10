@@ -64,6 +64,7 @@ export default function LoginPage() {
               id="outlined-basic"
               label="Email"
               variant="outlined"
+              disabled={isLogging}
               value={formData.email}
               onChange={handleEmailChange}
               required
@@ -75,6 +76,7 @@ export default function LoginPage() {
               label="Password"
               type="password"
               variant="outlined"
+              disabled={isLogging}
               value={formData.password}
               onChange={handlePasswordChange}
               required

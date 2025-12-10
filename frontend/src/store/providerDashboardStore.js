@@ -4,9 +4,11 @@ import {toast} from "react-hot-toast";
 
 const useProviderDashboardStore=create((set)=>({
     page:"home",
+    setPage:(page)=>set({page}),
+    browseJobsData:[],
+    browseJobsLoading:false,
     providerProfile:{},
     providerProfileLoading:false,
-    setPage:(page)=>set({page}),
     updatedProfile:{},
     updatingProfile:false,
     updateProfile:async(formData)=>{
@@ -35,6 +37,19 @@ const useProviderDashboardStore=create((set)=>({
             return false;
         }finally{
             set({providerProfileLoading:false})
+        }
+    },
+    browseJobs:async(filters)=>{
+        set({browseJobsLoading:true});
+        try {
+            const response=await axiosInstance.get("/provider/browseJobs", { params: filters });
+            set({browseJobsData:response.data.jobs});
+            return true;
+        } catch (error) {
+            console.log(error);
+            return false;
+        }finally{
+            set({browseJobsLoading:false})
         }
     }
 }));
