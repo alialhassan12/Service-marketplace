@@ -1,13 +1,19 @@
-import { MagnifyingGlassIcon, CalendarIcon, ClockIcon, ArrowLeftIcon, ArrowRightIcon, Cross2Icon } from "@radix-ui/react-icons";
-import { TextField, Card, Text, Flex, Button, Grid, Heading, Box, Select, Switch, Badge, Skeleton, IconButton, Dialog, Avatar, Separator, ScrollArea } from "@radix-ui/themes";
+import { MagnifyingGlassIcon, CalendarIcon, ClockIcon, ArrowLeftIcon, ArrowRightIcon, Cross2Icon, ChatBubbleIcon } from "@radix-ui/react-icons";
+import { TextField, Card, Text, Flex, Button, Grid, Heading, Box, Select, Switch, Badge, Skeleton, IconButton, Dialog, Avatar, Separator, ScrollArea, Popover, TextArea, Checkbox } from "@radix-ui/themes";
 import * as Slider from "@radix-ui/react-slider";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { MapPin } from "lucide-react";
 import useProviderDashboardStore from "../../store/providerDashboardStore";
+import { useAuthStore } from "../../store/authStore";
+import toast from "react-hot-toast";
 
 export default function ProviderBrowseJobs(){
+    const {authUser}=useAuthStore();
     const [range, setRange] = useState([100, 1000]);
     const [isRemote, setIsRemote] = useState(false);
+    const {browseJobs,browseJobsLoading,browseJobsData,submitProposal,submittingProposal}=useProviderDashboardStore();
+    const [selectedJob, setSelectedJob] = useState(null);
+    
     const [filters,setFilters]=useState({
         title:"",
         location:"",
@@ -16,8 +22,7 @@ export default function ProviderBrowseJobs(){
         remote:false,
         page: 1
     });
-    const {browseJobs,browseJobsLoading,browseJobsData}=useProviderDashboardStore();
-    const [selectedJob, setSelectedJob] = useState(null);
+    const [proposalDescription,setProposalDescription]=useState("");
 
     useEffect(() => {
         browseJobs(filters);
@@ -27,6 +32,28 @@ export default function ProviderBrowseJobs(){
     const submitFilters=()=>{
         browseJobs({...filters, page: 1});
         setFilters({...filters, page: 1});
+    }
+
+    const submitProposalClick = async () => {
+        if (!selectedJob) {
+            toast.error("Please select a job");
+            return;
+        }
+        
+        const proposalData = {
+            job_id: selectedJob.id,
+            provider_id: authUser?.id,
+            description: proposalDescription,
+            price: selectedJob.budget, 
+            status: "pending"
+        };
+
+        const success = await submitProposal(proposalData);
+        
+        if (success) {
+            setSelectedJob(null);
+            setProposalDescription("");
+        }
     }
 
     const handlePageChange = (newPage) => {
@@ -289,7 +316,44 @@ export default function ProviderBrowseJobs(){
                                 <Dialog.Close>
                                     <Button variant="soft" color="gray">Close</Button>
                                 </Dialog.Close>
-                                <Button variant="solid" className="bg-indigo-600 text-white">Apply Now</Button>
+                                {/* Apply button*/}
+
+                                <Popover.Root>
+                                        <Popover.Trigger>
+                                            <Button variant="soft" disabled={submittingProposal}>
+                                                {submittingProposal 
+                                                ? 
+                                                    <span className="loading loading-infinity loading-xl text-blue-500 text-center"/>
+                                                : 
+                                                    <p className="flex items-center gap-2"><ChatBubbleIcon width="16" height="16" />Submit Proposal</p>
+                                                }
+                                            </Button>
+                                        </Popover.Trigger>
+                                    <Popover.Content width="360px">
+                                        <Flex gap="3">
+                                            <Avatar
+                                                size="2"
+                                                src={`http://localhost:8000/storage/${authUser?.profile_picture}`}
+                                                fallback={authUser?.name?.[0] || 'A'}
+                                                radius="full"
+                                            />
+                                            <Box flexGrow="1">
+                                                <TextArea placeholder="Write a proposal…"
+                                                        value={proposalDescription}
+                                                        onChange={(e)=>setProposalDescription(e.target.value)}
+                                                        style={{ height: 80 }} />
+                                                <Flex gap="3" mt="3" justify="end">
+                                                    <Popover.Close>
+                                                        <Button size="1" disabled={proposalDescription.length<10 ||submittingProposal}
+                                                            onClick={submitProposalClick}>
+                                                            Submit
+                                                        </Button>
+                                                    </Popover.Close>
+                                                </Flex>
+                                            </Box>
+                                        </Flex>
+                                    </Popover.Content>
+                                </Popover.Root>
                             </Flex>
                         </Flex>
                     )}

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Resources\ProviderResource;
 use App\Models\Job;
+use App\Models\Proposal;
 use Exception;
 
 class ProviderProfileController extends Controller
@@ -108,6 +109,35 @@ class ProviderProfileController extends Controller
             return response()->json([
                 'message' => 'Jobs fetched successfully',
                 'jobs' => $jobs
+            ], 200);
+        } catch (Exception $th) {
+            return response()->json([
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    public function submitProposal(Request $request){
+        try {
+            $request->validate([
+                'job_id'=>'required|exists:jobs,id',
+                'provider_id'=>'required|exists:users,id',
+                'price'=>'required|numeric',
+                'description'=>'required|string',
+                'status'=>'required|string|in:pending,accepted,declined'
+            ]);
+
+            $proposal=new Proposal();
+            $proposal->job_id=$request->job_id;
+            $proposal->provider_id=$request->provider_id;
+            $proposal->price=$request->price;
+            $proposal->description=$request->description;
+            $proposal->status=$request->status;
+            $proposal->save();
+
+            return response()->json([
+                'message' => 'Proposal submitted successfully',
+                'proposal' => $proposal
             ], 200);
         } catch (Exception $th) {
             return response()->json([

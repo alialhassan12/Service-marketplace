@@ -29,7 +29,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/provider/profile', [ProviderProfileController::class, 'update']);
     Route::get('/provider/profile', [ProviderProfileController::class, 'show']);
     Route::get('/provider/browseJobs',[ProviderProfileController::class,'browseJobs'])->name('browseJobs');
-
+    Route::post('/provider/submitProposal',[ProviderProfileController::class,'submitProposal'])->name('submitProposal');
 });
 
 Route::middleware(['auth:sanctum', 'checkRole:provider'])->prefix('provider')->group(function () {

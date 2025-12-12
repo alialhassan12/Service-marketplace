@@ -51,6 +51,21 @@ const useProviderDashboardStore=create((set)=>({
         }finally{
             set({browseJobsLoading:false})
         }
+    },
+    submittingProposal:false,
+    submitProposal:async(proposal)=>{
+        set({submittingProposal:true});
+        try {
+            const response=await axiosInstance.post("/provider/submitProposal",proposal);
+            toast.success(response.data.message);
+            return response.data;
+        } catch (error) {
+            console.log(error);
+            toast.error(error.response?.data?.message);
+            return false;
+        }finally{
+            set({submittingProposal:false})
+        }
     }
 }));
 
