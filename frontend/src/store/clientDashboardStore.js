@@ -46,7 +46,7 @@ const useClientDashboardStore=create((set)=>({
         try {
             const response=await axiosInstance.get(`/jobs/${id}`);
             set({job:response.data.job});
-            set({proposals:response.data.proposals});
+            set({proposals:response.data.job.proposals});
             return true;
         } catch (error) {
             console.log(error);
@@ -71,6 +71,37 @@ const useClientDashboardStore=create((set)=>({
             return false;
         }finally{
             set({updatingJob:false})
+        }
+    },
+    updatingProposalStatusId:null,
+    updateProposalState:async(jobId,proposal_id,state)=>{
+        set({updatingProposalStatusId:proposal_id});
+        try {
+            const response=await axiosInstance.put(`/jobs/${jobId}/proposal/${proposal_id}`,{proposal_id,state});
+            toast.success(response.data.message);
+            return true;
+        } catch (error) {
+            console.log(error);
+            toast.error(error.response?.data?.message);
+            return false;
+        }finally{
+            set({updatingProposalStatusId:null})
+        }
+    },
+    suggestedProviders:[],
+    gettingSuggestedProviders:false,
+    getSuggestedProviders:async()=>{
+        set({gettingSuggestedProviders:true});
+        try {
+            const response=await axiosInstance.get('/client/suggested-providers');
+            set({suggestedProviders:response.data.providers});
+            return true;
+        } catch (error) {
+            console.log(error);
+            toast.error(error.response?.data?.message);
+            return false;
+        }finally{
+            set({gettingSuggestedProviders:false})
         }
     }
 

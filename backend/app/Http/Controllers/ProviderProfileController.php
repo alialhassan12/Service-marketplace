@@ -10,15 +10,18 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Resources\ProviderResource;
 use App\Models\Job;
 use App\Models\Proposal;
+use App\Models\User;
 use Exception;
 
 class ProviderProfileController extends Controller
 {
-    public function show(Request $request){
+    public function show(Request $request)
+    {
         return new ProviderResource($request->user());
     }
 
-    public function update(Request $request){
+    public function update(Request $request)
+    {
 
         $user = $request->user();
 
@@ -64,9 +67,10 @@ class ProviderProfileController extends Controller
         ], 200);
     }
 
-    public function browseJobs(Request $request){
+    public function browseJobs(Request $request)
+    {
         try {
-            
+
             $limit = 10;
             $query = Job::query()->with('client');
 
@@ -120,24 +124,56 @@ class ProviderProfileController extends Controller
     public function submitProposal(Request $request){
         try {
             $request->validate([
-                'job_id'=>'required|exists:jobs,id',
-                'provider_id'=>'required|exists:users,id',
-                'price'=>'required|numeric',
-                'description'=>'required|string',
-                'status'=>'required|string|in:pending,accepted,declined'
+                'job_id' => 'required|exists:jobs,id',
+                'provider_id' => 'required|exists:users,id',
+                'price' => 'required|numeric',
+                'description' => 'required|string',
+                'status' => 'required|string|in:pending,accepted,declined'
             ]);
 
-            $proposal=new Proposal();
-            $proposal->job_id=$request->job_id;
-            $proposal->provider_id=$request->provider_id;
-            $proposal->price=$request->price;
-            $proposal->description=$request->description;
-            $proposal->status=$request->status;
+            $proposal = new Proposal();
+            $proposal->job_id = $request->job_id;
+            $proposal->provider_id = $request->provider_id;
+            $proposal->price = $request->price;
+            $proposal->description = $request->description;
+            $proposal->status = $request->status;
             $proposal->save();
 
             return response()->json([
                 'message' => 'Proposal submitted successfully',
                 'proposal' => $proposal
+            ], 200);
+        } catch (Exception $th) {
+            return response()->json([
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getSuggestedProviders(Request $request){
+        try {
+            $providers = User::where('role', 'provider')
+                ->inRandomOrder()
+                ->limit(4)
+                ->get();
+
+            return response()->json([
+                'message' => 'Suggested providers fetched successfully',
+                'providers' => $providers
+            ], 200);
+        } catch (Exception $th) {
+            return response()->json([
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getMyProposals(Request $request){
+        try {
+            $proposals = Proposal::with('job.client')->where('provider_id', $request->user()->id)->get();
+            return response()->json([
+                'message' => 'Proposals fetched successfully',
+                'proposals' => $proposals
             ], 200);
         } catch (Exception $th) {
             return response()->json([

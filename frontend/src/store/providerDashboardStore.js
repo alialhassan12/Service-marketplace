@@ -66,6 +66,36 @@ const useProviderDashboardStore=create((set)=>({
         }finally{
             set({submittingProposal:false})
         }
+    },
+    recommendedJobsData:[],
+    recommendedJobsLoading:false,
+    getRecommendedJobs:async()=>{
+        set({recommendedJobsLoading:true});
+        try {
+            const response=await axiosInstance.get("/provider/recommended-jobs");
+            set({recommendedJobsData:response.data.jobs});
+            return true;
+        } catch (error) {
+            console.log(error);
+            return false;
+        }finally{
+            set({recommendedJobsLoading:false})
+        }
+    },
+    myProposalsData:[],
+    myProposalsLoading:false,
+    getMyProposals:async()=>{
+        set({myProposalsLoading:true});
+        try {
+            const response=await axiosInstance.get("/provider/my-proposals");
+            set({myProposalsData:response.data.proposals});
+            return true;
+        } catch (error) {
+            console.log(error);
+            return false;
+        }finally{
+            set({myProposalsLoading:false})
+        }
     }
 }));
 

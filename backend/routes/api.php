@@ -24,14 +24,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/jobs/{id}', [jobsController::class, 'getJob'])->name('getJob');
     Route::put('/jobs/{id}', [jobsController::class, 'updateJob'])->name('updateJob');
     Route::delete('/jobs/{id}', [jobsController::class, 'deleteJob'])->name('deleteJob');
-    
+    Route::put('/jobs/{id}/proposal/{proposalId}', [jobsController::class, 'updateProposalState'])->name('updateProposalState');
+    Route::get('/client/suggested-providers',[ProviderProfileController::class,'getSuggestedProviders'])->name('getSuggestedProviders');
+
     //provider routes
     Route::put('/provider/profile', [ProviderProfileController::class, 'update']);
     Route::get('/provider/profile', [ProviderProfileController::class, 'show']);
-    Route::get('/provider/browseJobs',[ProviderProfileController::class,'browseJobs'])->name('browseJobs');
-    Route::post('/provider/submitProposal',[ProviderProfileController::class,'submitProposal'])->name('submitProposal');
+    Route::get('/provider/browseJobs', [ProviderProfileController::class, 'browseJobs'])->name('browseJobs');
+    Route::post('/provider/submitProposal', [ProviderProfileController::class, 'submitProposal'])->name('submitProposal');
+    Route::get('/provider/recommended-jobs', [jobsController::class, 'getRecomendedJobs'])->name('getRecomendedJobs');
+    Route::get('/provider/my-proposals',[ProviderProfileController::class,'getMyProposals'])->name('getMyProposals');
 });
 
-Route::middleware(['auth:sanctum', 'checkRole:provider'])->prefix('provider')->group(function () {
-    
-});
+Route::middleware(['auth:sanctum', 'checkRole:provider'])->prefix('provider')->group(function () {});
