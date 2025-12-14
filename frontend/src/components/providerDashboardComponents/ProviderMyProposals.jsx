@@ -71,7 +71,7 @@ export default function ProviderMyProposals(){
                     ))}
                 </Grid>
             ) : (
-                <Text color="gray">You haven't submitted any proposals yet.</Text>
+                <div className="mt-6 text-center text-gray-500">You haven't submitted any proposals yet.</div>
             )}
 
             {/* Job Details Dialog */}
