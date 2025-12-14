@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
+import { Button } from "@radix-ui/themes";
 
 export default function NavBar(){
     const {authUser}=useAuthStore();
@@ -11,8 +12,8 @@ export default function NavBar(){
                 <ul className="flex justify-between items-center gap-5">
                     <li><a href="/">Browse</a></li>
                     <li><a href="/">How it works</a></li>
-                    <li><button className="btn btn-primary">Post a Job</button></li>
-                    <li><button className="btn btn-neutral btn-outline" onClick={() => navigate("/login")}>Log in</button></li>
+                    <li><Button size={{ initial: '2', md: '2' }} variant="soft" color="blue" style={{cursor:"pointer"}} >Post a Job</Button></li>
+                    <li><Button size={{ initial: '2', md: '2' }} variant="soft" color="gray" style={{cursor:"pointer"}} onClick={() => navigate("/login")}>Log in</Button></li>
                 </ul>
             </div>
         </div>

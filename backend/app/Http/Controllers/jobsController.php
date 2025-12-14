@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Job;
+use App\Models\Proposal;
 use Exception;
 use Illuminate\Http\Request;
 
@@ -50,8 +51,7 @@ class jobsController extends Controller
     public function getJob(Request $request, $id)
     {
         try {
-            $job = Job::findOrFail($id);
-            $proposals=$job->proposals()->get();
+            $job = Job::with('proposals.provider')->findOrFail($id);
 
             if ($job->client_id !== $request->user()->id) {
                 return response()->json([
@@ -62,7 +62,6 @@ class jobsController extends Controller
             return response()->json([
                 'message' => 'Job fetched successfully',
                 'job' => $job,
-                'proposals'=>$proposals
             ], 200);
         } catch (Exception $th) {
             return response()->json([
@@ -90,10 +89,49 @@ class jobsController extends Controller
             $job->budget = $request->budget;
             $job->status = $request->status;
             $job->save();
-            
+
             return response()->json([
                 'message' => 'Job updated successfully',
                 'job' => $job
+            ], 200);
+        } catch (Exception $th) {
+            return response()->json([
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    public function updateProposalState(Request $request){
+        try {
+            $request->validate([
+                'proposal_id' => 'required|integer',
+                'state' => 'required|string',   
+            ]);
+
+            $proposal = Proposal::findOrFail($request->proposal_id);
+            $proposal->status = $request->state;
+            $proposal->save();
+
+            return response()->json([
+                'message' => 'Proposal state updated successfully',
+                'proposal' => $proposal
+            ], 200);
+        } catch (Exception $th) {
+            return response()->json([
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getRecomendedJobs(Request $request){
+        try {
+            $jobs=Job::where('client_id','!=',$request->user()->id)->where('status','open')
+                ->inRandomOrder()
+                ->limit(4)
+                ->get();
+            return response()->json([
+                'message' => 'Jobs fetched successfully',
+                'jobs' => $jobs
             ], 200);
         } catch (Exception $th) {
             return response()->json([

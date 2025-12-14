@@ -16,13 +16,15 @@ import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Input from '@mui/material/Input';
 import InputAdornment from '@mui/material/InputAdornment';
-import { Select } from '@radix-ui/themes';
+import { Select, Avatar } from '@radix-ui/themes';
 import { Text, Skeleton } from "@radix-ui/themes";
+import { ChatBubbleIcon } from '@radix-ui/react-icons';
+import { Loader2Icon } from 'lucide-react';
 
 const JobDetailsPage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { getJob, job, gettingJob,proposals,updateJob,updatingJob,updatedJob } = useClientDashboardStore();
+    const { getJob, job, gettingJob,proposals,updateJob,updatingJob,updatedJob,updateProposalState,updatingProposalStatusId } = useClientDashboardStore();
     const [openEdit,setOpenEdit]=useState(false);
     const[status,setStatus]=useState("");
     
@@ -33,6 +35,10 @@ const JobDetailsPage = () => {
     useEffect(() => {
         setStatus(job?.status);
     }, [job]);
+
+    const changeProposalState=(proposalId,state)=>{
+        updateProposalState(id,proposalId,state);
+    }
 
     const [formData,setFormData]=useState({
         title:"",
@@ -70,15 +76,62 @@ const JobDetailsPage = () => {
     if (gettingJob) {
         return (
             <div className="flex flex-col w-full p-10 max-w-4xl mx-auto">
-                {/* <span className="loading loading-spinner loading-lg"></span> */}
+                {/* Header Skeleton */}
                 <div className="flex justify-between items-center mb-6 w-full">
-                    <Skeleton width="150px" height="48px" />
-                    <Skeleton width="150px" height="48px" />
+                    <Skeleton width="80px" height="36px" />
+                    <Skeleton width="180px" height="36px" />
                 </div>
-                <Skeleton width="100%" height="400px" />
-                <Skeleton width="150px" height="28px" className='mt-6' />
-                <Skeleton width="100%" height="400px" className='mt-2' />
 
+                {/* Main Job Details Card Skeleton */}
+                <div className="bg-white border-2 border-gray-200 rounded-xl p-8 shadow-sm space-y-6">
+                    <div className="flex justify-between items-start">
+                        <div className="space-y-2">
+                            <Skeleton width="250px" height="32px" />
+                            <div className="flex gap-2">
+                                <Skeleton width="80px" height="24px" />
+                                <Skeleton width="80px" height="24px" />
+                            </div>
+                        </div>
+                        <div className="flex flex-col items-end space-y-1">
+                            <Skeleton width="50px" height="20px" />
+                            <Skeleton width="100px" height="32px" />
+                        </div>
+                    </div>
+
+                    <div className="divider"></div>
+
+                    <div className="space-y-2">
+                        <Skeleton width="120px" height="28px" />
+                        <div className="space-y-1">
+                            <Skeleton width="100%" height="20px" />
+                            <Skeleton width="100%" height="20px" />
+                            <Skeleton width="80%" height="20px" />
+                        </div>
+                    </div>
+
+                    <div className="divider"></div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                            <Skeleton width="80px" height="20px" />
+                            <Skeleton width="150px" height="24px" />
+                        </div>
+                        <div className="space-y-1">
+                            <Skeleton width="80px" height="20px" />
+                            <Skeleton width="150px" height="24px" />
+                        </div>
+                    </div>
+
+                    <Skeleton width="120px" height="36px" />
+                </div>
+                
+                 {/* Proposals Skeleton */}
+                <div className='mt-6 space-y-2'>
+                    <Skeleton width="150px" height="28px" />
+                    <div className="bg-white border-2 border-gray-200 rounded-xl p-8 shadow-sm h-32 flex items-center justify-center">
+                        <Skeleton width="100%" height="100%" />
+                    </div>
+                </div>
             </div>
         );
     }
@@ -103,7 +156,7 @@ const JobDetailsPage = () => {
                 <h1 className="text-3xl font-bold">Job Details</h1>
             </div>
 
-            <div className="bg-white border-2 border-gray-200 rounded-xl p-8 shadow-sm space-y-6" data-aos="fade-up">
+            <div className="bg-white border-2 border-gray-200 rounded-xl p-8 shadow-sm space-y-6" >
                 <div className="flex justify-between items-start">
                     <div>
                         
@@ -161,11 +214,49 @@ const JobDetailsPage = () => {
             {/* proposals */}
             <div className='mt-6'>
                 <h3 className="text-lg font-semibold mb-2">Proposals</h3>
-                <div className="grid grid-cols-2 gap-4 text-sm bg-white border-2 border-gray-200 rounded-xl p-8 shadow-sm space-y-6">
+                <div className="grid grid-cols-1 gap-4 mt-4">
                     {proposals.map((proposal) => (
-                        <div key={proposal.id}>
-                            <p className="text-gray-500">Provider</p>
-                            {/* <p className="font-medium">{proposal.provider.name}</p> */}
+                        <div key={proposal.id} className="bg-white border-2 border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
+                            <div className="flex justify-between items-start mb-4">
+                                <div 
+                                    className="flex items-center gap-3 cursor-pointer group" 
+                                    onClick={() => navigate(`/provider-profile/${proposal.provider.id}`)}
+                                >
+                                    <Avatar
+                                        size="3"
+                                        src={`http://localhost:8000/storage/${proposal.provider.profile_picture}`}
+                                        fallback={proposal.provider.name?.[0]}
+                                        radius="full"
+                                    />
+                                    <div>
+                                        <h4 className="font-bold text-lg group-hover:text-indigo-600 transition-colors">{proposal.provider.name}</h4>
+                                        <p className="text-xs text-gray-500">Provider</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <Button variant="soft" color="gray" onClick={(e) => { e.stopPropagation(); /* Add chat logic later */ }}>
+                                        <ChatBubbleIcon />
+                                    </Button>
+                                    <Select.Root defaultValue={proposal.status || "pending"} onValueChange={(value)=>changeProposalState(proposal.id,value)}>
+                                        <Select.Trigger variant="soft" color={
+                                            proposal.status === 'accepted' ? 'green' : 
+                                            proposal.status === 'rejected' ? 'red' : 'indigo'
+                                        }  />
+                                        <Select.Content>
+                                            <Select.Item value="pending">Pending</Select.Item>
+                                            <Select.Item value="accepted">Accepted</Select.Item>
+                                            <Select.Item value="rejected">Rejected</Select.Item>
+                                        </Select.Content>
+                                    </Select.Root>
+                                    {updatingProposalStatusId === proposal.id && <span className="loading loading-infinity loading-xl text-blue-500 text-center"/>}
+                                </div>
+                            </div>
+                            <div className="pl-12">
+                                <p className="text-gray-700 whitespace-pre-wrap">{proposal.description}</p>
+                                <div className="mt-4 flex gap-4 text-sm text-gray-500 border-t pt-2 border-gray-100">
+                                    <span>Price: <strong>${proposal.price}</strong></span>
+                                </div>
+                            </div>
                         </div>
                     ))}
                 </div>
