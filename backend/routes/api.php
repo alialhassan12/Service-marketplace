@@ -1,10 +1,12 @@
 <?php
 
-use App\Http\Controllers\authController;
-use App\Http\Controllers\jobsController;
-use App\Http\Controllers\ProviderProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\authController;
+use App\Http\Controllers\jobsController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ProviderProfileController;
+use Laravel\Cashier\Http\Controllers\WebhookController;
 
 //public routes
 Route::post('/login', [authController::class, 'login'])->name('login');
@@ -34,6 +36,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/provider/submitProposal', [ProviderProfileController::class, 'submitProposal'])->name('submitProposal');
     Route::get('/provider/recommended-jobs', [jobsController::class, 'getRecomendedJobs'])->name('getRecomendedJobs');
     Route::get('/provider/my-proposals',[ProviderProfileController::class,'getMyProposals'])->name('getMyProposals');
+
+    //payment routes
+    Route::post('/payments/pay', [PaymentController::class, 'payProvider']);
+    Route::get('/payments/history', [PaymentController::class, 'paymentHistory']);
+    Route::get('/payments/balance', [PaymentController::class, 'getProviderBalance']);
 });
 
 Route::middleware(['auth:sanctum', 'checkRole:provider'])->prefix('provider')->group(function () {});
+Route::get('/payments/download-invoice/{id}', [PaymentController::class, 'downloadInvoice'])
+     ->middleware('auth:sanctum');
