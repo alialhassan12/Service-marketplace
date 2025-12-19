@@ -15,6 +15,7 @@ import JobDetailsPage from './Pages/JobDetailsPage';
 import { Toaster } from 'react-hot-toast';
 import { ThemeProvider } from "./contexts/ThemeContext";
 import ProviderUpdateProfile from './components/providerDashboardComponents/ProviderUpdateProfile';
+import Snowfall from "react-snowfall";
 
 function App() {
   const { check, authUser, isChecking } = useAuthStore();
@@ -42,6 +43,7 @@ function App() {
   return (
   
       <ThemeProvider>
+        <Snowfall color="#82C3D9"/>
         <Routes>
           <Route
             path="/"
