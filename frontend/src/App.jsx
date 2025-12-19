@@ -16,6 +16,7 @@ import { Toaster } from 'react-hot-toast';
 import { ThemeProvider } from "./contexts/ThemeContext";
 import ProviderUpdateProfile from './components/providerDashboardComponents/ProviderUpdateProfile';
 import Snowfall from "react-snowfall";
+import ViewProviderProfile from "./Pages/ViewProviderProfile";
 
 function App() {
   const { check, authUser, isChecking } = useAuthStore();
@@ -41,7 +42,6 @@ function App() {
   const userRole = authUser?.role?.toLowerCase();
 
   return (
-  
       <ThemeProvider>
         <Snowfall color="#82C3D9"/>
         <Routes>
@@ -84,11 +84,14 @@ function App() {
 
         <Route path="/job/:id" element={authUser?<JobDetailsPage/>:<Navigate to="/login"/>}/>
         <Route path="/provider/update-profile" element={authUser?.role === 'provider'?<ProviderUpdateProfile/>:<Navigate to="/"/>}/>
+        
+        <Route path="/provider-profile/:id" element={authUser?<ViewProviderProfile/>:<Navigate to="/"/>}/>
       </Routes>
       
       <Toaster position="top-center" reverseOrder={false}/>
     
-  </ThemeProvider>);
+  </ThemeProvider>
+  );
 }
 
 export default App;

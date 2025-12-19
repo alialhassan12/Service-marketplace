@@ -17,7 +17,17 @@ class ProviderProfileController extends Controller
 {
     public function show(Request $request)
     {
-        return new ProviderResource($request->user());
+        $userId=$request->route('id');
+        $user=User::findOrFail($userId);
+        if(!$user){
+            return response()->json([
+                'message'=>'User not found',
+            ],404);
+        }
+        return response()->json([
+            'message'=>'User fetched successfully',
+            'user'=>$user
+        ],200);
     }
 
     public function update(Request $request)

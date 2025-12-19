@@ -28,6 +28,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/jobs/{id}', [jobsController::class, 'deleteJob'])->name('deleteJob');
     Route::put('/jobs/{id}/proposal/{proposalId}', [jobsController::class, 'updateProposalState'])->name('updateProposalState');
     Route::get('/client/suggested-providers',[ProviderProfileController::class,'getSuggestedProviders'])->name('getSuggestedProviders');
+    Route::get('/client/provider-profile/{id}',[ProviderProfileController::class,'show'])->name('showProviderProfile');
 
     //provider routes
     Route::put('/provider/profile', [ProviderProfileController::class, 'update']);

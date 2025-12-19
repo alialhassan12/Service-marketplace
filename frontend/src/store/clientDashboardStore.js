@@ -103,7 +103,23 @@ const useClientDashboardStore=create((set)=>({
         }finally{
             set({gettingSuggestedProviders:false})
         }
-    }
+    },
+    providerProfile:null,
+    gettingProviderProfile:false,
+    getProviderProfile:async(id)=>{
+        set({gettingProviderProfile:true});
+        try {
+            const response=await axiosInstance.get(`/client/provider-profile/${id}`);
+            set({providerProfile:response.data.user});
+            return true;
+        } catch (error) {
+            console.log(error);
+            toast.error(error.response?.data?.message);
+            return false;
+        }finally{
+            set({gettingProviderProfile:false})
+        }
+    },
 
 }));
 

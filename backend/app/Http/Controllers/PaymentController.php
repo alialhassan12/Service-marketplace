@@ -6,6 +6,7 @@ use App\Models\Payment;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Http\Resources\PaymentResource;
+use Illuminate\Container\Attributes\Auth;
 
 class PaymentController extends Controller
 {
