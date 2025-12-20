@@ -1,9 +1,6 @@
 import "aos/dist/aos.css";
 import LoginImage from "../assets/loginImg.jpg";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
-import Divider from "@mui/material/Divider";
-import { RadioCards, Flex, Text } from "@radix-ui/themes";
+import { TextField, Button, Text, Flex, Heading, Separator, RadioCards } from "@radix-ui/themes";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
@@ -38,7 +35,6 @@ export default function RegisterPage() {
     setFormData({ ...formData, location: e.target.value });
   };
   const handleRoleChange = (value) => {
-    // setRole(value);
     setFormData({ ...formData, role: value });
   };
 
@@ -54,118 +50,144 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex flex-row w-screen gap-10">
-      {/* left side */}
-      <div
-        className="w-[50%] sticky top-0 left-0 h-[100vh]"
-        data-aos="fade-right"
-      >
-        <img className="w-full h-full" src={LoginImage} />
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full p-10 flex flex-col justify-center items-center">
-          <h1 className="text-4xl text-white font-bold">Join Our Community.</h1>
-          <p className="mt-5 text-2xl font-light text-white">
-            Find the perfect professional for your project or showcase your
-            skills to the world.
-          </p>
+    <div className="flex flex-col lg:flex-row w-screen min-h-screen">
+      {/* Left side (Image) */}
+      <div className="hidden lg:block lg:w-1/2 h-full relative overflow-hidden md:sticky md:top-0 md:h-screen" data-aos="fade-right">
+        <img className="w-full h-full object-cover" src={LoginImage} alt="Register Background" />
+        <div className="absolute inset-0 bg-black/40 flex flex-col justify-center items-center p-6 text-center">
+            <h1 className="text-3xl md:text-5xl text-white font-bold mb-4 drop-shadow-lg">
+                Join Our Community.
+            </h1>
+            <p className="text-lg md:text-2xl font-light text-white drop-shadow-md max-w-md">
+                Find the perfect professional for your project or showcase your skills to the world.
+            </p>
         </div>
       </div>
-      {/* right side */}
-      <div
-        className="w-[40%] flex flex-col justify-center items-center"
+
+      {/* Right side (Form) */}
+      <div 
+        className="w-full lg:w-1/2 flex-1 flex flex-col justify-center items-center p-6 md:p-12 bg-white"
         data-aos="fade-left"
       >
-        <div className="w-[100%] h-full ">
-          <h1 className="text-3xl font-bold mb-5 mt-10">SkillHub</h1>
-          <h2 className="text-2xl font-medium">Createn an Account</h2>
-          <p className="text-gray-500">Start your journey with us</p>
-          <form className="flex flex-col gap-5 mt-5" onSubmit={handleSubmit}>
+        <div className="w-full max-w-lg space-y-6">
+          <div className="text-center md:text-left mt-8 md:mt-0">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">SkillHub</h1>
+              <h2 className="text-2xl font-semibold text-gray-800">Create an Account</h2>
+              <Text color="gray" size="2">Start your journey with us</Text>
+          </div>
+
+          <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
             {/* select role */}
-            <div className="">
+            <div>
+              <Text as="label" size="2" weight="medium" color="gray" className="mb-2 block">I am a...</Text>
               <RadioCards.Root
                 defaultValue={"client"}
                 value={formData.role}
                 onValueChange={(value) => handleRoleChange(value)}
                 columns={{ initial: "1", sm: "2" }}
               >
-                <RadioCards.Item value="client">
+                <RadioCards.Item value="client" style={{ cursor: 'pointer' }}>
                   <Flex direction="column" width="100%">
-                    <Text weight="bold">I am a Client</Text>
-                    <Text weight="light">Looking to hire for a project</Text>
+                    <Text weight="bold">Client</Text>
+                    <Text weight="light" size="1">Hiring for a project</Text>
                   </Flex>
                 </RadioCards.Item>
-                <RadioCards.Item value="provider">
+                <RadioCards.Item value="provider" style={{ cursor: 'pointer' }}>
                   <Flex direction="column" width="100%">
-                    <Text weight="bold">I am a Service Provider</Text>
-                    <Text weight="light">Offering my skills to the world</Text>
+                    <Text weight="bold">Service Provider</Text>
+                    <Text weight="light" size="1">Offering skills</Text>
                   </Flex>
                 </RadioCards.Item>
               </RadioCards.Root>
             </div>
-            {/* name Field */}
-            <TextField
-              sx={{ width: "100%" }}
-              label="Name"
-              variant="outlined"
-              value={formData.name}
-              onChange={(e) => handleNameChange(e)}
-              required
-            />
-            {/* email Field */}
-            <TextField
-              sx={{ width: "100%" }}
-              label="Email"
-              variant="outlined"
-              value={formData.email}
-              onChange={(e) => handleEmailChange(e)}
-              required
-            />
-            {/* password Field */}
-            <TextField
-              sx={{ width: "100%" }}
-              label="Password"
-              type="password"
-              variant="outlined"
-              value={formData.password}
-              onChange={(e) => handlePasswordChange(e)}
-              required
-            />
-            {/* phone number Field */}
-            <TextField
-              sx={{ width: "100%" }}
-              label="Phone Number"
-              variant="outlined"
-              value={formData.phone_number}
-              onChange={(e) => handlePhoneChange(e)}
-              required
-            />
-            {/* location Field */}
-            <TextField
-              sx={{ width: "100%" }}
-              label="Location"
-              variant="outlined"
-              value={formData.location}
-              onChange={(e) => handleLocationChange(e)}
-              required
-            />
-            {/* create Btn */}
-            <Button type="submit" variant="contained" disabled={isLogging}>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Flex direction="column" gap="2">
+                    <label className="text-sm font-medium text-gray-700">Name</label>
+                    <TextField.Root 
+                        size="3" 
+                        placeholder="John Doe" 
+                        value={formData.name}
+                        onChange={handleNameChange}
+                        required
+                    />
+                </Flex>
+                <Flex direction="column" gap="2">
+                    <label className="text-sm font-medium text-gray-700">Email</label>
+                    <TextField.Root 
+                        size="3" 
+                        placeholder="john@example.com" 
+                        value={formData.email}
+                        onChange={handleEmailChange}
+                        required
+                    />
+                </Flex>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Flex direction="column" gap="2">
+                    <label className="text-sm font-medium text-gray-700">Phone Number</label>
+                    <TextField.Root 
+                        size="3" 
+                        placeholder="+1 234 567 890" 
+                        value={formData.phone_number}
+                        onChange={handlePhoneChange}
+                        required
+                    />
+                </Flex>
+                <Flex direction="column" gap="2">
+                    <label className="text-sm font-medium text-gray-700">Location</label>
+                    <TextField.Root 
+                        size="3" 
+                        placeholder="New York, USA" 
+                        value={formData.location}
+                        onChange={handleLocationChange}
+                        required
+                    />
+                </Flex>
+            </div>
+
+            <Flex direction="column" gap="2">
+                <label className="text-sm font-medium text-gray-700">Password</label>
+                <TextField.Root 
+                    size="3" 
+                    type="password" 
+                    placeholder="Create a strong password" 
+                    value={formData.password}
+                    onChange={handlePasswordChange}
+                    required
+                />
+            </Flex>
+
+            <Button 
+                size="3" 
+                variant="solid" 
+                type="submit" 
+                disabled={isLogging}
+                style={{ width: '100%', cursor: 'pointer', marginTop: '10px' }}
+            >
               {isLogging ? (
-                <span className="loading loading-infinity loading-xl text-blue-500"></span>
+                <span className="loading loading-dots loading-md"></span>
               ) : (
                 "Create Account"
               )}
             </Button>
-            {/* divider */}
-            <Divider variant="fullWidth">
-              <p>Or</p>
-            </Divider>
-            {/* login btn */}
-            <p className="text-gray-500 text-center">
+
+            <Flex align="center" gap="4" width="100%">
+                <Separator size="4" />
+                <Text color="gray" size="2">Or</Text>
+                <Separator size="4" />
+            </Flex>
+
+            <Text align="center" color="gray" size="2">
               Already have an account?{" "}
-              <a href="/login" className="text-blue-500">
+              <a 
+                href="/login" 
+                className="text-blue-600 font-semibold hover:underline"
+              >
                 Login
               </a>
-            </p>
+            </Text>
           </form>
         </div>
       </div>

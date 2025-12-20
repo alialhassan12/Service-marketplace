@@ -48,8 +48,7 @@ class jobsController extends Controller
         ], 200);
     }
 
-    public function getJob(Request $request, $id)
-    {
+    public function getJob(Request $request, $id){
         try {
             $job = Job::with('proposals.provider')->findOrFail($id);
 
@@ -78,7 +77,6 @@ class jobsController extends Controller
                 'location' => 'string',
                 'is_remote' => 'required|boolean',
                 'budget' => 'required|numeric',
-                'status' => 'required|string',
             ]);
 
             $job = Job::findOrFail($request->id);
@@ -87,11 +85,38 @@ class jobsController extends Controller
             $job->location = $request->location;
             $job->is_remote = $request->is_remote;
             $job->budget = $request->budget;
-            $job->status = $request->status;
             $job->save();
 
             return response()->json([
                 'message' => 'Job updated successfully',
+                'job' => $job
+            ], 200);
+        } catch (Exception $th) {
+            return response()->json([
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    public function updateJobStatus(Request $request){
+        try {
+            $request->validate([
+                'job_id' => 'required|integer',
+                'status' => 'required|string|in:open,in_progress,completed,closed',   
+            ]);
+
+            $job = Job::findOrFail($request->job_id);
+            if($job->client_id !== $request->user()->id){
+                return response()->json([
+                    'message' => 'Unauthorized'
+                ], 403);
+            }
+
+            $job->status = $request->status;
+            $job->save();
+
+            return response()->json([
+                'message' => 'Job status updated successfully',
                 'job' => $job
             ], 200);
         } catch (Exception $th) {
