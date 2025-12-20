@@ -70,7 +70,24 @@ const useClientDashboardStore=create((set)=>({
             toast.error(error.response?.data?.message);
             return false;
         }finally{
-            set({updatingJob:false})
+            set({updatingJob:false});
+        }
+    },
+    updatingJobStatus:false,
+    updatedJobStatus:null,
+    updateJobStatus:async(id,status)=>{
+        set({updatingJobStatus:true});
+        try {
+            const response=await axiosInstance.put(`/jobs/status/${id}`,{job_id:id,status});
+            set({updatedJobStatus:response.data.job});
+            toast.success(response.data.message);
+            return true;
+        } catch (error) {
+            console.log(error);
+            toast.error(error.response?.data?.message);
+            return false;
+        }finally{
+            set({updatingJobStatus:false});
         }
     },
     updatingProposalStatusId:null,

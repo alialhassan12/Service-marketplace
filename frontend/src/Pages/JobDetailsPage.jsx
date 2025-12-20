@@ -17,25 +17,35 @@ import InputLabel from '@mui/material/InputLabel';
 import Input from '@mui/material/Input';
 import InputAdornment from '@mui/material/InputAdornment';
 import { Select, Avatar } from '@radix-ui/themes';
-import { Text, Skeleton } from "@radix-ui/themes";
-import { ChatBubbleIcon } from '@radix-ui/react-icons';
-import { Loader2Icon } from 'lucide-react';
+import { Skeleton } from "@radix-ui/themes";
+import { ChatBubbleIcon,ArrowLeftIcon } from '@radix-ui/react-icons';
+
 
 const JobDetailsPage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { getJob, job, gettingJob,proposals,updateJob,updatingJob,updatedJob,updateProposalState,updatingProposalStatusId } = useClientDashboardStore();
+    const { getJob,
+            job,
+            gettingJob,
+            proposals,
+            updateJob,
+            updatingJob,
+            updatedJob,
+            updateProposalState,
+            updatingProposalStatusId,
+            updateJobStatus,
+            updatingJobStatus,
+            updatedJobStatus } = useClientDashboardStore();
     const [openEdit,setOpenEdit]=useState(false);
-    const[status,setStatus]=useState("");
-    
+    const [jobStatus,setJobStatus]=useState(job?.status);
     useEffect(() => {
         getJob(id);
     }, [getJob,updatedJob]);
     
-    useEffect(() => {
-        setStatus(job?.status);
-    }, [job]);
-
+    const changeJobStatus=(state)=>{
+        setJobStatus(state);
+        updateJobStatus(id,state);
+    }
     const changeProposalState=(proposalId,state)=>{
         updateProposalState(id,proposalId,state);
     }
@@ -46,7 +56,6 @@ const JobDetailsPage = () => {
         is_remote:false,
         location:"",
         budget:0,
-        status:status
     });
 
     const updateFormValues=()=>{
@@ -56,7 +65,6 @@ const JobDetailsPage = () => {
             is_remote:job?.is_remote,
             location:job?.location,
             budget:job?.budget,
-            status:status
         })
     }
 
@@ -150,8 +158,8 @@ const JobDetailsPage = () => {
     return (
         <div className="flex flex-col w-full p-10 max-w-4xl mx-auto" >
             <div className="flex justify-between items-center mb-6">
-                <Button variant="outlined" onClick={() => navigate('/dashboard')}>
-                    Back
+                <Button variant="outlined" onClick={() => navigate(-1)}>
+                    <ArrowLeftIcon className="mr-2"/>Back
                 </Button>
                 <h1 className="text-3xl font-bold">Job Details</h1>
             </div>
@@ -162,8 +170,8 @@ const JobDetailsPage = () => {
                         
                         <h2 className="text-2xl font-bold mb-2">{job.title}</h2>
                         <div className="flex gap-2">
-                            <Select.Root value={status} onValueChange={(value)=>{
-                                setStatus(value);
+                            <Select.Root value={jobStatus} onValueChange={(value)=>{
+                                changeJobStatus(value);
                             }}>
                                 <Select.Trigger color="indigo" variant="soft" />
                                 <Select.Content color="indigo">
@@ -173,6 +181,7 @@ const JobDetailsPage = () => {
                                     <Select.Item value="closed">Closed</Select.Item>
                                 </Select.Content>
                             </Select.Root>
+                            {updatingJobStatus && <span className="loading loading-infinity loading-xl text-blue-500 text-center"/>}
 
                             {/* {job.status === "open" && <div className="badge badge-soft badge-info">Open</div>}
                             {job.status === "in_progress" && <div className="badge badge-soft badge-warning">In Progress</div>}

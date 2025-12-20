@@ -14,91 +14,155 @@ import { Button, Flex, Text } from "@radix-ui/themes";
 
 export default function LandingPage(){
     return(
-        <div>
-            <div className="pl-20 pr-20 pt-5 pb-5 border-b-1 border-gray-200">
+        <div className="bg-gray-50 min-h-screen flex flex-col">
+             {/* Navbar Container */}
+            <div className="pl-4 pr-4 md:pl-20 md:pr-20 pt-5 pb-5 border-b border-gray-200 bg-white sticky top-0 z-50">
                 <NavBar/>
             </div>
-            <div className="p-5 ml-20 mr-20 " data-aos="fade-up">
-                {/* Hero section */}
-                <div className="relative w-full h-[60vh] min-h-[500px] rounded-2xl overflow-hidden bg-gray-900 shadow-xl">
-                    <img 
-                        className="w-full h-full object-cover opacity-70 transform hover:scale-105 transition-transform duration-1000" 
-                        src={LandingImage}
-                        alt="Hero Background"
-                    />
-                    <div className="absolute inset-0 flex flex-col justify-center items-center text-center p-6 bg-linear-to-t from-black/60 via-transparent to-black/30">
-                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-6 drop-shadow-2xl max-w-4xl tracking-tight">
-                            Find the best freelancers for any job
+
+            {/* Main Content */}
+            <div className="flex-1 p-4 md:p-5 md:ml-20 md:mr-20" data-aos="fade-up">
+                
+                {/* Hero Section - Split Layout */}
+                <div className="flex flex-col-reverse md:flex-row items-center justify-between gap-10 mt-10 md:mt-20 mb-20">
+                    
+                    {/* Left: Text Content */}
+                    <div className="flex-1 text-center md:text-left space-y-6">
+                        <h1 className="text-4xl md:text-5xl lg:text-7xl font-extrabold text-gray-900 tracking-tight leading-tight">
+                            Find the best <span className="text-blue-600">freelancers</span> for any job
                         </h1>
-                        <p className="text-white text-lg md:text-xl mb-10 max-w-2xl drop-shadow-lg font-medium">
-                            Millions of people use SkillHub to turn their skills into money. Start your journey today.
+                        <p className="text-lg md:text-xl text-gray-600 font-medium max-w-2xl mx-auto md:mx-0 leading-relaxed">
+                            Millions of people use SkillHub to turn their skills into money. Start your journey today and connect with top talent.
                         </p>
-                        <Flex gap="5" direction={{ initial: 'column', sm: 'row' }} align="center">
-                            <Button size={{ initial: '3', md: '4' }} variant="solid" color="blue" highContrast style={{ cursor: 'pointer', fontWeight: '600' }}>
+                        
+                        <Flex gap="5" direction={{ initial: 'column', xs: 'row' }} align="center" justify={{ initial: 'center', md: 'start' }} className="pt-4">
+                            <Button 
+                                size={{ initial: '3', md: '4' }} 
+                                variant="solid" 
+                                color="blue" 
+                                highContrast 
+                                style={{ cursor: 'pointer', fontWeight: 'bold', paddingLeft: '32px', paddingRight: '32px' }}
+                            >
                                 Post a Job
                             </Button>
-                            <Button size={{ initial: '3', md: '4' }} variant="soft" color="gray" highContrast style={{ cursor: 'pointer', fontWeight: '600', backgroundColor: 'rgba(255, 255, 255, 0.15)', color: 'white' }}>
+                            <Button 
+                                size={{ initial: '3', md: '4' }} 
+                                variant="outline" 
+                                color="gray" 
+                                highContrast 
+                                style={{ cursor: 'pointer', fontWeight: 'bold', paddingLeft: '32px', paddingRight: '32px' }}
+                            >
                                 Become a Provider
                             </Button>
                         </Flex>
+                        
+                        {/* Stats or Trust Markers (Optional Enhancement) */}
+                        <div className="pt-8 flex items-center justify-center md:justify-start gap-8 text-gray-500 text-sm font-semibold">
+                            <div className="flex items-center gap-2">
+                                <PeopleIcon className="text-blue-500" /> <span>1M+ Users</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <GppGoodIcon className="text-green-500" /> <span>Verified Pros</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Right: Image */}
+                    <div className=" flex-1 w-full max-w-2xl lg:translate-y-[-100px] md:translate-y-[-100px]">
+                        <div className="relative group">
+                            {/* Decorative Blur Effect */}
+                            <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                            
+                            <img 
+                                className="relative w-full h-auto object-cover rounded-2xl shadow-2xl transform transition-transform duration-500 ease-out group-hover:scale-[1.02] group-hover:shadow-[0_20px_50px_rgba(8,_112,_184,_0.7)]" 
+                                src={LandingImage}
+                                alt="Freelancers collaboration"
+                            />
+                        </div>
                     </div>
                 </div>
+
                 {/* why choose section */}
-                <div data-aos="fade-up" className="mt-10">
-                    <h1 className="text-4xl font-bold">Why choose SkillHub?</h1>
-                    <p className="mt-5 text-2xl">we connect you with the best talent and provide a secure platform for you projects.</p>
+                <div data-aos="fade-up" className="mt-20 md:mt-32">
+                    <div className="text-center mb-12">
+                        <h1 className="text-4xl font-bold text-gray-900">Why choose SkillHub?</h1>
+                        <p className="mt-4 text-xl text-gray-500 max-w-3xl mx-auto">We connect you with the best talent and provide a secure platform for your projects.</p>
+                    </div>
+                    
                     {/* cards*/}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mt-5">
-                        <div className="rounded-xl border border-gray-200 p-4 max-w-sm bg-white shadow-sm hover:shadow-lg transition-shadow duration-300 cursor-default">
-                            <SearchIcon/>
-                            <h2 className="text-gray-900 font-semibold text-base mt-5">Find the right talent</h2>
-                            <p className="text-gray-500 text-sm leading-relaxed">Browse thousands of skilled professionals ad find the perfect match for your needs.</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <div className="group rounded-2xl border border-gray-100 p-8 bg-white shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                            <div className="p-3 bg-blue-50 rounded-lg w-fit mb-6">
+                                <SearchIcon className="text-blue-600 font-large scale-125"/>
+                            </div>
+                            <h2 className="text-gray-900 font-bold text-xl mb-3">Find the right talent</h2>
+                            <p className="text-gray-500 leading-relaxed">Browse thousands of skilled professionals and find the perfect match for your needs.</p>
                         </div>
-                        <div className="rounded-xl border border-gray-200 p-4 max-w-sm bg-white shadow-sm hover:shadow-lg transition-shadow duration-300 cursor-default">
-                            <PeopleIcon/>
-                            <h2 className="text-gray-900 font-semibold text-base mt-5">Collaborate effictively</h2>
-                            <p className="text-gray-500 text-sm leading-relaxed">Our Platform offers tools for seamles communication and project management.</p>
+                        <div className="group rounded-2xl border border-gray-100 p-8 bg-white shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                            <div className="p-3 bg-indigo-50 rounded-lg w-fit mb-6">
+                                <PeopleIcon className="text-indigo-600 font-large scale-125"/>
+                            </div>
+                            <h2 className="text-gray-900 font-bold text-xl mb-3">Collaborate effectively</h2>
+                            <p className="text-gray-500 leading-relaxed">Our platform offers tools for seamless communication and project management.</p>
                         </div>
-                        <div className="rounded-xl border border-gray-200 p-4 max-w-sm bg-white shadow-sm hover:shadow-lg transition-shadow duration-300 cursor-default">
-                            <GppGoodIcon/>
-                            <h2 className="text-gray-900 font-semibold text-base mt-5">Secure payments</h2>
-                            <p className="text-gray-500 text-sm leading-relaxed">All payments are processed through secure payment gateways.</p>
+                        <div className="group rounded-2xl border border-gray-100 p-8 bg-white shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                            <div className="p-3 bg-green-50 rounded-lg w-fit mb-6">
+                                <GppGoodIcon className="text-green-600 font-large scale-125"/>
+                            </div>
+                            <h2 className="text-gray-900 font-bold text-xl mb-3">Secure payments</h2>
+                            <p className="text-gray-500 leading-relaxed">All payments are processed through secure payment gateways ensuring your money is safe.</p>
                         </div>
                     </div>
                 </div>
+
                 {/* how it works section */}
-                <div data-aos="fade-up" className="mt-30">
-                    <h1 className="text-4xl font-bold">How it works?</h1>
-                    <p className="mt-5 text-2xl">Get your project started in a few simple steps</p>
+                <div data-aos="fade-up" className="mt-20 md:mt-32">
+                    <div className="text-center mb-12">
+                        <h1 className="text-4xl font-bold text-gray-900">How it works?</h1>
+                        <p className="mt-4 text-xl text-gray-500">Get your project started in a few simple steps.</p>
+                    </div>
+
                     {/* cards */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mt-5">
-                        <div className="">
-                            <img className="rounded-2xl hover:scale-105 transition-transform duration-300" src={h1} alt="" />
-                            <h2 className="text-gray-900 font-semibold text-base mt-5">Post your job</h2>
-                            <p className="text-gray-500 text-sm leading-relaxed">Describe your job requirments nad budget.</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-center md:text-left">
+                        <div className="flex flex-col h-full">
+                            <div className="overflow-hidden rounded-2xl mb-6">
+                                <img className="w-full h-48 object-cover hover:scale-110 transition-transform duration-500" src={h1} alt="Post job" />
+                            </div>
+                            <h2 className="text-gray-900 font-bold text-xl mb-2">1. Post your job</h2>
+                            <p className="text-gray-500">Describe your job requirements and budget clearly to attract the right talent.</p>
                         </div>
-                        <div className="">
-                            <img className="rounded-2xl max-h-[200px] w-full hover:scale-105 transition-transform duration-300" src={h2} alt="" />
-                            <h2 className="text-gray-900 font-semibold text-base mt-5">Review Proposals</h2>
-                            <p className="text-gray-500 text-sm leading-relaxed">Recieve proposals from qualified freelancers and review the profiles.</p>
+                        <div className="flex flex-col h-full">
+                            <div className="overflow-hidden rounded-2xl mb-6">
+                                <img className="w-full h-48 object-cover hover:scale-110 transition-transform duration-500" src={h2} alt="Review proposals" />
+                            </div>
+                            <h2 className="text-gray-900 font-bold text-xl mb-2">2. Review Proposals</h2>
+                            <p className="text-gray-500">Receive proposals from qualified freelancers and review their detailed profiles.</p>
                         </div>
-                        <div className="">
-                            <img className="rounded-2xl max-h-[200px] w-full hover:scale-105 transition-transform duration-300" src={h3} alt="" />
-                            <h2 className="text-gray-900 font-semibold text-base mt-5">Hire and collaborate</h2>
-                            <p className="text-gray-500 text-sm leading-relaxed">Choose the best freelancers and start working together on your project.</p>
+                        <div className="flex flex-col h-full">
+                            <div className="overflow-hidden rounded-2xl mb-6">
+                                <img className="w-full h-48 object-cover hover:scale-110 transition-transform duration-500" src={h3} alt="Collaborate" />
+                            </div>
+                            <h2 className="text-gray-900 font-bold text-xl mb-2">3. Hire and collaborate</h2>
+                            <p className="text-gray-500">Choose the best freelancers and start working together on your project.</p>
                         </div>
                     </div>
                 </div>
+
                 {/* ready section */}
-                <div data-aos="fade-up" className="mt-30 mb-30 flex flex-col justify-center items-center">
-                    <h1 className="text-4xl font-bold">Ready to get started?</h1>
-                    <p className="mt-5 text-2xl text-center">Join SkillHub and start connecting with Top talent.</p>
-                    <div className="mt-5">
-                        <Button size={{ initial: '3', md: '4' }} variant="solid" color="indigo" highContrast style={{ cursor: 'pointer' }}>Get Started</Button>
+                <div data-aos="fade-up" className="mt-20 md:mt-32 mb-20">
+                    <div className="bg-indigo-600 rounded-3xl p-10 md:p-16 text-center text-white shadow-2xl">
+                        <h1 className="text-3xl md:text-5xl font-bold mb-6">Ready to get started?</h1>
+                        <p className="text-lg md:text-2xl text-indigo-100 mb-8 max-w-2xl mx-auto">Join SkillHub today and start connecting with top talent to bring your ideas to life.</p>
+                        <div>
+                            <button className="bg-white text-indigo-600 hover:bg-indigo-50 font-bold py-3 px-8 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105 cursor-pointer">
+                                Get Started Now
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div className="pl-20 pr-20 pt-5 pb-5 border-t-1 border-gray-200">
+            
+            <div className="pl-4 pr-4 md:pl-20 md:pr-20 pt-5 pb-5 border-t border-gray-200 bg-white">
                 <Footer/>
             </div>
         </div>
