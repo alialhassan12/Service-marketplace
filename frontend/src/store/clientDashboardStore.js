@@ -39,6 +39,7 @@ const useClientDashboardStore=create((set)=>({
         }
     },
     job:null,
+    jobStatus:null,
     proposals:[],
     gettingJob:false,
     getJob:async (id)=>{
@@ -47,6 +48,7 @@ const useClientDashboardStore=create((set)=>({
             const response=await axiosInstance.get(`/jobs/${id}`);
             set({job:response.data.job});
             set({proposals:response.data.job.proposals});
+            set({jobStatus:response.data.job.status});
             return true;
         } catch (error) {
             console.log(error);
@@ -80,6 +82,7 @@ const useClientDashboardStore=create((set)=>({
         try {
             const response=await axiosInstance.put(`/jobs/status/${id}`,{job_id:id,status});
             set({updatedJobStatus:response.data.job});
+            set({jobStatus:response.data.job.status});
             toast.success(response.data.message);
             return true;
         } catch (error) {

@@ -26,6 +26,7 @@ const JobDetailsPage = () => {
     const navigate = useNavigate();
     const { getJob,
             job,
+            jobStatus,
             gettingJob,
             proposals,
             updateJob,
@@ -37,13 +38,11 @@ const JobDetailsPage = () => {
             updatingJobStatus,
             updatedJobStatus } = useClientDashboardStore();
     const [openEdit,setOpenEdit]=useState(false);
-    const [jobStatus,setJobStatus]=useState(job?.status);
     useEffect(() => {
         getJob(id);
     }, [getJob,updatedJob]);
     
     const changeJobStatus=(state)=>{
-        setJobStatus(state);
         updateJobStatus(id,state);
     }
     const changeProposalState=(proposalId,state)=>{
