@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Payment;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Mail\PaymentInvoiceMail;
+use Illuminate\Support\Facades\Mail;
 use App\Http\Resources\PaymentResource;
 use Illuminate\Container\Attributes\Auth;
 
@@ -26,6 +29,14 @@ class PaymentController extends Controller
             'payment_method' => $request->payment_method,
             'transaction_id' => uniqid('txn_') . strtoupper(Str::random(10)),
         ]);
+
+        $payment->load('client', 'provider');
+
+        try{
+            Mail::to($payment->client->email)->send(new PaymentInvoiceMail($payment));
+        } catch(\Exception $e) {
+
+        }
 
         return new PaymentResource($payment);
     }
