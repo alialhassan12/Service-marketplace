@@ -68,7 +68,7 @@ export default function LandingPage(){
                     </div>
 
                     {/* Right: Image */}
-                    <div className=" flex-1 w-full max-w-2xl lg:translate-y-[-100px] md:translate-y-[-100px]">
+                    <div className=" flex-1 w-full max-w-2xl ">
                         <div className="relative group">
                             {/* Decorative Blur Effect */}
                             <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>

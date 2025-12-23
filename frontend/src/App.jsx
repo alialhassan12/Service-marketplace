@@ -15,6 +15,7 @@ import JobDetailsPage from './Pages/JobDetailsPage';
 import { Toaster } from 'react-hot-toast';
 import { ThemeProvider } from "./contexts/ThemeContext";
 import ProviderUpdateProfile from './components/providerDashboardComponents/ProviderUpdateProfile';
+import ClientUpdateProfile from './components/clientDashboardComponents/ClientUpdateProfile';
 import Snowfall from "react-snowfall";
 import ViewProviderProfile from "./Pages/ViewProviderProfile";
 
@@ -42,55 +43,56 @@ function App() {
   const userRole = authUser?.role?.toLowerCase();
 
   return (
-      <ThemeProvider>
-        <Snowfall color="#82C3D9"/>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              userRole === "client" ||
+    <ThemeProvider>
+      <Snowfall color="#82C3D9" />
+      <Routes>
+        <Route
+          path="/"
+          element={
+            userRole === "client" ||
               userRole === "provider" ||
               userRole === "admin" ? (
-                <Navigate to="/dashboard" />
-              ) : (
-                <LandingPage />
-              )
-            }
-          />
+              <Navigate to="/dashboard" />
+            ) : (
+              <LandingPage />
+            )
+          }
+        />
 
-          <Route
-            path="/login"
-            element={authUser ? <Navigate to="/dashboard" /> : <LoginPage />}
-          />
-          <Route
-            path="/register"
-            element={authUser ? <Navigate to="/dashboard" /> : <RegisterPage />}
-          />
+        <Route
+          path="/login"
+          element={authUser ? <Navigate to="/dashboard" /> : <LoginPage />}
+        />
+        <Route
+          path="/register"
+          element={authUser ? <Navigate to="/dashboard" /> : <RegisterPage />}
+        />
 
-          <Route
-            path="/dashboard/*"
-            element={
-              userRole === "client" ? (
-                <ClientDashboard />
-              ) : userRole === "provider" ? (
-                <ProviderDashboard />
-              ) : userRole === "admin" ? (
-                <AdminDashboard />
-              ) : (
-                <Navigate to="/" />
-              )
-            }
-          />
+        <Route
+          path="/dashboard/*"
+          element={
+            userRole === "client" ? (
+              <ClientDashboard />
+            ) : userRole === "provider" ? (
+              <ProviderDashboard />
+            ) : userRole === "admin" ? (
+              <AdminDashboard />
+            ) : (
+              <Navigate to="/" />
+            )
+          }
+        />
 
-        <Route path="/job/:id" element={authUser?<JobDetailsPage/>:<Navigate to="/login"/>}/>
-        <Route path="/provider/update-profile" element={authUser?.role === 'provider'?<ProviderUpdateProfile/>:<Navigate to="/"/>}/>
-        
-        <Route path="/provider-profile/:id" element={authUser?<ViewProviderProfile/>:<Navigate to="/"/>}/>
+        <Route path="/job/:id" element={authUser ? <JobDetailsPage /> : <Navigate to="/login" />} />
+        <Route path="/provider/update-profile" element={authUser?.role === 'provider' ? <ProviderUpdateProfile /> : <Navigate to="/" />} />
+        <Route path="/client/update-profile" element={authUser?.role === 'client' ? <ClientUpdateProfile /> : <Navigate to="/" />} />
+
+        <Route path="/provider-profile/:id" element={authUser ? <ViewProviderProfile /> : <Navigate to="/" />} />
       </Routes>
-      
-      <Toaster position="top-center" reverseOrder={false}/>
-    
-  </ThemeProvider>
+
+      <Toaster position="top-center" reverseOrder={false} />
+
+    </ThemeProvider>
   );
 }
 

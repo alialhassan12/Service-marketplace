@@ -93,13 +93,13 @@ const SidebarContent = ({ active, setPage, authUser, logout, isLoggingOut, isCol
 
                 <a 
                     onClick={() => {
-                        setPage("userProfile");
+                        setPage("profile");
                         if(onClose) onClose();
                     }}
                     className={`
                         flex items-center p-2 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors
                         ${isCollapsed ? "justify-center" : "space-x-3"}
-                        ${active === "userProfile" ? "bg-blue-50" : ""}
+                        ${active === "profile" ? "bg-blue-50" : ""}
                     `}
                     title={authUser?.name}
                 >

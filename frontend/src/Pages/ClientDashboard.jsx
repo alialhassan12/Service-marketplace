@@ -1,6 +1,7 @@
 import ClientSideBar from "../components/clientDashboardComponents/ClientSideBar";
 import ClientHome from "../components/clientDashboardComponents/ClientHome";
 import ClientMyJobs from "../components/clientDashboardComponents/ClientMyJobs";
+import ClientProfile from "../components/clientDashboardComponents/ClientProfile";
 import useClientDashboardStore from "../store/clientDashboardStore";
 
 export default function ClientDashboard(){
@@ -12,6 +13,7 @@ export default function ClientDashboard(){
             <div className="w-full bg-gray-100 ">
                 {page==="home" && <ClientHome/>}
                 {page==="myJobs" && <ClientMyJobs/>}
+                {page==="profile" && <ClientProfile/>}
             </div>
         </div>
     )

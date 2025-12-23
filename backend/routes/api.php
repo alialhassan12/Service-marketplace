@@ -30,6 +30,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/jobs/{id}/proposal/{proposalId}', [jobsController::class, 'updateProposalState'])->name('updateProposalState');
     Route::get('/client/suggested-providers',[ProviderProfileController::class,'getSuggestedProviders'])->name('getSuggestedProviders');
     Route::get('/client/provider-profile/{id}',[ProviderProfileController::class,'show'])->name('showProviderProfile');
+    Route::put('/client/update-profile', [ProviderProfileController::class, 'update'])->name('clientUpdateProfile');
 
     //provider routes
     Route::put('/provider/profile', [ProviderProfileController::class, 'update']);
