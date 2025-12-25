@@ -164,4 +164,36 @@ class jobsController extends Controller
             ], 500);
         }
     }
+    public function getClientAcceptedProviders(Request $request){
+        try {
+            $user_id=$request->user()->id;
+            if(!$user_id){
+                return response()->json([
+                    'message' => 'User not found'
+                ], 404);
+            }
+            if($request->user()->role !== 'client'){
+                return response()->json([
+                    'message' => 'Unauthorized'
+                ], 403);
+            }
+            //get the completed jobs of the client with the accepted provider
+            $jobs=Job::with('proposals.provider')
+                        ->where('client_id',$user_id)
+                        ->whereHas('proposals', function ($query) {
+                            $query->where('status', 'accepted');
+                        })
+                        ->where('status','completed')
+                        ->get();
+
+            return response()->json([
+                'message' => 'Providers fetched successfully',
+                'providers' => $jobs
+            ], 200);
+        } catch (Exception $th) {
+            return response()->json([
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
 }

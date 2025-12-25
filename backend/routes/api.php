@@ -31,6 +31,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/client/suggested-providers',[ProviderProfileController::class,'getSuggestedProviders'])->name('getSuggestedProviders');
     Route::get('/client/provider-profile/{id}',[ProviderProfileController::class,'show'])->name('showProviderProfile');
     Route::put('/client/update-profile', [ProviderProfileController::class, 'update'])->name('clientUpdateProfile');
+    Route::get('/client/accepted-providers', [jobsController::class, 'getClientAcceptedProviders'])->name('getClientAcceptedProviders');
 
     //provider routes
     Route::put('/provider/profile', [ProviderProfileController::class, 'update']);

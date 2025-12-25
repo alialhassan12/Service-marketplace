@@ -9,13 +9,13 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use App\Mail\PaymentInvoiceMail;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Resources\PaymentResource;
-use Illuminate\Container\Attributes\Auth;
+use Illuminate\Support\Facades\Auth;
 
 class PaymentController extends Controller
 {
     public function payProvider(Request $request) {
 
-        if(auth()->id() === $request->provider_id) {
+        if(Auth::id() === $request->provider_id) {
             return response()->json([
                 'message' => 'You cannot pay yourself.'
             ], 400);
@@ -44,18 +44,18 @@ class PaymentController extends Controller
     public function paymentHistory(Request $request) {
 
         $payments = Payment::with('provider')
-                ->where('client_id', auth()->id())
+                ->where('client_id', Auth::id())
                 ->get();
 
         return PaymentResource::collection($payments);
     }
 
     public function getProviderBalance(Request $request) {
-        $totalEarned = Payment::where('provider_id', auth()->id())
+        $totalEarned = Payment::where('provider_id', Auth::id())
                         ->where('status', 'paid')
                         ->sum('amount');
 
-        $pendingAmount = Payment::where('provider_id', auth()->id())
+        $pendingAmount = Payment::where('provider_id', Auth::id())
                         ->where('status', 'pending')
                         ->sum('amount');
 
@@ -73,7 +73,7 @@ class PaymentController extends Controller
 
         $payment = Payment::with(['client', 'provider'])->findOrFail($id);
 
-        if(auth()->id() !== $payment->client->id && auth()->id() !== $payment->provider->id) {
+        if(Auth::id() !== $payment->client->id && Auth::id() !== $payment->provider->id) {
             return response()->json([
                 'message' => 'You are not authorized to download this invoice.'
             ], 403);

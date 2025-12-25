@@ -18,6 +18,7 @@ import ProviderUpdateProfile from './components/providerDashboardComponents/Prov
 import ClientUpdateProfile from './components/clientDashboardComponents/ClientUpdateProfile';
 import Snowfall from "react-snowfall";
 import ViewProviderProfile from "./Pages/ViewProviderProfile";
+import ClientAcceptedProvidersToPay from "./Pages/ClientPayProviderPage";
 
 function App() {
   const { check, authUser, isChecking } = useAuthStore();
@@ -88,6 +89,7 @@ function App() {
         <Route path="/client/update-profile" element={authUser?.role === 'client' ? <ClientUpdateProfile /> : <Navigate to="/" />} />
 
         <Route path="/provider-profile/:id" element={authUser ? <ViewProviderProfile /> : <Navigate to="/" />} />
+        <Route path="/client/pay-provider" element={authUser?.role === 'client' ? <ClientAcceptedProvidersToPay /> : <Navigate to="/" />} />
       </Routes>
 
       <Toaster position="top-center" reverseOrder={false} />

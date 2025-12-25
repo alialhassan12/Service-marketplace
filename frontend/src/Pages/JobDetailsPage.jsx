@@ -2,6 +2,7 @@ import React, { useEffect,useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import useClientDashboardStore from '../store/clientDashboardStore';
 import Button from '@mui/material/Button';
+import {Button as RadixButton} from '@radix-ui/themes';
 import 'aos/dist/aos.css';
 import EditIcon from '@mui/icons-material/Edit';
 // dialog imports
@@ -36,7 +37,8 @@ const JobDetailsPage = () => {
             updatingProposalStatusId,
             updateJobStatus,
             updatingJobStatus,
-            updatedJobStatus } = useClientDashboardStore();
+            updatedJobStatus,
+            updatedProposalStatus} = useClientDashboardStore();
     const [openEdit,setOpenEdit]=useState(false);
     useEffect(() => {
         getJob(id);
@@ -242,9 +244,13 @@ const JobDetailsPage = () => {
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <Button variant="soft" color="gray" onClick={(e) => { e.stopPropagation(); /* Add chat logic later */ }}>
+                                    {/* chat button */}
+                                    <RadixButton variant="soft" color="gray" onClick={(e) => { e.stopPropagation(); /* Add chat logic later */ }}>
                                         <ChatBubbleIcon />
-                                    </Button>
+                                    </RadixButton>
+                                    {/* quick pay button */}
+                                    <RadixButton variant="soft" color="green">Quick pay</RadixButton>
+
                                     <Select.Root defaultValue={proposal.status || "pending"} onValueChange={(value)=>changeProposalState(proposal.id,value)}>
                                         <Select.Trigger variant="soft" color={
                                             proposal.status === 'accepted' ? 'green' : 

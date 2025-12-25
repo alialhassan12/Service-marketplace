@@ -155,6 +155,23 @@ const useClientDashboardStore = create((set) => ({
             set({ updatingProfile: false })
         }
     },
+    acceptedProviders: [],
+    gettingAcceptedProviders: false,
+    getAcceptedProviders: async () => {
+        set({ gettingAcceptedProviders: true });
+        try {
+            const response = await axiosInstance.get('/client/accepted-providers');
+            set({ acceptedProviders: response.data.providers });
+            console.log(response.data.providers);
+            return true;
+        } catch (error) {
+            console.log(error);
+            toast.error(error.response?.data?.message);
+            return false;
+        } finally {
+            set({ gettingAcceptedProviders: false })
+        }
+    },
 }));
 
 export default useClientDashboardStore
