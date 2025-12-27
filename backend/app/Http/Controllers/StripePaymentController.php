@@ -7,6 +7,7 @@ use App\Models\Job;
 use App\Services\StripeService;
 use App\Mail\PaymentInvoiceMail;
 use App\Http\Resources\PaymentResource;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
@@ -34,14 +35,14 @@ class StripePaymentController extends Controller
         // Verify the job belongs to the client
         $job = Job::findOrFail($request->job_id);
 
-        if ($job->client_id !== auth()->id()) {
+        if ($job->client_id !== auth('sanctum')->id()) {
             return response()->json([
                 'message' => 'You are not authorized to pay for this job.'
             ], 403);
         }
 
         // Prevent self-payment
-        if (auth()->id() === $request->provider_id) {
+        if (auth('sanctum')->id() === $request->provider_id) {
             return response()->json([
                 'message' => 'You cannot pay yourself.'
             ], 400);
@@ -57,37 +58,54 @@ class StripePaymentController extends Controller
                 'usd',
                 $request->description ?? "Payment for job: {$job->title}",
                 [
-                    'client_id' => auth()->id(),
+                    'client_id' => auth('sanctum')->id(),
                     'provider_id' => $request->provider_id,
                     'job_id' => $request->job_id,
                 ]
             );
+            //check if the payment already exist first
+            $payment = Payment::where('job_id', $request->job_id)->first();
+            if ($payment) {
+                $payment->update([
+                    'stripe_payment_intent_id' => $paymentIntent->id,
+                    'transaction_id' => 'txn_' . $paymentIntent->id,
+                ]);
 
-            // Create a pending payment record
-            $payment = Payment::create([
-                'client_id' => auth()->id(),
-                'provider_id' => $request->provider_id,
-                'job_id' => $request->job_id,
-                'amount' => $request->amount,
-                'currency' => 'USD',
-                'status' => 'pending',
-                'payment_method' => 'stripe',
-                'stripe_payment_intent_id' => $paymentIntent->id,
-                'description' => $request->description,
-                'transaction_id' => 'txn_' . $paymentIntent->id,
-            ]);
+                return response()->json([
+                    'message' => 'Payment already exists for this job.',
+                    'data'=>[
+                        'payment_id' => $payment->id,
+                        'client_secret' => $paymentIntent->client_secret,
+                        'payment_intent_id' => $paymentIntent->id,
+                        'amount' => $payment->amount,
+                        'currency' => $payment->currency,
+                    ]
+                ], 201);
+            }
+            // // Create a pending payment record
+            // $newPayment = Payment::create([
+            //     'client_id' => auth('sanctum')->id(),
+            //     'provider_id' => $request->provider_id,
+            //     'job_id' => $request->job_id,
+            //     'amount' => $request->amount,
+            //     'currency' => 'USD',
+            //     'status' => 'pending',
+            //     'payment_method' => 'stripe',
+            //     'stripe_payment_intent_id' => $paymentIntent->id,
+            //     'description' => $request->description,
+            //     'transaction_id' => 'txn_' . $paymentIntent->id,
+            // ]);
 
-            return response()->json([
-                'status' => 'success',
-                'data' => [
-                    'payment_id' => $payment->id,
-                    'client_secret' => $paymentIntent->client_secret,
-                    'payment_intent_id' => $paymentIntent->id,
-                    'amount' => $request->amount,
-                    'currency' => 'USD',
-                ]
-            ], 201);
-
+            // return response()->json([
+            //     'status' => 'success',
+            //     'data' => [
+            //         'payment_id' => $newPayment->id,
+            //         'client_secret' => $paymentIntent->client_secret,
+            //         'payment_intent_id' => $paymentIntent->id,
+            //         'amount' => $request->amount,
+            //         'currency' => 'USD',
+            //     ]
+            // ], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -110,7 +128,7 @@ class StripePaymentController extends Controller
             $payment = Payment::with(['client', 'provider'])->findOrFail($request->payment_id);
 
             // Verify the user is the client
-            if ($payment->client_id !== auth()->id()) {
+            if ($payment->client_id !== auth('sanctum')->id()) {
                 return response()->json([
                     'message' => 'You are not authorized to confirm this payment.'
                 ], 403);
@@ -127,7 +145,7 @@ class StripePaymentController extends Controller
             try {
                 Mail::to($payment->client->email)->send(new PaymentInvoiceMail($payment));
             } catch (\Exception $e) {
-                \Log::error('Failed to send payment invoice email: ' . $e->getMessage());
+                Log::error('Failed to send payment invoice email: ' . $e->getMessage());
             }
 
             return response()->json([
@@ -135,7 +153,6 @@ class StripePaymentController extends Controller
                 'message' => 'Payment confirmed successfully',
                 'data' => new PaymentResource($payment)
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -150,9 +167,9 @@ class StripePaymentController extends Controller
     public function paymentHistory(Request $request)
     {
         $payments = Payment::with(['provider', 'job'])
-            ->where('client_id', auth()->id())
+            ->where('client_id', auth('sanctum')->id())
             ->orderBy('created_at', 'desc')
-            ->paginate(15);
+            ->paginate(10);
 
         return PaymentResource::collection($payments);
     }
@@ -162,11 +179,11 @@ class StripePaymentController extends Controller
      */
     public function getProviderBalance(Request $request)
     {
-        $totalEarned = Payment::where('provider_id', auth()->id())
+        $totalEarned = Payment::where('provider_id', auth('sanctum')->id())
             ->where('status', 'paid')
             ->sum('amount');
 
-        $pendingAmount = Payment::where('provider_id', auth()->id())
+        $pendingAmount = Payment::where('provider_id', auth('sanctum')->id())
             ->where('status', 'pending')
             ->sum('amount');
 
@@ -187,7 +204,7 @@ class StripePaymentController extends Controller
     {
         $payment = Payment::with(['client', 'provider', 'job'])->findOrFail($id);
 
-        if (auth()->id() !== $payment->client->id && auth()->id() !== $payment->provider->id) {
+        if (auth('sanctum')->id() !== $payment->client->id && auth('sanctum')->id() !== $payment->provider->id) {
             return response()->json([
                 'message' => 'You are not authorized to download this invoice.'
             ], 403);
@@ -205,7 +222,7 @@ class StripePaymentController extends Controller
     {
         $payment = Payment::with(['client', 'provider', 'job'])->findOrFail($id);
 
-        if (auth()->id() !== $payment->client->id && auth()->id() !== $payment->provider->id) {
+        if (auth('sanctum')->id() !== $payment->client->id && auth('sanctum')->id() !== $payment->provider->id) {
             return response()->json([
                 'message' => 'You are not authorized to view this payment.'
             ], 403);

@@ -87,7 +87,6 @@ function App() {
         <Route path="/job/:id" element={authUser ? <JobDetailsPage /> : <Navigate to="/login" />} />
         <Route path="/provider/update-profile" element={authUser?.role === 'provider' ? <ProviderUpdateProfile /> : <Navigate to="/" />} />
         <Route path="/client/update-profile" element={authUser?.role === 'client' ? <ClientUpdateProfile /> : <Navigate to="/" />} />
-
         <Route path="/provider-profile/:id" element={authUser ? <ViewProviderProfile /> : <Navigate to="/" />} />
         <Route path="/client/pay-provider" element={authUser?.role === 'client' ? <ClientAcceptedProvidersToPay /> : <Navigate to="/" />} />
       </Routes>

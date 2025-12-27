@@ -47,8 +47,8 @@ const JobDetailsPage = () => {
     const changeJobStatus=(state)=>{
         updateJobStatus(id,state);
     }
-    const changeProposalState=(proposalId,state)=>{
-        updateProposalState(id,proposalId,state);
+    const changeProposalState=(proposalId,state,provider_id,amount,description)=>{
+        updateProposalState(id,proposalId,state,provider_id,amount,description);
     }
 
     const [formData,setFormData]=useState({
@@ -251,7 +251,7 @@ const JobDetailsPage = () => {
                                     {/* quick pay button */}
                                     <RadixButton variant="soft" color="green">Quick pay</RadixButton>
 
-                                    <Select.Root defaultValue={proposal.status || "pending"} onValueChange={(value)=>changeProposalState(proposal.id,value)}>
+                                    <Select.Root defaultValue={proposal.status || "pending"} onValueChange={(value)=>changeProposalState(proposal.id,value,proposal.provider_id,proposal.price,proposal.description)}>
                                         <Select.Trigger variant="soft" color={
                                             proposal.status === 'accepted' ? 'green' : 
                                             proposal.status === 'rejected' ? 'red' : 'indigo'

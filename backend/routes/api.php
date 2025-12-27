@@ -51,7 +51,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::middleware(['auth:sanctum', 'checkRole:provider'])->prefix('provider')->group(function () {});
 Route::get('/payments/download-invoice/{id}', [StripePaymentController::class, 'downloadInvoice'])
-     ->middleware('auth:sanctum');
+    ->middleware('auth:sanctum');
 
 // Stripe webhook route (must be public and not require authentication)
 Route::post('/webhook/stripe', [StripeWebhookController::class, 'handleWebhook'])->name('stripe.webhook');
+

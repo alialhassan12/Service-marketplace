@@ -94,10 +94,10 @@ const useClientDashboardStore = create((set) => ({
         }
     },
     updatingProposalStatusId: null,
-    updateProposalState: async (jobId, proposal_id, state) => {
+    updateProposalState: async (jobId, proposal_id, state, provider_id, amount, description) => {
         set({ updatingProposalStatusId: proposal_id });
         try {
-            const response = await axiosInstance.put(`/jobs/${jobId}/proposal/${proposal_id}`, { proposal_id, state });
+            const response = await axiosInstance.put(`/jobs/${jobId}/proposal/${proposal_id}`, {job_id: jobId, proposal_id, state, provider_id, amount, description });
             toast.success(response.data.message);
             return true;
         } catch (error) {
