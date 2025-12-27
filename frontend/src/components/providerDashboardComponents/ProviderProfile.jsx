@@ -86,8 +86,8 @@ export default function ProviderProfile(){
                 {/* Right Column: Details */}
                 <div className="w-full lg:w-2/3 flex flex-col gap-6">
                     {/* Bio Section */}
-                    <div className="bg-white gap-2 rounded-3xl p-8 shadow-[0_2px_12px_rgba(0,0,0,0.08)] border border-gray-100 h-fit">
-                        <Heading size="5" className="mb-4 text-gray-800 flex items-center gap-2">
+                    <div className="flex flex-col bg-white gap-2 rounded-3xl p-8 shadow-[0_2px_12px_rgba(0,0,0,0.08)] border border-gray-100 h-fit">
+                        <Heading size="5" className="text-gray-800 flex items-center gap-2">
                             About Me
                         </Heading>
                         <Text as="p" size="3" className="text-gray-600 leading-relaxed whitespace-pre-wrap">
@@ -96,12 +96,12 @@ export default function ProviderProfile(){
                     </div>
 
                     {/* Skills Section */}
-                    <div className="bg-white  rounded-3xl p-8 shadow-[0_2px_12px_rgba(0,0,0,0.08)] border border-gray-100 h-fit">
-                        <Heading size="5" className="mb-4 text-gray-800">Skills & Expertise</Heading>
+                    <div className="flex flex-col bg-white gap-2 rounded-3xl p-8 shadow-[0_2px_12px_rgba(0,0,0,0.08)] border border-gray-100 h-fit">
+                        <Heading size="5" className="text-gray-800">Skills & Expertise</Heading>
                         <div className="flex flex-wrap gap-2 mt-2">
                             {skills.length > 0 ? (
                                 skills.map((skill, index) => (
-                                    <Badge 
+                                    <Badge
                                         key={index} 
                                         color="teal" 
                                         variant="soft" 

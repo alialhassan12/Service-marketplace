@@ -18,7 +18,6 @@ export default function ProviderUpdateProfile(){
         bio:authUser?.bio || "",
         skills:authUser?.skills || [],
         profile_picture:authUser?.profile_picture || "",
-        phone_number:authUser?.phone_number || "",
     });
     const [skills, setSkills] = useState(formData.skills);
     const [inputValue, setInputValue] = useState("");

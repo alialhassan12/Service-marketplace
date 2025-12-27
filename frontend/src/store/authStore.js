@@ -19,10 +19,8 @@ export const useAuthStore=create((set)=>({
             const response=await axiosInstance.get("/check");
             set({authUser:response.data});
         } catch (error) {
-            // If check fails (no token, invalid token, or server error), clear auth state
             set({authUser:null});
             localStorage.removeItem("token");
-            console.log("Auth check failed:", error);
         } finally {
             set({isChecking:false});
         }
@@ -56,7 +54,6 @@ export const useAuthStore=create((set)=>({
             localStorage.removeItem("token");
             toast.success("Logout successful");
         } catch (error) {
-            console.log(error);
             toast.error(error.response.data.message);
         }finally{
             set({isLoggingOut:false});
