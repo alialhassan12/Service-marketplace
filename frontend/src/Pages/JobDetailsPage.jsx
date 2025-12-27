@@ -2,6 +2,7 @@ import React, { useEffect,useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import useClientDashboardStore from '../store/clientDashboardStore';
 import Button from '@mui/material/Button';
+import {Button as RadixButton} from '@radix-ui/themes';
 import 'aos/dist/aos.css';
 import EditIcon from '@mui/icons-material/Edit';
 // dialog imports
@@ -36,7 +37,8 @@ const JobDetailsPage = () => {
             updatingProposalStatusId,
             updateJobStatus,
             updatingJobStatus,
-            updatedJobStatus } = useClientDashboardStore();
+            updatedJobStatus,
+            updatedProposalStatus} = useClientDashboardStore();
     const [openEdit,setOpenEdit]=useState(false);
     useEffect(() => {
         getJob(id);
@@ -45,8 +47,8 @@ const JobDetailsPage = () => {
     const changeJobStatus=(state)=>{
         updateJobStatus(id,state);
     }
-    const changeProposalState=(proposalId,state)=>{
-        updateProposalState(id,proposalId,state);
+    const changeProposalState=(proposalId,state,provider_id,amount,description)=>{
+        updateProposalState(id,proposalId,state,provider_id,amount,description);
     }
 
     const [formData,setFormData]=useState({
@@ -242,10 +244,14 @@ const JobDetailsPage = () => {
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <Button variant="soft" color="gray" onClick={(e) => { e.stopPropagation(); /* Add chat logic later */ }}>
+                                    {/* chat button */}
+                                    <RadixButton variant="soft" color="gray" onClick={(e) => { e.stopPropagation(); /* Add chat logic later */ }}>
                                         <ChatBubbleIcon />
-                                    </Button>
-                                    <Select.Root defaultValue={proposal.status || "pending"} onValueChange={(value)=>changeProposalState(proposal.id,value)}>
+                                    </RadixButton>
+                                    {/* quick pay button */}
+                                    <RadixButton variant="soft" color="green">Quick pay</RadixButton>
+
+                                    <Select.Root defaultValue={proposal.status || "pending"} onValueChange={(value)=>changeProposalState(proposal.id,value,proposal.provider_id,proposal.price,proposal.description)}>
                                         <Select.Trigger variant="soft" color={
                                             proposal.status === 'accepted' ? 'green' : 
                                             proposal.status === 'rejected' ? 'red' : 'indigo'

@@ -53,7 +53,7 @@ export default function ClientHome(){
                 </div>
                 <div className="flex flex-col justify-center items-center w-full p-5 gap-2 rounded-xl bg-white">
                     <IconButton color="secondary" sx={{width:"50px",height:"50px"}}
-                        onClick={()=>setPage("userProfile")}>
+                        onClick={()=>setPage("profile")}>
                         <AccountCircleIcon sx={{fontSize:"30px"}}/>
                     </IconButton>
                     <p className=" font-bold">Profile</p>
@@ -62,7 +62,7 @@ export default function ClientHome(){
             {/* suggested providers */}
             <div className="mt-8">
                 <h2 className="text-xl font-bold mb-4">Suggested Providers</h2>
-                 {gettingSuggestedProviders ? (
+                {gettingSuggestedProviders ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         {[1, 2, 3, 4].map((i) => (
                             <div key={i} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center gap-3">

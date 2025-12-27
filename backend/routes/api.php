@@ -31,6 +31,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/client/suggested-providers',[ProviderProfileController::class,'getSuggestedProviders'])->name('getSuggestedProviders');
     Route::get('/client/provider-profile/{id}',[ProviderProfileController::class,'show'])->name('showProviderProfile');
     Route::put('/client/update-profile', [ProviderProfileController::class, 'update'])->name('clientUpdateProfile');
+    Route::get('/client/accepted-providers', [jobsController::class, 'getClientAcceptedProviders'])->name('getClientAcceptedProviders');
 
     //provider routes
     Route::put('/provider/profile', [ProviderProfileController::class, 'update']);
@@ -50,7 +51,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::middleware(['auth:sanctum', 'checkRole:provider'])->prefix('provider')->group(function () {});
 Route::get('/payments/download-invoice/{id}', [StripePaymentController::class, 'downloadInvoice'])
-     ->middleware('auth:sanctum');
+    ->middleware('auth:sanctum');
 
 // Stripe webhook route (must be public and not require authentication)
 Route::post('/webhook/stripe', [StripeWebhookController::class, 'handleWebhook'])->name('stripe.webhook');
+

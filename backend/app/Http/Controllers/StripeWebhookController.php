@@ -6,6 +6,7 @@ use App\Models\Payment;
 use App\Services\StripeService;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Log;
 
 class StripeWebhookController extends Controller
 {
@@ -47,13 +48,13 @@ class StripeWebhookController extends Controller
                     break;
 
                 default:
-                    \Log::info('Unhandled Stripe webhook event: ' . $event->type);
+                    Log::info('Unhandled Stripe webhook event: ' . $event->type);
             }
 
             return response()->json(['status' => 'success'], 200);
 
         } catch (\Exception $e) {
-            \Log::error('Stripe webhook error: ' . $e->getMessage());
+            Log::error('Stripe webhook error: ' . $e->getMessage());
             return response()->json(['error' => $e->getMessage()], 400);
         }
     }
@@ -66,7 +67,7 @@ class StripeWebhookController extends Controller
         $payment = Payment::where('stripe_payment_intent_id', $paymentIntent->id)->first();
 
         if (!$payment) {
-            \Log::warning("Payment intent {$paymentIntent->id} not found in database");
+            Log::warning("Payment intent {$paymentIntent->id} not found in database");
             return;
         }
 
@@ -77,7 +78,7 @@ class StripeWebhookController extends Controller
                 'stripe_charge_id' => $paymentIntent->charges->data[0]->id ?? null,
             ]);
 
-            \Log::info("Payment {$payment->id} marked as paid");
+            Log::info("Payment {$payment->id} marked as paid");
         }
     }
 
@@ -89,7 +90,7 @@ class StripeWebhookController extends Controller
         $payment = Payment::where('stripe_payment_intent_id', $paymentIntent->id)->first();
 
         if (!$payment) {
-            \Log::warning("Payment intent {$paymentIntent->id} not found in database");
+            Log::warning("Payment intent {$paymentIntent->id} not found in database");
             return;
         }
 
@@ -97,7 +98,7 @@ class StripeWebhookController extends Controller
             'status' => 'failed',
         ]);
 
-        \Log::warning("Payment {$payment->id} failed: " . ($paymentIntent->last_payment_error->message ?? 'Unknown error'));
+        Log::warning("Payment {$payment->id} failed: " . ($paymentIntent->last_payment_error->message ?? 'Unknown error'));
     }
 
     /**
@@ -108,7 +109,7 @@ class StripeWebhookController extends Controller
         $payment = Payment::where('stripe_charge_id', $charge->id)->first();
 
         if (!$payment) {
-            \Log::warning("Charge {$charge->id} not found in database");
+            Log::warning("Charge {$charge->id} not found in database");
             return;
         }
 
@@ -116,7 +117,7 @@ class StripeWebhookController extends Controller
             'status' => 'refunded',
         ]);
 
-        \Log::info("Payment {$payment->id} was refunded");
+        Log::info("Payment {$payment->id} was refunded");
     }
 
     /**
@@ -127,7 +128,7 @@ class StripeWebhookController extends Controller
         $payment = Payment::where('stripe_charge_id', $dispute->charge)->first();
 
         if (!$payment) {
-            \Log::warning("Charge {$dispute->charge} not found in database");
+            Log::warning("Charge {$dispute->charge} not found in database");
             return;
         }
 
@@ -135,6 +136,6 @@ class StripeWebhookController extends Controller
             'status' => 'disputed',
         ]);
 
-        \Log::warning("Payment {$payment->id} has a dispute: {$dispute->reason}");
+        Log::warning("Payment {$payment->id} has a dispute: {$dispute->reason}");
     }
 }

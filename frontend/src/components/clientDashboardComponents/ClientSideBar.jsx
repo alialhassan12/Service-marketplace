@@ -103,8 +103,8 @@ const SidebarContent = ({ active, setPage, authUser, logout, isLoggingOut, isCol
                     `}
                     title={authUser?.name}
                 >
-                    {authUser?.image ? (
-                        <Avatar className="w-8 h-8" src={authUser?.image} />
+                    {authUser?.profile_picture ? (
+                        <Avatar className="w-8 h-8" src={`http://localhost:8000/storage/${authUser?.profile_picture}`} />
                     ) : (
                         <Avatar className="w-8 h-8 bg-blue-500 text-white text-sm">
                             {authUser?.name?.[0]?.toUpperCase()}
