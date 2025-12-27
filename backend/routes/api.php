@@ -2,11 +2,13 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\authController;
 use App\Http\Controllers\jobsController;
 use App\Http\Controllers\StripePaymentController;
 use App\Http\Controllers\ProviderProfileController;
 use App\Http\Controllers\StripeWebhookController;
+
 
 //public routes
 Route::post('/login', [authController::class, 'login'])->name('login');
@@ -47,6 +49,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/payments/history', [StripePaymentController::class, 'paymentHistory']);
     Route::get('/payments/{id}', [StripePaymentController::class, 'getPayment']);
     Route::get('/payments/balance', [StripePaymentController::class, 'getProviderBalance']);
+
+
 });
 
 Route::middleware(['auth:sanctum', 'checkRole:provider'])->prefix('provider')->group(function () {});
@@ -56,3 +60,26 @@ Route::get('/payments/download-invoice/{id}', [StripePaymentController::class, '
 // Stripe webhook route (must be public and not require authentication)
 Route::post('/webhook/stripe', [StripeWebhookController::class, 'handleWebhook'])->name('stripe.webhook');
 
+
+
+
+Route::middleware(['auth:sanctum', 'checkRole:admin'])->prefix('admin')->group(function () {
+    Route::get('/stats', [AdminController::class, 'stats']);
+
+    Route::get('/users', [AdminController::class, 'getUsers']);
+    Route::delete('/users/{id}', [AdminController::class, 'deleteUser']);
+
+    Route::get('/jobs', [AdminController::class, 'getJobs']);
+    Route::put('/jobs/{id}/status', [AdminController::class, 'updateJobStatus']);
+    Route::delete('/jobs/{id}', [AdminController::class, 'deleteJob']);
+
+    Route::get('/proposals', [AdminController::class, 'getProposals']);
+    Route::delete('/proposals/{id}', [AdminController::class, 'deleteProposal']);
+
+    // Content management
+    Route::get('/content/{key}', [AdminController::class, 'getContent']);
+    Route::put('/content/{key}', [AdminController::class, 'updateContent']);
+    Route::get('/jobs/{id}', [AdminController::class, 'getJob']);
+
+
+});

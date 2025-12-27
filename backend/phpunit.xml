@@ -23,8 +23,9 @@
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="BROADCAST_CONNECTION" value="null"/>
         <env name="CACHE_STORE" value="array"/>
-        <env name="DB_CONNECTION" value="sqlite"/>
-        <env name="DB_DATABASE" value=":memory:"/>
+        <!-- Use PostgreSQL for tests by default (set your test DB in .env.testing). -->
+        <env name="DB_CONNECTION" value="pgsql"/>
+        <!-- If you prefer sqlite in-memory, set DB_CONNECTION=sqlite and DB_DATABASE=:memory: in .env.testing -->
         <env name="MAIL_MAILER" value="array"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
