@@ -1,5 +1,6 @@
 import { Cross2Icon } from "@radix-ui/react-icons";
-import Button from '@mui/material/Button';
+import {Button} from '@radix-ui/themes';
+import {Button as MuiBtn} from '@mui/material';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -50,7 +51,7 @@ export default function PostJobButton(){
     }
     return(
         <>
-            <Button variant="contained" onClick={handleClickOpen}>
+            <Button variant="solid" style={{cursor:"pointer"}} onClick={handleClickOpen}>
                 Post new job
             </Button>
             <Dialog open={open} onClose={handleClose}>
@@ -116,10 +117,10 @@ export default function PostJobButton(){
                 </form>
                 </DialogContent>
                 <DialogActions>
-                <Button onClick={handleClose}>Cancel</Button>
-                <Button disabled={addingJob} type="submit"onClick={handleSubmit} variant="contained">
+                <MuiBtn onClick={handleClose} variant="outlined">Cancel</MuiBtn>
+                <MuiBtn variant="contained" disabled={addingJob} type="submit" onClick={handleSubmit}>
                     {addingJob ? <span className="loading loading-infinity loading-xl text-blue-500"></span> : "Post"}
-                </Button>
+                </MuiBtn>
                 </DialogActions>
             </Dialog>
         </>

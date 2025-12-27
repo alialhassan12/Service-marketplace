@@ -1,8 +1,6 @@
 import "aos/dist/aos.css";
 import LoginImage from "../assets/loginImg.jpg";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
-import Divider from "@mui/material/Divider";
+import { TextField, Button, Text, Flex, Heading, Separator } from "@radix-ui/themes";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
@@ -34,70 +32,87 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex flex-row w-screen h-screen gap-10">
-      {/* left side */}
-      <div className="w-[50%] relative" data-aos="fade-right">
-        <img className="w-full h-full" src={LoginImage} />
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full p-10 flex flex-col justify-center items-center">
-          <h1 className="text-4xl text-white font-bold">
+    <div className="flex flex-col lg:flex-row w-screen h-screen">
+      {/* Left side (Image) */}
+      <div className="hidden lg:block lg:w-1/2 h-full relative overflow-hidden" data-aos="fade-right">
+        <img className="w-full h-full object-cover" src={LoginImage} alt="Login Background" />
+        <div className="absolute inset-0 bg-black/40 flex flex-col justify-center items-center p-6 text-center">
+          <h1 className="text-3xl md:text-5xl text-white font-bold mb-4 drop-shadow-lg">
             Connect. Collaborate. Create.
           </h1>
-          <p className="mt-5 text-2xl font-light text-white">
-            Find the perfect professional for your project or showcase your
-            skills to the world.
+          <p className="text-lg md:text-2xl font-light text-white drop-shadow-md max-w-md">
+            Find the perfect professional for your project or showcase your skills to the world.
           </p>
         </div>
       </div>
-      {/* right side */}
+
+      {/* Right side (Form) */}
       <div
-        className="w-[40%] h-full flex flex-col justify-center items-center"
-        data-aos="fade-left"
+        className="w-full lg:w-1/2 flex-1 flex flex-col justify-center items-center p-6 md:p-20 bg-white"
+        data-aos="fade-down"
       >
-        <div className="w-[100%] ">
-          <h1 className=" text-3xl font-bold mb-5">SkillHub</h1>
-          <h2 className="text-xl font-bold">Welcome Back</h2>
-          <p className="text-gray-500 ">Login to access your account</p>
-          <form className="flex flex-col gap-5 mt-5" onSubmit={handleSubmit}>
-            {/* email Field */}
-            <TextField
-              sx={{ width: "100%" }}
-              id="outlined-basic"
-              label="Email"
-              variant="outlined"
-              value={formData.email}
-              onChange={handleEmailChange}
-              required
-            />
-            {/* password Field */}
-            <TextField
-              sx={{ width: "100%" }}
-              id="outlined-password"
-              label="Password"
-              type="password"
-              variant="outlined"
-              value={formData.password}
-              onChange={handlePasswordChange}
-              required
-            />
-            {/* login Btn */}
-            <Button type="submit" disabled={isLogging} variant="contained">
+        <div className="w-full max-w-md space-y-6">
+          <div className="text-center md:text-left">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">SkillHub</h1>
+            <h2 className="text-2xl font-semibold text-gray-800">Welcome Back</h2>
+            <Text color="gray" size="2">Login to access your account</Text>
+          </div>
+
+          <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
+            <Flex direction="column" gap="3">
+                <label className="text-sm font-medium text-gray-700">Email</label>
+                <TextField.Root 
+                    size="3" 
+                    placeholder="Enter your email" 
+                    value={formData.email}
+                    onChange={handleEmailChange}
+                    required
+                    disabled={isLogging}
+                />
+            </Flex>
+
+            <Flex direction="column" gap="3">
+                <label className="text-sm font-medium text-gray-700">Password</label>
+                <TextField.Root 
+                    size="3" 
+                    type="password" 
+                    placeholder="Enter your password" 
+                    value={formData.password}
+                    onChange={handlePasswordChange}
+                    required
+                    disabled={isLogging}
+                />
+            </Flex>
+
+            <Button 
+                size="3" 
+                variant="solid" 
+                type="submit" 
+                disabled={isLogging} 
+                style={{ width: '100%', cursor: 'pointer', marginTop: '10px' }}
+            >
               {isLogging ? (
-                <span className="loading loading-infinity loading-xl text-blue-500"></span>
+                <span className="loading loading-dots loading-md"></span>
               ) : (
                 "Login"
               )}
             </Button>
-            {/* divider */}
-            <Divider variant="fullWidth">
-              <p>Or</p>
-            </Divider>
-            {/* Sign Up */}
-            <p className="text-gray-500 text-center">
+
+            <Flex align="center" gap="4" width="100%">
+                <Separator size="4" />
+                <Text color="gray" size="2">Or</Text>
+                <Separator size="4" />
+            </Flex>
+
+            <Text align="center" color="gray" size="2">
               Don't have an account?{" "}
-              <a href="/register" className="text-blue-500">
+              <a 
+                href="/register" 
+                className="text-blue-600 font-semibold hover:underline"
+              >
                 Sign Up
               </a>
-            </p>
+            </Text>
           </form>
         </div>
       </div>
