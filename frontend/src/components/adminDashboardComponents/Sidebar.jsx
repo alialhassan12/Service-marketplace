@@ -31,7 +31,7 @@ function NavItem({ icon, label, to, active }) {
 export default function Sidebar() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { logout, isLoggingOut } = useAuthStore();
+  const { logout, isLoggingOut, authUser } = useAuthStore();
 
   const handleLogout = async () => {
     await logout();
@@ -41,10 +41,14 @@ export default function Sidebar() {
   return (
     <aside className="fixed left-0 top-0 w-64 h-screen bg-bg-2/60 backdrop-blur border-r border-white/5 p-4 flex flex-col z-10">
       <div className="flex items-center gap-3 mb-8">
-        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 to-cyan-400" />
-        <div>
-          <p className="text-sm text-muted leading-tight">Admin Panel</p>
-          <p className="font-medium">Service Marketplace</p>
+        <div className="h-10 w-10 rounded-full overflow-hidden border border-white/10 relative">
+          <div className="w-full h-full bg-gradient-to-br from-indigo-500 to-cyan-400 flex items-center justify-center text-white font-bold text-sm uppercase">
+            {authUser?.name?.charAt(0).toUpperCase() || 'A'}
+          </div>
+        </div>
+        <div className="flex flex-col">
+          <p className="font-medium text-white truncate max-w-[150px]">{authUser?.name || 'Admin'}</p>
+          <p className="text-xs text-muted leading-tight">Administrator</p>
         </div>
       </div>
 
