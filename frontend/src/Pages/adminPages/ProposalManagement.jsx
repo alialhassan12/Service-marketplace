@@ -1,68 +1,25 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Search, Filter, Calendar, ChevronDown } from "lucide-react";
-
-// TODO: Replace with database query: SELECT * FROM proposals ORDER BY date_submitted DESC
-const fakeProposals = [
-  {
-    id: "P-1024",
-    jobTitle: "Brand Logo Design for Startup",
-    provider: {
-      name: "Laura Evans",
-      avatar: "LE",
-    },
-    dateSubmitted: "2023-10-26",
-    bidAmount: 550.0,
-    status: "Accepted",
-  },
-  {
-    id: "P-1023",
-    jobTitle: "E-commerce Website Development",
-    provider: {
-      name: "Mark Johnson",
-      avatar: "MJ",
-    },
-    dateSubmitted: "2023-10-25",
-    bidAmount: 3200.0,
-    status: "Active",
-  },
-  {
-    id: "P-1022",
-    jobTitle: "Social Media Content Calendar",
-    provider: {
-      name: "Sarah Lee",
-      avatar: "SL",
-    },
-    dateSubmitted: "2023-10-25",
-    bidAmount: 800.0,
-    status: "Flagged",
-  },
-  {
-    id: "P-1021",
-    jobTitle: "Mobile App UI/UX Redesign",
-    provider: {
-      name: "David Chen",
-      avatar: "DC",
-    },
-    dateSubmitted: "2023-10-24",
-    bidAmount: 4500.0,
-    status: "Rejected",
-  },
-];
+import adminStore from "../../store/adminStore";
 
 function StatusPill({ status }) {
   const statusMap = {
-    Accepted: "bg-emerald-400/10 text-emerald-300",
-    Active: "bg-blue-400/10 text-blue-300",
-    Flagged: "bg-amber-400/10 text-amber-300",
-    Rejected: "bg-rose-400/10 text-rose-300",
+    accepted: "bg-emerald-400/10 text-emerald-300",
+    pending: "bg-amber-400/10 text-amber-300",
+    rejected: "bg-rose-400/10 text-rose-300",
   };
+
+  const displayStatus = status === 'accepted' ? 'Accepted' :
+                       status === 'pending' ? 'Pending' :
+                       status === 'rejected' ? 'Rejected' : status;
+
   return (
     <span
       className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-        statusMap[status] || statusMap.Active
+        statusMap[status] || statusMap.pending
       }`}
     >
-      {status}
+      {displayStatus}
     </span>
   );
 }
@@ -72,6 +29,35 @@ export default function ProposalManagement() {
   const [statusFilter, setStatusFilter] = useState("All");
   const [dateRangeFilter, setDateRangeFilter] = useState("All");
   const [selectedProposals, setSelectedProposals] = useState([]);
+  const [proposals, setProposals] = useState([]);
+  const [meta, setMeta] = useState({});
+
+  useEffect(() => {
+    fetchProposals();
+  }, []);
+
+  async function fetchProposals(page = 1) {
+    try {
+      const data = await adminStore.fetchProposals({ page });
+      setProposals(data.data || data);
+      setMeta(data.meta || {});
+    } catch (err) {
+      console.error("Failed to fetch proposals", err);
+      alert("Failed to fetch proposals");
+    }
+  }
+
+  async function handleDeleteProposal(id) {
+    if (!confirm("Delete this proposal?")) return;
+    try {
+      await adminStore.deleteProposal(id);
+      alert("Proposal deleted");
+      fetchProposals();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete proposal");
+    }
+  }
 
   // TODO: Replace with database query: SELECT * FROM proposals WHERE (provider_name LIKE ? OR job_title LIKE ? OR proposal_id LIKE ?)
   const handleSearch = (e) => {
@@ -110,16 +96,18 @@ export default function ProposalManagement() {
     }
   };
 
-  const filteredProposals = fakeProposals.filter((proposal) => {
+  const filteredProposals = proposals.filter((proposal) => {
     const matchesSearch =
-      proposal.provider.name
+      (proposal.provider?.name || '')
         .toLowerCase()
         .includes(searchQuery.toLowerCase()) ||
-      proposal.jobTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      proposal.id.toLowerCase().includes(searchQuery.toLowerCase());
+      (proposal.job?.title || '')
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      proposal.id.toString().includes(searchQuery);
 
     const matchesStatus =
-      statusFilter === "All" || proposal.status === statusFilter;
+      statusFilter === "All" || proposal.status === statusFilter.toLowerCase();
 
     return matchesSearch && matchesStatus;
   });
@@ -218,6 +206,7 @@ export default function ProposalManagement() {
                 <th className="py-3 font-medium">DATE SUBMITTED</th>
                 <th className="py-3 font-medium">BID AMOUNT</th>
                 <th className="py-3 font-medium">STATUS</th>
+                <th className="py-3 font-medium">ACTIONS</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
@@ -236,21 +225,29 @@ export default function ProposalManagement() {
                       #{proposal.id}
                     </span>
                   </td>
-                  <td className="py-4 font-medium">{proposal.jobTitle}</td>
+                  <td className="py-4 font-medium">{proposal.job?.title || 'Unknown Job'}</td>
                   <td className="py-4">
                     <div className="flex items-center gap-2">
                       <div className="h-8 w-8 rounded-full bg-blue-500/20 flex items-center justify-center text-xs font-medium">
-                        {proposal.provider.avatar}
+                        {(proposal.provider?.name || 'U')[0].toUpperCase()}
                       </div>
-                      <span>{proposal.provider.name}</span>
+                      <span>{proposal.provider?.name || 'Unknown Provider'}</span>
                     </div>
                   </td>
-                  <td className="py-4 text-muted">{proposal.dateSubmitted}</td>
+                  <td className="py-4 text-muted">{new Date(proposal.created_at).toLocaleDateString()}</td>
                   <td className="py-4 font-medium">
-                    ${proposal.bidAmount.toFixed(2)}
+                    ${parseFloat(proposal.price || 0).toFixed(2)}
                   </td>
                   <td className="py-4">
                     <StatusPill status={proposal.status} />
+                  </td>
+                  <td className="py-4">
+                    <button
+                      onClick={() => handleDeleteProposal(proposal.id)}
+                      className="text-rose-400 hover:text-rose-300 text-sm"
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
               ))}

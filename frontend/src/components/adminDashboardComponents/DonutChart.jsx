@@ -1,9 +1,5 @@
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 
-const pieData = [
-  { name: "Providers", value: 70 },
-  { name: "Clients", value: 30 },
-];
 const PIE_COLORS = ["#3b82f6", "#22d3ee"];
 
 function LegendDot({ color, label }) {
@@ -18,7 +14,16 @@ function LegendDot({ color, label }) {
   );
 }
 
-export default function DonutChart() {
+export default function DonutChart({ stats }) {
+  // Calculate user breakdown from stats
+  const totalUsers = (stats?.users_count || 0);
+  const providers = Math.floor(totalUsers * 0.7); // Assuming 70% are providers
+  const clients = totalUsers - providers;
+
+  const pieData = [
+    { name: "Providers", value: providers },
+    { name: "Clients", value: clients },
+  ];
   return (
     <div className="card p-4 h-full relative flex flex-col items-center">
       <p className="text-sm text-muted mb-2 w-full text-left">User Breakdown</p>
@@ -41,13 +46,13 @@ export default function DonutChart() {
           </PieChart>
         </ResponsiveContainer>
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none select-none">
-          <div className="text-3xl font-semibold text-primary">1,245</div>
-          <div className="text-xs text-muted">Total Users</div>
-        </div>
+           <div className="text-3xl font-semibold text-primary">{totalUsers.toLocaleString()}</div>
+           <div className="text-xs text-muted">Total Users</div>
+         </div>
       </div>
       <div className="flex items-center justify-center gap-6 mt-2">
-        <LegendDot color="#3b82f6" label="Providers (70%)" />
-        <LegendDot color="#22d3ee" label="Clients (30%)" />
+        <LegendDot color="#3b82f6" label={`Providers (${totalUsers > 0 ? Math.round((providers / totalUsers) * 100) : 0}%)`} />
+        <LegendDot color="#22d3ee" label={`Clients (${totalUsers > 0 ? Math.round((clients / totalUsers) * 100) : 0}%)`} />
       </div>
     </div>
   );
