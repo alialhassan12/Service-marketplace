@@ -7,6 +7,8 @@ import ProposalManagement from "./adminPages/ProposalManagement";
 import ContentManagement from "./adminPages/ContentManagement";
 import PaymentHistory from "./adminPages/PaymentHistory";
 import Settings from "./adminPages/Settings";
+import AdminProfile from "../components/adminDashboardComponents/AdminProfile";
+
 
 export default function AdminDashboard() {
   return (
@@ -22,6 +24,8 @@ export default function AdminDashboard() {
           <Route path="ContentManagement" element={<ContentManagement />} />
           <Route path="PaymentHistory" element={<PaymentHistory />} />
           <Route path="Settings" element={<Settings />} />
+          <Route path="Profile" element={<AdminProfile />} />
+
         </Routes>
       </div>
     </div>

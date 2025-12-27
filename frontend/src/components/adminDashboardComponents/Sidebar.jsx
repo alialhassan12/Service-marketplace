@@ -8,6 +8,7 @@ import {
   BarChart3,
   Settings,
   LogOut,
+  User,
 } from "lucide-react";
 import { useAuthStore } from "../../store/authStore";
 
@@ -16,11 +17,10 @@ function NavItem({ icon, label, to, active }) {
     <Link
       to={to}
       className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl transition
-      ${
-        active
+      ${active
           ? "bg-white/10 text-white"
           : "text-muted hover:text-white hover:bg-white/5"
-      }`}
+        }`}
     >
       {icon}
       <span className="text-sm">{label}</span>
@@ -92,6 +92,12 @@ export default function Sidebar() {
       </nav>
 
       <div className="mt-auto pt-10 space-y-1">
+        <NavItem
+          icon={<User size={18} />}
+          label="Profile"
+          to="/dashboard/Profile"
+          active={location.pathname === "/dashboard/Profile"}
+        />
         <NavItem
           icon={<Settings size={18} />}
           label="Settings"
