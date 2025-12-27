@@ -4,9 +4,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\authController;
 use App\Http\Controllers\jobsController;
-use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\StripePaymentController;
 use App\Http\Controllers\ProviderProfileController;
-use Laravel\Cashier\Http\Controllers\WebhookController;
+use App\Http\Controllers\StripeWebhookController;
 
 //public routes
 Route::post('/login', [authController::class, 'login'])->name('login');
@@ -41,11 +41,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/provider/my-proposals',[ProviderProfileController::class,'getMyProposals'])->name('getMyProposals');
 
     //payment routes
-    Route::post('/payments/pay', [PaymentController::class, 'payProvider']);
-    Route::get('/payments/history', [PaymentController::class, 'paymentHistory']);
-    Route::get('/payments/balance', [PaymentController::class, 'getProviderBalance']);
+    Route::post('/payments/create-intent', [StripePaymentController::class, 'createPaymentIntent']);
+    Route::post('/payments/confirm', [StripePaymentController::class, 'confirmPayment']);
+    Route::get('/payments/history', [StripePaymentController::class, 'paymentHistory']);
+    Route::get('/payments/{id}', [StripePaymentController::class, 'getPayment']);
+    Route::get('/payments/balance', [StripePaymentController::class, 'getProviderBalance']);
 });
 
 Route::middleware(['auth:sanctum', 'checkRole:provider'])->prefix('provider')->group(function () {});
-Route::get('/payments/download-invoice/{id}', [PaymentController::class, 'downloadInvoice'])
+Route::get('/payments/download-invoice/{id}', [StripePaymentController::class, 'downloadInvoice'])
      ->middleware('auth:sanctum');
+
+// Stripe webhook route (must be public and not require authentication)
+Route::post('/webhook/stripe', [StripeWebhookController::class, 'handleWebhook'])->name('stripe.webhook');
