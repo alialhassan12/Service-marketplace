@@ -16,6 +16,7 @@ class PaymentResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'client_name' => $this->client->name,
             'provider_name' => $this->provider->name,
             'service' => $this->job ? $this->job->title : 'No Services',
             'date' => $this->created_at->format('M d, Y'),
