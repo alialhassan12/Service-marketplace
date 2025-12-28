@@ -7,7 +7,7 @@ import dayjs from 'dayjs';
 
 export default function ClientPaymentPage() {
     const navigate = useNavigate();
-    const { payments, pagination, isLoadingHistory, getPaymentHistory,totalSpent,pendingAmount } = usePaymentStore();
+    const { payments, pagination, isLoadingHistory, getPaymentHistory,totalSpent,pendingAmount,downloadInvoice,isDownloadingInvoice,downloadingInvoiceId } = usePaymentStore();
 
     useEffect(() => {
         getPaymentHistory();
@@ -21,6 +21,9 @@ export default function ClientPaymentPage() {
 
     const handlePayProvider = () => {
         navigate('/client/pay-provider');
+    }
+    const handleDownloadInvoice = (payment_id) => {
+        downloadInvoice(payment_id);
     }
 
     return (
@@ -85,7 +88,6 @@ export default function ClientPaymentPage() {
                         <Select.Item value="all">All Statuses</Select.Item>
                         <Select.Item value="paid">Paid</Select.Item>
                         <Select.Item value="pending">Pending</Select.Item>
-                        <Select.Item value="refunded">Refunded</Select.Item>
                     </Select.Content>
                 </Select.Root>
             </Flex>
@@ -148,8 +150,15 @@ export default function ClientPaymentPage() {
                                         </Badge>
                                     </Table.Cell>
                                     <Table.Cell>
-                                        <Button variant="ghost" size="1" onClick={() => window.open(`http://localhost:8000/api/payments/download-invoice/${payment.id}`, '_blank')}>
-                                            <DownloadIcon />
+                                        <Button 
+                                            variant="ghost" 
+                                            size="1" 
+                                            onClick={() => handleDownloadInvoice(payment.id)}
+                                            disabled={isDownloadingInvoice}
+                                        >
+                                            <div className={isDownloadingInvoice && downloadingInvoiceId === payment.id ? 'animate-download' : ''}>
+                                                <DownloadIcon />
+                                            </div>
                                         </Button>
                                     </Table.Cell>
                                 </Table.Row>

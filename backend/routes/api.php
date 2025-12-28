@@ -54,6 +54,7 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Route::middleware(['auth:sanctum', 'checkRole:provider'])->prefix('provider')->group(function () {});
+//download invoice
 Route::get('/payments/download-invoice/{id}', [StripePaymentController::class, 'downloadInvoice'])
     ->middleware('auth:sanctum');
 
@@ -62,7 +63,7 @@ Route::post('/webhook/stripe', [StripeWebhookController::class, 'handleWebhook']
 
 
 
-
+//admin routes
 Route::middleware(['auth:sanctum', 'checkRole:admin'])->prefix('admin')->group(function () {
     Route::get('/stats', [AdminController::class, 'stats']);
 
@@ -80,6 +81,4 @@ Route::middleware(['auth:sanctum', 'checkRole:admin'])->prefix('admin')->group(f
     Route::get('/content/{key}', [AdminController::class, 'getContent']);
     Route::put('/content/{key}', [AdminController::class, 'updateContent']);
     Route::get('/jobs/{id}', [AdminController::class, 'getJob']);
-
-
 });

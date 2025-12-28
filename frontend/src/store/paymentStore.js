@@ -83,5 +83,25 @@ export const usePaymentStore=create((set)=>({
         } finally {
             set({ isLoadingHistory: false });
         }
+    },
+    isDownloadingInvoice:false,
+    downloadingInvoiceId:null,
+    downloadInvoice:async(payment_id)=>{
+        set({ isDownloadingInvoice: true, downloadingInvoiceId: payment_id });
+        try {
+            const response =await axiosInstance.get("/payments/download-invoice/"+payment_id,{
+                responseType:"blob"
+            });
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'invoice.pdf');
+            document.body.appendChild(link);
+            link.click();
+        } catch (error) {
+            toast.error("Failed to download invoice");
+        }finally{
+            set({ isDownloadingInvoice: false, downloadingInvoiceId: null });
+        }
     }
 }))

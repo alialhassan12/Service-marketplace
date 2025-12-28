@@ -105,7 +105,7 @@
             <tr class="total">
                 <td></td>
                 <td style="text-align: right;">
-                   Total Amount: ${{ number_format($payment->amount, 2) }}
+                Total Amount: ${{ number_format($payment->amount, 2) }}
                 </td>
             </tr>
         </table>

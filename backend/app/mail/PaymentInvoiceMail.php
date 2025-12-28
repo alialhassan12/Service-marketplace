@@ -24,10 +24,6 @@ class PaymentInvoiceMail extends Mailable
         $this->payment = $payment;
     }
 
-    public function build() {
-        return $this->subject('Payment Invoice' . $this->payment->transaction_id)
-                    ->view('emails.invoice');
-    }
 
     /**
      * Get the message envelope.
@@ -45,7 +41,7 @@ class PaymentInvoiceMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'view.name',
+            view: 'emails.invoice',
         );
     }
 

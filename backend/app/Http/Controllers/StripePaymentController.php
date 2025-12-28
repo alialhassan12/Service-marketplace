@@ -7,6 +7,7 @@ use App\Models\Job;
 use App\Services\StripeService;
 use App\Mail\PaymentInvoiceMail;
 use App\Http\Resources\PaymentResource;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -73,7 +74,7 @@ class StripePaymentController extends Controller
 
                 return response()->json([
                     'message' => 'Payment already exists for this job.',
-                    'data'=>[
+                    'data' => [
                         'payment_id' => $payment->id,
                         'client_secret' => $paymentIntent->client_secret,
                         'payment_intent_id' => $paymentIntent->id,
@@ -202,17 +203,24 @@ class StripePaymentController extends Controller
      */
     public function downloadInvoice($id)
     {
-        $payment = Payment::with(['client', 'provider', 'job'])->findOrFail($id);
+        try {
+            $payment = Payment::with(['client', 'provider', 'job'])->findOrFail($id);
 
-        if (auth('sanctum')->id() !== $payment->client->id && auth('sanctum')->id() !== $payment->provider->id) {
+            if (auth('sanctum')->id() !== $payment->client->id && auth('sanctum')->id() !== $payment->provider->id) {
+                return response()->json([
+                    'message' => 'You are not authorized to download this invoice.'
+                ], 403);
+            }
+
+            $pdf = Pdf::loadView('emails.invoice', compact('payment'));
+
+            return $pdf->download('invoice_' . $payment->transaction_id . '.pdf');
+        } catch (\Exception $e) {
+            Log::error('Invoice download failed: ' . $e->getMessage());
             return response()->json([
-                'message' => 'You are not authorized to download this invoice.'
-            ], 403);
+                'message' => 'Failed to download invoice.'
+            ], 500);
         }
-
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('emails.invoice', compact('payment'));
-
-        return $pdf->download('invoice_' . $payment->transaction_id . '.pdf');
     }
 
     /**
