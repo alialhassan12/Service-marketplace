@@ -4,6 +4,7 @@ import ProviderBrowseJobs from "../components/providerDashboardComponents/Provid
 import ProviderProfile from "../components/providerDashboardComponents/ProviderProfile";
 import useProviderDashboardStore from "../store/providerDashboardStore";
 import ProviderMyProposals from "../components/providerDashboardComponents/ProviderMyProposals";
+import ProviderEarningsPage from "../components/providerDashboardComponents/ProviderEarningsPage";
 
 export default function ProviderDashboard(){
     const {page}=useProviderDashboardStore();
@@ -16,6 +17,7 @@ export default function ProviderDashboard(){
                 {page==="browseJobs" && <ProviderBrowseJobs/>}
                 {page==="profile" && <ProviderProfile/>}
                 {page==="myProposals" && <ProviderMyProposals/>}
+                {page==="earnings" && <ProviderEarningsPage/>}
             </div>
         </div>
     )

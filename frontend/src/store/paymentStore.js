@@ -84,6 +84,23 @@ export const usePaymentStore=create((set)=>({
             set({ isLoadingHistory: false });
         }
     },
+    isLoadingProviderHistory:false,
+    providerPayments:[],
+    providerPagination:{},
+    getProviderPaymentHistory:async (page=1)=>{
+        set({ isLoadingProviderHistory: true });
+        try {
+            const response =await axiosInstance.get(`/payments/provider-history?page=${page}`);
+            set({
+                providerPayments:response.data.data,
+                providerPagination:response.data.meta
+            });
+        } catch (error) {
+            toast.error("Failed to fetch provider payment history");
+        } finally {
+            set({ isLoadingProviderHistory: false });
+        }
+    },
     isDownloadingInvoice:false,
     downloadingInvoiceId:null,
     downloadInvoice:async(payment_id)=>{
@@ -103,5 +120,24 @@ export const usePaymentStore=create((set)=>({
         }finally{
             set({ isDownloadingInvoice: false, downloadingInvoiceId: null });
         }
-    }
+    },
+    isLoadingBalance:false,
+    providerTotalEarned:0,
+    providerPendingAmount:0,
+    getProviderBalance:async()=>{
+        set({ isLoadingBalance: true });
+        try {
+            const response = await axiosInstance.get("/payments/provider-balance");
+            set({
+                providerTotalEarned: response.data.data.total_earned,
+                providerPendingAmount: response.data.data.pending_amount
+            });
+        } catch (error) {
+            toast.error("Failed to fetch provider balance");
+            return null;
+        }finally{
+            set({ isLoadingBalance: false });
+        }
+    },
+
 }))

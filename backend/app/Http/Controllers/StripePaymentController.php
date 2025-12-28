@@ -197,6 +197,14 @@ class StripePaymentController extends Controller
             ]
         ]);
     }
+    public function getProviderPaymentHistory(Request $request){
+        $payments = Payment::with(['client', 'provider', 'job'])
+            ->where('provider_id', auth('sanctum')->id())
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+            
+        return PaymentResource::collection($payments);
+    }
 
     /**
      * Download invoice as PDF

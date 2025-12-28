@@ -1,14 +1,14 @@
-import { Box, Flex, Card, Button, Badge, Table, TextField, Select, Text, Skeleton } from '@radix-ui/themes';
+import { Box, Flex, Card, Button, Badge, Table, TextField, Select, Text, Skeleton, Tabs } from '@radix-ui/themes';
 import { MagnifyingGlassIcon, PlusIcon, DownloadIcon, CardStackIcon, FileTextIcon, PersonIcon } from '@radix-ui/react-icons';
 import { useNavigate } from 'react-router-dom';
 import { usePaymentStore } from '../../store/paymentStore';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 
 export default function ClientPaymentPage() {
     const navigate = useNavigate();
     const { payments, pagination, isLoadingHistory, getPaymentHistory,totalSpent,pendingAmount,downloadInvoice,isDownloadingInvoice,downloadingInvoiceId } = usePaymentStore();
-
+    const [selectedTab, setSelectedTab] = useState('all');
     useEffect(() => {
         getPaymentHistory();
     }, []);
@@ -55,15 +55,15 @@ export default function ClientPaymentPage() {
             </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-5">
             {[
                 { label: 'Pay Provider', icon: <PlusIcon width="30" height="30" />,onClick:handlePayProvider},
-                { label: 'Add Method', icon: <CardStackIcon width="30" height="30" /> },
-                { label: 'Invoices', icon: <FileTextIcon width="30" height="30" /> },
+                // { label: 'Add Method', icon: <CardStackIcon width="30" height="30" /> },
+                // { label: 'Invoices', icon: <FileTextIcon width="30" height="30" /> },
                 { label: 'Support', icon: <PersonIcon width="30" height="30" /> }
             ].map((action) => (
-                <div key={action.label} className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center justify-center gap-2 hover:shadow-md transition-all duration-300 cursor-pointer">
-                    <div className="p-3 bg-blue-50 rounded-full text-blue-600" onClick={action.onClick}>
+                <div key={action.label} className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center justify-center gap-2 hover:shadow-md transition-all duration-300">
+                    <div className="p-3 bg-blue-50 rounded-full text-blue-600 cursor-pointer" onClick={action.onClick}>
                         {action.icon}
                     </div>
                     <p className="font-bold text-gray-800">{action.label}</p>
@@ -76,20 +76,17 @@ export default function ClientPaymentPage() {
             <h2 className="text-xl font-bold">Recent Activity</h2>
             
             {/* Filters (Visual Only for now unless backend supports it) */}
-            <Flex gap="4" direction={{ initial: 'column', sm: 'row' }}>
-                <TextField.Root placeholder="Search transactions..." style={{ flex: 1 }}>
-                    <TextField.Slot>
-                        <MagnifyingGlassIcon height="16" width="16" />
-                    </TextField.Slot>
-                </TextField.Root>
-                <Select.Root defaultValue="all">
-                    <Select.Trigger placeholder="Filter by status" />
-                    <Select.Content>
-                        <Select.Item value="all">All Statuses</Select.Item>
-                        <Select.Item value="paid">Paid</Select.Item>
-                        <Select.Item value="pending">Pending</Select.Item>
-                    </Select.Content>
-                </Select.Root>
+            <Flex gap="4" direction={{ initial: 'column', sm: 'row' }} className="mb-2">
+                <Tabs.Root defaultValue="all" className="w-full" value={selectedTab} onValueChange={(value)=>{
+                    setSelectedTab(value);
+                    getPaymentHistory();
+                }}>
+                    <Tabs.List variant="surface">
+                        <Tabs.Trigger value="all">All Transactions</Tabs.Trigger>
+                        <Tabs.Trigger value="paid">Paid</Tabs.Trigger>
+                        <Tabs.Trigger value="pending">Pending</Tabs.Trigger>
+                    </Tabs.List>
+                </Tabs.Root>
             </Flex>
 
             {/* Transactions Table */}
@@ -132,7 +129,9 @@ export default function ClientPaymentPage() {
                                 </Table.Cell>
                             </Table.Row>
                         ) : (
-                            payments.map((payment) => (
+                            payments.map((payment) => {
+                                if(selectedTab === 'all' || selectedTab === payment.status.toLowerCase()){
+                                    return(
                                 <Table.Row key={payment.id}>
                                     <Table.RowHeaderCell>
                                         <Flex direction="column">
@@ -162,7 +161,8 @@ export default function ClientPaymentPage() {
                                         </Button>
                                     </Table.Cell>
                                 </Table.Row>
-                            ))
+                            )}
+                            })
                         )}
                     </Table.Body>
                 </Table.Root>
