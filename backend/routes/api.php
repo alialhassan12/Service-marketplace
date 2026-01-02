@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\authController;
 use App\Http\Controllers\jobsController;
+use App\Http\Controllers\messagesController;
 use App\Http\Controllers\StripePaymentController;
 use App\Http\Controllers\ProviderProfileController;
 use App\Http\Controllers\StripeWebhookController;
@@ -50,6 +51,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/payments/provider-history', [StripePaymentController::class, 'getProviderPaymentHistory']);
     Route::get('/payments/history', [StripePaymentController::class, 'paymentHistory']);
     Route::get('/payments/{id}', [StripePaymentController::class, 'getPayment']);
+
+    //message routes
+    Route::get('/messages/contacts',[messagesController::class,'getContacts']);
+    Route::get('/messages/{id}',[messagesController::class,'getMessages']);
+    Route::post('/messages/sendMessage/{id}',[messagesController::class,'sendMessage']);
 });
 
 Route::middleware(['auth:sanctum', 'checkRole:provider'])->prefix('provider')->group(function () {});
