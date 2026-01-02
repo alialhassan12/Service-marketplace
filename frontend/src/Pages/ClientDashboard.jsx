@@ -4,6 +4,7 @@ import ClientMyJobs from "../components/clientDashboardComponents/ClientMyJobs";
 import ClientProfile from "../components/clientDashboardComponents/ClientProfile";
 import useClientDashboardStore from "../store/clientDashboardStore";
 import ClientPaymentPage from "../components/clientDashboardComponents/ClientPaymentPage";
+import ClientMessagesPage from "../components/clientDashboardComponents/ClientMessagesPage";
 
 export default function ClientDashboard(){
     const {page}=useClientDashboardStore();
@@ -16,6 +17,7 @@ export default function ClientDashboard(){
                 {page==="myJobs" && <ClientMyJobs/>}
                 {page==="payments" && <ClientPaymentPage/>}
                 {page==="profile" && <ClientProfile/>}
+                {page==="messages" && <ClientMessagesPage/>}
             </div>
         </div>
     )

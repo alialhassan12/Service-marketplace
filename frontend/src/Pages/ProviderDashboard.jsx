@@ -5,6 +5,7 @@ import ProviderProfile from "../components/providerDashboardComponents/ProviderP
 import useProviderDashboardStore from "../store/providerDashboardStore";
 import ProviderMyProposals from "../components/providerDashboardComponents/ProviderMyProposals";
 import ProviderEarningsPage from "../components/providerDashboardComponents/ProviderEarningsPage";
+import ProviderMessagesPage from "../components/providerDashboardComponents/ProviderMessagesPage";
 
 export default function ProviderDashboard(){
     const {page}=useProviderDashboardStore();
@@ -18,6 +19,7 @@ export default function ProviderDashboard(){
                 {page==="profile" && <ProviderProfile/>}
                 {page==="myProposals" && <ProviderMyProposals/>}
                 {page==="earnings" && <ProviderEarningsPage/>}
+                {page==="messages" && <ProviderMessagesPage/>}
             </div>
         </div>
     )

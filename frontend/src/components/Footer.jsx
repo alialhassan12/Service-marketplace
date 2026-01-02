@@ -7,7 +7,7 @@ export default function Footer(){
                 <li><a href="" className="text-gray-600 hover:text-blue-600 transition-colors">Terms of Service</a></li>
                 <li><a href="" className="text-gray-600 hover:text-blue-600 transition-colors">Privacy Policy</a></li>
             </ul>
-            <p className="text-center text-gray-500 text-sm order-last md:order-none">© 2025 SkillHub. All rights reserved.</p>
+            <p className="text-center text-gray-500 text-sm order-last md:order-none">© {new Date().getFullYear()} SkillHub. All rights reserved.</p>
         </div>
     );
 }
