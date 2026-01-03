@@ -271,16 +271,16 @@ export default function ClientMessagesPage() {
                                                                 fallback={(contact.name?.[0] || contact.email?.[0] || '?').toUpperCase()}
                                                                 radius="full"
                                                             />
-                                                    </Box>
-                                                    <Box style={{ flex: 1, minWidth: 0 }}>
-                                                        <Flex justify="arround" align="center" gap="2">
-                                                            <Text weight="bold" size="2" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                                                {contact.name}
-                                                            </Text>
-                                                            <Text color="gray" size="1" style={{ flexShrink: 0 }}>{contact.time}</Text>
-                                                        </Flex>
-                                                        <Flex justify="between" align="center" gap="2">
-                                                            <Text color="gray" size="2" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                                        </Box>
+                                                        <Box style={{ flex: 1, minWidth: 0 }}>
+                                                            <Flex justify="arround" align="center" gap="2">
+                                                                <Text weight="bold" size="2" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                                                    {contact.name}
+                                                                </Text>
+                                                                <Text color="gray" size="1" style={{ flexShrink: 0 }}>{contact.time}</Text>
+                                                            </Flex>
+                                                            <Flex justify="between" align="center" gap="2">
+                                                                <Text color="gray" size="2" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                                                 {contact.lastMessage}
                                                             </Text>
                                                             {contact.unread > 0 && (
