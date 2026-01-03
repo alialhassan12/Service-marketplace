@@ -172,6 +172,26 @@ const useClientDashboardStore = create((set) => ({
             set({ gettingAcceptedProviders: false })
         }
     },
+    searchProvidersResults: [],
+    searchingProviders: false,
+    searchProviders: async (query) => {
+        if (!query.trim()) {
+            set({ searchProvidersResults: [] });
+            return;
+        }
+        set({ searchingProviders: true });
+        try {
+            const response = await axiosInstance.get(`/client/search-providers?query=${query}`);
+            set({ searchProvidersResults: response.data.providers });
+            return true;
+        } catch (error) {
+            console.log(error);
+            toast.error(error.response?.data?.message);
+            return false;
+        } finally {
+            set({ searchingProviders: false })
+        }
+    },
 }));
 
 export default useClientDashboardStore

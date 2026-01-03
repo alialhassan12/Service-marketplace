@@ -1,7 +1,8 @@
-import { Flex, Box, Text, TextField, Button, Avatar, ScrollArea, Separator, Card, Badge, IconButton, Skeleton } from "@radix-ui/themes";
-import { Search, Send, Plus, MoreVertical, ChevronLeft, MessageSquare } from "lucide-react";
+import { Flex, Box, Text, TextField, Button, Avatar, ScrollArea, Separator, Card, Badge, IconButton, Skeleton, Dialog } from "@radix-ui/themes";
+import { Search, Send, Plus, MoreVertical, ChevronLeft, MessageSquare, UserPlus, SearchCheck } from "lucide-react";
 import { useMessagesStore } from '../../store/messagesStore';
 import { useAuthStore } from '../../store/authStore';
+import useClientDashboardStore from '../../store/clientDashboardStore';
 import { useEffect, useRef, useState } from 'react';
 
 const ContactSkeleton = () => (
@@ -36,7 +37,12 @@ export default function ClientMessagesPage() {
     const [messageInput, setMessageInput] = useState("");
     const [mobileView, setMobileView] = useState('list');
     const {authUser}=useAuthStore();
-    const {contacts,loadingContacts,getContacts,messages,loadingMessages,getMessages,sendMessage,loadingSendMessage,subscribeToMessages}=useMessagesStore();
+    const {contacts,loadingContacts,getContacts,messages,loadingMessages,getMessages,sendMessage,loadingSendMessage,subscribeToMessages, addContact}=useMessagesStore();
+    const {suggestedProviders, getSuggestedProviders, searchProvidersResults, searchProviders, searchingProviders} = useClientDashboardStore();
+
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [searchQueryNew, setSearchQueryNew] = useState("");
+    const [searchContacts,setSearchContacts] = useState("");
 
     const messagesEndRef = useRef(null);
 
@@ -81,6 +87,24 @@ export default function ClientMessagesPage() {
         setSelectedContact(null);
     };
 
+    const handleSearchNew = (query) => {
+        searchProviders(query);
+    };
+
+    const handleSelectProvider = async (provider) => {
+        const existingContact = contacts.find(c => c.id === provider.id);
+        if (existingContact) {
+            handleContactSelect(existingContact);
+        } else {
+            const success = await addContact(provider.id);
+            if (success) {
+                handleContactSelect(provider);
+            }
+        }
+        setIsDialogOpen(false);
+        setSearchQueryNew("");
+    };
+
     return (
         <Flex direction="column" style={{ height: '100vh', backgroundColor: 'var(--gray-2)', overflow: 'hidden' }}>
             <Box style={{ flex: 1, position: 'relative', display: 'flex', overflow: 'hidden' }}>
@@ -117,15 +141,99 @@ export default function ClientMessagesPage() {
                         <Box p="4" style={{ borderBottom: '1px solid var(--gray-5)' }}> 
                             <Flex justify="between" align="center" mb="4">
                                 <Text size="5" weight="bold">Messages</Text>
-                                <IconButton variant="ghost" color="gray">
-                                    <Plus size={18} />
-                                </IconButton>
+                                {/* Add new contact Dialog */}
+                                <Dialog.Root open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                                    <Dialog.Trigger>
+                                        <IconButton variant="ghost" color="gray" onClick={() => {
+                                            getSuggestedProviders();
+                                            setIsDialogOpen(true);
+                                        }}>
+                                            <Plus size={18} />
+                                        </IconButton>
+                                    </Dialog.Trigger>
+
+                                    <Dialog.Content style={{ maxWidth: 450 }}>
+                                        <Dialog.Title>Add New Contact</Dialog.Title>
+                                        <Dialog.Description size="2" mb="4">
+                                            Search for a provider by name to start a new conversation.
+                                        </Dialog.Description>
+
+                                        <Flex direction="column" gap="3">
+                                            <Flex direction="row" gap="2" align="center">
+                                                <TextField.Root
+                                                    placeholder="Search providers..."
+                                                    value={searchQueryNew}
+                                                    style={{ flex: 1 }}
+                                                    onChange={(e) => setSearchQueryNew(e.target.value)}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter') handleSearchNew(searchQueryNew);
+                                                    }}
+                                                >
+                                                    <TextField.Slot>
+                                                        <Search size={16} />
+                                                    </TextField.Slot>
+                                                </TextField.Root>
+                                                <Button variant="solid" color="blue" loading={searchingProviders} onClick={() => handleSearchNew(searchQueryNew)}>
+                                                    Search
+                                                </Button>
+                                            </Flex>
+
+                                            <ScrollArea scrollbars="vertical" style={{ height: '300px' }}>
+                                                <Flex direction="column" gap="2">
+                                                    {(
+                                                        <>
+                                                            {searchingProviders ? (
+                                                                <Flex justify="center" p="4"><Skeleton width="100%" height="20px" /></Flex>
+                                                            ) : searchProvidersResults.length > 0 ? (
+                                                                searchProvidersResults.map(provider => (
+                                                                <Card key={provider.id} style={{ cursor: 'pointer' }} onClick={() => handleSelectProvider(provider)}>
+                                                                    <Flex gap="3" align="center">
+                                                                        <Avatar src={`http://localhost:8000/storage/${provider.profile_picture}`} fallback={provider.name[0]} radius="full" />
+                                                                        <Box style={{ flex: 1 }}>
+                                                                            <Text size="2" weight="bold">{provider.name}</Text>
+                                                                            <Text size="1" color="gray" style={{ display: 'block' }}>{provider.bio || 'Professional Provider'}</Text>
+                                                                        </Box>
+                                                                        <IconButton variant="ghost" color="blue"><UserPlus size={16} /></IconButton>
+                                                                    </Flex>
+                                                                </Card>
+                                                                ))
+                                                            ) : (
+                                                                <></>
+                                                            )}
+                                                        </>
+                                                    )}
+                                                        <>
+                                                            <Text size="1" color="gray" weight="bold" mb="1">Suggested Providers</Text>
+                                                            {suggestedProviders.map(provider => (
+                                                                <Card key={provider.id} style={{ cursor: 'pointer' }} onClick={() => handleSelectProvider(provider)}>
+                                                                    <Flex gap="3" align="center">
+                                                                        <Avatar src={`http://localhost:8000/storage/${provider.profile_picture}`} fallback={provider.name[0]} radius="full" />
+                                                                        <Box style={{ flex: 1 }}>
+                                                                            <Text size="2" weight="bold">{provider.name}</Text>
+                                                                            <Text size="1" color="gray" style={{ display: 'block' }}>{provider.bio || 'Professional Provider'}</Text>
+                                                                        </Box>
+                                                                        <IconButton variant="ghost" color="blue"><UserPlus size={16} /></IconButton>
+                                                                    </Flex>
+                                                                </Card>
+                                                            ))}
+                                                        </>
+                                                </Flex>
+                                            </ScrollArea>
+                                        </Flex>
+
+                                        <Flex gap="3" mt="4" justify="end">
+                                            <Dialog.Close>
+                                                <Button variant="soft" color="gray">Cancel</Button>
+                                            </Dialog.Close>
+                                        </Flex>
+                                    </Dialog.Content>
+                                </Dialog.Root>
                             </Flex>
                             <TextField.Root
                                 placeholder="Search contacts..."
                                 style={{ width: '100%' }}
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
+                                value={searchContacts}
+                                onChange={(e) => setSearchContacts(e.target.value)}
                             >
                                 <TextField.Slot>
                                     <Search size={16} />
@@ -140,49 +248,53 @@ export default function ClientMessagesPage() {
                                         {[...Array(6)].map((_, i) => <ContactSkeleton key={i} />)}
                                     </>
                                 ) : (
-                                    contacts.map((contact) => (
-                                        <Box
-                                            key={contact.id}
-                                            p="3"
-                                            style={{
-                                                borderRadius: 'var(--radius-3)',
-                                                cursor: 'pointer',
-                                                backgroundColor: selectedContact?.id === contact.id ? 'var(--accent-3)' : 'transparent',
-                                                transition: 'background-color 0.2s',
-                                                overflow: 'hidden',
-                                            }}
-                                            onClick={() => handleContactSelect(contact)}
-                                        >
-                                            <Flex gap="3" align="center"  style={{ width: '100%' }}>
-                                                <Box position="relative" style={{ flexShrink: 0 }}>
-                                                    <Avatar
-                                                        size="3"
-                                                        src={`http://localhost:8000/storage/${contact.profile_picture}`}
-                                                        fallback={contact.name[0].toUpperCase()}
-                                                        radius="full"
-                                                    />
-                                                </Box>
-                                                <Box style={{ flex: 1, minWidth: 0 }}>
-                                                    <Flex justify="arround" align="center" gap="2">
-                                                        <Text weight="bold" size="2" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                                            {contact.name}
-                                                        </Text>
-                                                        <Text color="gray" size="1" style={{ flexShrink: 0 }}>{contact.time}</Text>
-                                                    </Flex>
-                                                    <Flex justify="between" align="center" gap="2">
-                                                        <Text color="gray" size="2" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                                            {contact.lastMessage}
-                                                        </Text>
-                                                        {contact.unread > 0 && (
-                                                            <Badge color="blue" variant="solid" radius="full" style={{ flexShrink: 0 }}>
-                                                                {contact.unread}
-                                                            </Badge>
-                                                        )}
-                                                    </Flex>
-                                                </Box>
-                                            </Flex>
-                                        </Box>
-                                    ))
+                                    contacts.map((contact) => {
+                                        if(contact.name.toLowerCase().includes(searchContacts.toLowerCase())){
+                                            return(
+                                                    <Box
+                                                        key={contact.id}
+                                                        p="3"
+                                                        style={{
+                                                            borderRadius: 'var(--radius-3)',
+                                                            cursor: 'pointer',
+                                                            backgroundColor: selectedContact?.id === contact.id ? 'var(--accent-3)' : 'transparent',
+                                                            transition: 'background-color 0.2s',
+                                                            overflow: 'hidden',
+                                                        }}
+                                                        onClick={() => handleContactSelect(contact)}
+                                                    >
+                                                    <Flex gap="3" align="center"  style={{ width: '100%' }}>
+                                                        <Box position="relative" style={{ flexShrink: 0 }}>
+                                                            <Avatar
+                                                                size="3"
+                                                                src={`http://localhost:8000/storage/${contact.profile_picture}`}
+                                                                fallback={(contact.name?.[0] || contact.email?.[0] || '?').toUpperCase()}
+                                                                radius="full"
+                                                            />
+                                                    </Box>
+                                                    <Box style={{ flex: 1, minWidth: 0 }}>
+                                                        <Flex justify="arround" align="center" gap="2">
+                                                            <Text weight="bold" size="2" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                                                {contact.name}
+                                                            </Text>
+                                                            <Text color="gray" size="1" style={{ flexShrink: 0 }}>{contact.time}</Text>
+                                                        </Flex>
+                                                        <Flex justify="between" align="center" gap="2">
+                                                            <Text color="gray" size="2" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                                                {contact.lastMessage}
+                                                            </Text>
+                                                            {contact.unread > 0 && (
+                                                                <Badge color="blue" variant="solid" radius="full" style={{ flexShrink: 0 }}>
+                                                                    {contact.unread}
+                                                                </Badge>
+                                                            )}
+                                                        </Flex>
+                                                    </Box>
+                                                </Flex>
+                                            </Box>
+                                            )
+                                        }
+                                    })
                                 )}
                             </Flex>
                         </ScrollArea>
@@ -207,7 +319,7 @@ export default function ClientMessagesPage() {
                                             <Avatar
                                                 size="3"
                                                 src={`http://localhost:8000/storage/${selectedContact.profile_picture}`}
-                                                fallback={selectedContact.name[0].toUpperCase()}
+                                                fallback={(selectedContact.name?.[0] || selectedContact.email?.[0] || '?').toUpperCase()}
                                                 radius="full"
                                             />
                                             <Box>

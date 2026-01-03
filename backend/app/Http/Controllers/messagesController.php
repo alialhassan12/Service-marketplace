@@ -89,4 +89,27 @@ class messagesController extends Controller
             ], 500);
         }
     }
+
+    public function addContact(Request $request)
+    {
+        try {
+            $user_id = auth('sanctum')->id();
+
+            $contact = Message::create([
+                'sender_id' => $user_id,
+                'receiver_id' => $request->receiver_id,
+                'message' => 'Hi, I would like to start a conversation.',
+            ])->load(['sender', 'receiver']);
+
+            return response()->json([
+                'feedback' => 'Contact added successfully',
+                'contact_data' => $contact
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Failed to add contact',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

@@ -17,17 +17,17 @@ class ProviderProfileController extends Controller
 {
     public function show(Request $request)
     {
-        $userId=$request->route('id');
-        $user=User::findOrFail($userId);
-        if(!$user){
+        $userId = $request->route('id');
+        $user = User::findOrFail($userId);
+        if (!$user) {
             return response()->json([
-                'message'=>'User not found',
-            ],404);
+                'message' => 'User not found',
+            ], 404);
         }
         return response()->json([
-            'message'=>'User fetched successfully',
-            'user'=>$user
-        ],200);
+            'message' => 'User fetched successfully',
+            'user' => $user
+        ], 200);
     }
 
     public function update(Request $request)
@@ -131,7 +131,8 @@ class ProviderProfileController extends Controller
         }
     }
 
-    public function submitProposal(Request $request){
+    public function submitProposal(Request $request)
+    {
         try {
             $request->validate([
                 'job_id' => 'required|exists:jobs,id',
@@ -160,7 +161,8 @@ class ProviderProfileController extends Controller
         }
     }
 
-    public function getSuggestedProviders(Request $request){
+    public function getSuggestedProviders(Request $request)
+    {
         try {
             $providers = User::where('role', 'provider')
                 ->inRandomOrder()
@@ -178,7 +180,46 @@ class ProviderProfileController extends Controller
         }
     }
 
-    public function getMyProposals(Request $request){
+    public function searchProviders(Request $request)
+    {
+        try {
+            $query = $request->query('query');
+            $providers = User::where('role', 'provider')
+                ->where('name', 'like', '%' . $query . '%')
+                ->limit(10)
+                ->get();
+
+            return response()->json([
+                'message' => 'Providers searched successfully',
+                'providers' => $providers
+            ], 200);
+        } catch (Exception $th) {
+            return response()->json([
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+    public function searchClients(Request $request){
+        try {
+            $query = $request->query('query');
+            $clients = User::where('role', 'client')
+                ->where('name', 'like', '%' . $query . '%')
+                ->limit(10)
+                ->get();
+
+            return response()->json([
+                'message' => 'Clients searched successfully',
+                'clients' => $clients
+            ], 200);
+        } catch (Exception $th) {
+            return response()->json([
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getMyProposals(Request $request)
+    {
         try {
             $proposals = Proposal::with('job.client')->where('provider_id', $request->user()->id)->get();
             return response()->json([
