@@ -58,6 +58,26 @@ export const useMessagesStore = create((set, get) => ({
             set({loadingSendMessage:false});
         }
     },
+    addContact:async(receiver_id)=>{
+        try {
+            const response = await axiosInstance.post('/messages/contacts/addContact', { receiver_id });
+            const messageData = response.data.contact_data;
+            
+            // The contact is the receiver (the person we just messaged)
+            const newContact = messageData.receiver;
+            
+            set((state) => ({
+                contacts: state.contacts.some(c => c.id === newContact.id) 
+                    ? state.contacts 
+                    : [newContact, ...state.contacts]
+            }));
+            
+            return true;
+        } catch (error) {
+            console.log(error);
+            return false;
+        }
+    },
 
     subscribeToMessages: (currentUserId, contactId) => {
         const channel = supabase

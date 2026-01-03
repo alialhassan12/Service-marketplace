@@ -66,7 +66,7 @@ export default function RegisterPage() {
 
       {/* Right side (Form) */}
       <div 
-        className="w-full lg:w-1/2 flex-1 flex flex-col justify-center items-center p-6 md:p-12 bg-white"
+        className="w-full lg:w-1/2 flex-1 flex flex-col justify-center items-center p-6 md:p-12"
         data-aos="fade-left"
       >
         <div className="w-full max-w-lg space-y-6">

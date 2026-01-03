@@ -12,6 +12,8 @@ export default function LoginPage() {
     email: "",
     password: "",
   });
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
   //handlers
   const handleEmailChange = (e) => {
@@ -22,6 +24,21 @@ export default function LoginPage() {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if(formData.email === "" || formData.password === "") {
+      setEmailError("Must fill this field");
+      setPasswordError("Must fill this field");
+      return;
+    }
+    if(formData.password.length < 6) {
+      setPasswordError("Password must be at least 6 characters long");
+      return;
+    }
+    if(formData.email.includes("@") === false) {
+      setEmailError("Email must be a valid email address");
+      return;
+    }
+    setEmailError("");
+    setPasswordError("");
     const result = await login(formData);
 
     // If login successful, navigate to dashboard
@@ -48,8 +65,8 @@ export default function LoginPage() {
 
       {/* Right side (Form) */}
       <div
-        className="w-full lg:w-1/2 flex-1 flex flex-col justify-center items-center p-6 md:p-20 bg-white"
-        data-aos="fade-down"
+        className="w-full lg:w-1/2 flex-1 flex flex-col justify-center items-center p-6 md:p-20"
+        data-aos="fade-left"
       >
         <div className="w-full max-w-md space-y-6">
           <div className="text-center md:text-left">
@@ -68,7 +85,10 @@ export default function LoginPage() {
                     onChange={handleEmailChange}
                     required
                     disabled={isLogging}
+                    color={emailError ? "red" : "gray"}
+                    style={{outline: emailError ? "1px solid red" : ""}}
                 />
+                <Text color="red" size="2">{emailError}</Text>
             </Flex>
 
             <Flex direction="column" gap="3">
@@ -81,7 +101,10 @@ export default function LoginPage() {
                     onChange={handlePasswordChange}
                     required
                     disabled={isLogging}
+                    color={passwordError?"red":"gray"}
+                    style={{outline: passwordError ? "1px solid red" : ""}}
                 />
+                <Text color="red" size="2">{passwordError}</Text>
             </Flex>
 
             <Button 

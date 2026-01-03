@@ -5,6 +5,7 @@ import { Cross2Icon } from "@radix-ui/react-icons";
 import { useNavigate } from "react-router-dom";
 import useProviderDashboardStore from "../../store/providerDashboardStore";
 import toast from "react-hot-toast";
+import { ArrowLeft, Save, Upload } from "lucide-react";
 
 export default function ProviderUpdateProfile(){
     const navigate=useNavigate();
@@ -99,7 +100,7 @@ export default function ProviderUpdateProfile(){
 
     return(
         <div className="flex flex-col w-full p-4 md:p-10" data-aos="fade-up">
-            <Button variant="outline" size="2" className="mt-5 w-fit cursor-pointer hover:bg-gray-100 transition-colors" onClick={()=>{navigate('/dashboard')}}>Back</Button>
+            <Button variant="outline" size="2" className="mt-5 w-fit cursor-pointer hover:bg-gray-100 transition-colors" onClick={()=>{navigate('/dashboard')}}><ArrowLeft width="16" height="16" />Back</Button>
             <h1 className="text-2xl font-bold mt-5">Profile Setup</h1>
             <div className="flex flex-col w-full mt-5 gap-4">
                 {/* profile image */}
@@ -109,7 +110,7 @@ export default function ProviderUpdateProfile(){
                         {profileImage!=undefined?
                         (<img src={profileImage.includes("http") || profileImage.includes("data:") ? profileImage : `http://localhost:8000/storage/${profileImage}`} className="w-24 h-24 rounded-full object-cover shadow-sm" />):
                         <div className="flex items-center justify-center text-2xl w-24 h-24 rounded-full bg-gray-200 text-gray-600">{authUser.name.charAt(0)}</div>}
-                        <Button variant="soft" className="cursor-pointer hover:bg-gray-200 transition-colors" onClick={()=>profileImageRef.current.click()}>Upload Photo</Button>
+                        <Button variant="soft" className="cursor-pointer hover:bg-gray-200 transition-colors" onClick={()=>profileImageRef.current.click()}><Upload width="16" height="16" />Upload Photo</Button>
                         <input type="file" ref={profileImageRef} onChange={handleProfileImageChange} hidden />
                     </div>
                 </div>
@@ -199,7 +200,15 @@ export default function ProviderUpdateProfile(){
                 </div>
                 {/* save button */}
                 <Button disabled={updatingProfile} variant="solid" size="3" className="mt-5 w-full md:w-fit cursor-pointer hover:bg-teal-600 transition-colors shadow-md"
-                    onClick={handleSubmit}>{updatingProfile?<span className="loading loading-infinity loading-xl text-blue-500"/>:'Save Changes'}</Button>
+                    onClick={handleSubmit}>
+                        {updatingProfile?
+                        <span className="loading loading-infinity loading-xl text-blue-500"/>
+                        :
+                        <p className="flex items-center justify-center gap-2">
+                            <Save width="16" height="16" /> Save Changes
+                        </p>
+                        }
+                </Button>
             </div>
         </div>
     )
