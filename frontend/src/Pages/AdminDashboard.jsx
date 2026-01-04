@@ -7,6 +7,8 @@ import ProposalManagement from "./adminPages/ProposalManagement";
 import ContentManagement from "./adminPages/ContentManagement";
 import PaymentHistory from "./adminPages/PaymentHistory";
 import Settings from "./adminPages/Settings";
+import AdminProfile from "../components/adminDashboardComponents/AdminProfile";
+
 
 import { Theme } from "@radix-ui/themes";
 
