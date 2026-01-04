@@ -12,7 +12,10 @@ use App\Http\Controllers\StripeWebhookController;
 
 
 //public routes
-Route::post('/login', [authController::class, 'login'])->name('login');
+Route::get('/login', function() {
+    return response()->json(['message' => 'Unauthenticated.'], 401);
+})->name('login');
+Route::post('/login', [authController::class, 'login']);
 Route::post('/register', [authController::class, 'register'])->name('register');
 
 
@@ -76,9 +79,12 @@ Route::middleware(['auth:sanctum', 'checkRole:admin'])->prefix('admin')->group(f
     Route::get('/stats', [AdminController::class, 'stats']);
 
     Route::get('/users', [AdminController::class, 'getUsers']);
+    Route::get('/users/{id}', [AdminController::class, 'getUser']);
+    Route::post('/users', [AdminController::class, 'createUser']);
     Route::delete('/users/{id}', [AdminController::class, 'deleteUser']);
 
     Route::get('/jobs', [AdminController::class, 'getJobs']);
+    Route::post('/jobs', [AdminController::class, 'createJob']);
     Route::put('/jobs/{id}/status', [AdminController::class, 'updateJobStatus']);
     Route::delete('/jobs/{id}', [AdminController::class, 'deleteJob']);
 
@@ -89,4 +95,10 @@ Route::middleware(['auth:sanctum', 'checkRole:admin'])->prefix('admin')->group(f
     Route::get('/content/{key}', [AdminController::class, 'getContent']);
     Route::put('/content/{key}', [AdminController::class, 'updateContent']);
     Route::get('/jobs/{id}', [AdminController::class, 'getJob']);
+
+    // Transactions / Finance
+    Route::get('/transactions', [AdminController::class, 'getTransactions']);
+    Route::get('/transactions/stats', [AdminController::class, 'getTransactionStats']);
+    Route::get('/stats/revenue-chart', [AdminController::class, 'getRevenueChartData']);
+    Route::get('/transactions/export', [AdminController::class, 'exportTransactions']);
 });

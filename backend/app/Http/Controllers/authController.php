@@ -9,6 +9,7 @@ use App\Models\User;
 class authController extends Controller
 {
     public function login(Request $request){
+        \Illuminate\Support\Facades\Log::info('Login attempt', $request->all());
         //validate input
         $request->validate([
             'email'=>'required|email',

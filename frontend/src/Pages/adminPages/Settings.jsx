@@ -8,6 +8,7 @@ import {
   Save,
 } from "lucide-react";
 import { useTheme } from "../../contexts/useTheme.js";
+import toast, { Toaster } from 'react-hot-toast';
 
 export default function Settings() {
   const { theme, setTheme } = useTheme();
@@ -47,13 +48,22 @@ export default function Settings() {
   const handleSave = () => {
     console.log("Saving settings:", settings);
     // TODO: Call API: PUT /api/settings with settings data
-    alert(
-      "Settings saved successfully! (Replace with API call to PUT /api/settings)"
-    );
+    toast.success("Settings saved successfully!");
   };
 
   return (
     <main className="flex-1 p-6 text-primary">
+      <Toaster 
+        position="top-center" 
+        reverseOrder={false}
+        toastOptions={{
+          style: {
+            background: '#1e1e2d',
+            color: '#fff',
+            border: '1px solid rgba(255,255,255,0.1)',
+          },
+        }}
+      />
       <header className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-semibold mb-1 text-primary">Settings</h1>

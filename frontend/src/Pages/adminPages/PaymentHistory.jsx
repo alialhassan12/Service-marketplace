@@ -1,74 +1,18 @@
-import { useState } from "react";
-import { Search, Download, ChevronDown, MoreVertical } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Search, Download, ChevronDown, MoreVertical, Filter, Calendar } from "lucide-react";
 import StatCard from "../../components/adminDashboardComponents/StatCard";
-
-// TODO: Replace with database query: SELECT SUM(amount) as total_volume FROM transactions
-const fakeSummaryData = {
-  totalVolume: { value: "$850,230.00", delta: "+5.2%", positive: true },
-  platformFees: { value: "$42,511.50", delta: "+8.1%", positive: true },
-  totalPayouts: { value: "$790,112.90", delta: "+4.8%", positive: true },
-  pendingTransactions: { value: "$17,605.60", delta: "-1.5%", positive: false },
-};
-
-// TODO: Replace with database query: SELECT * FROM transactions ORDER BY date DESC
-const fakeTransactions = [
-  {
-    id: "TXN-7B3C1A",
-    date: "Oct 26, 2023",
-    client: "Olivia Martin",
-    provider: "Liam Johnson",
-    amount: 1250.0,
-    fee: 62.5,
-    status: "Completed",
-  },
-  {
-    id: "TXN-9D8E5F",
-    date: "Oct 25, 2023",
-    client: "Noah Williams",
-    provider: "Emma Brown",
-    amount: 800.0,
-    fee: 40.0,
-    status: "Completed",
-  },
-  {
-    id: "TXN-4A2B6C",
-    date: "Oct 24, 2023",
-    client: "Ava Garcia",
-    provider: "James Miller",
-    amount: 2500.0,
-    fee: 125.0,
-    status: "Pending",
-  },
-  {
-    id: "TXN-6E7F1D",
-    date: "Oct 23, 2023",
-    client: "Sophia Rodriguez",
-    provider: "Lucas Wilson",
-    amount: 450.0,
-    fee: 22.5,
-    status: "Failed",
-  },
-  {
-    id: "TXN-8C9B3A",
-    date: "Oct 22, 2023",
-    client: "Isabella Martinez",
-    provider: "Henry Davis",
-    amount: 1800.0,
-    fee: 90.0,
-    status: "Completed",
-  },
-];
+import adminStore from "../../store/adminStore";
 
 function StatusPill({ status }) {
   const statusMap = {
-    Completed: "bg-emerald-400/10 text-emerald-300",
-    Pending: "bg-amber-400/10 text-amber-300",
-    Failed: "bg-rose-400/10 text-rose-300",
+    paid: "bg-emerald-400/10 text-emerald-300",
+    pending: "bg-amber-400/10 text-amber-300",
+    failed: "bg-rose-400/10 text-rose-300",
   };
   return (
     <span
-      className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-        statusMap[status] || statusMap.Pending
+      className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium capitalize ${
+        statusMap[status?.toLowerCase()] || statusMap.pending
       }`}
     >
       {status}
@@ -76,67 +20,104 @@ function StatusPill({ status }) {
   );
 }
 
+function SkeletonRow() {
+  return (
+    <tr className="animate-pulse">
+        <td className="py-4"><div className="h-5 w-24 bg-white/10 rounded"></div></td>
+        <td className="py-4"><div className="h-4 w-24 bg-white/10 rounded"></div></td>
+        <td className="py-4"><div className="h-4 w-32 bg-white/10 rounded mb-1"></div></td>
+        <td className="py-4"><div className="h-4 w-32 bg-white/10 rounded"></div></td>
+        <td className="py-4"><div className="h-4 w-16 bg-white/10 rounded"></div></td>
+        <td className="py-4"><div className="h-4 w-12 bg-white/10 rounded"></div></td>
+        <td className="py-4"><div className="h-6 w-20 bg-white/10 rounded-full"></div></td>
+        <td className="py-4"><div className="h-4 w-4 bg-white/10 rounded"></div></td>
+    </tr>
+  );
+}
+
 export default function PaymentHistory() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [typeFilter, setTypeFilter] = useState("All");
+  // Removed Type Filter as schema doesn't seem to support it explicitly or it's not in requirements beyond basic listing
+  // If "Type" is needed we can infer or add later. Focusing on Client/Status/Date.
   const [statusFilter, setStatusFilter] = useState("All");
   const [dateRangeFilter, setDateRangeFilter] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
-
-  // TODO: Replace with database query: SELECT * FROM transactions WHERE (transaction_id LIKE ? OR client_name LIKE ? OR provider_name LIKE ? OR job_title LIKE ?)
-  const handleSearch = (e) => {
-    setSearchQuery(e.target.value);
-    // TODO: Debounce and call API: GET /api/transactions?search=${searchQuery}
-    console.log("Searching transactions:", e.target.value);
-  };
-
-  // TODO: Replace with database queries filtered by type, status, date range
-  const handleTypeFilter = (type) => {
-    setTypeFilter(type);
-    // TODO: Call API: GET /api/transactions?type=${type}
-    console.log("Type filter:", type);
-  };
-
-  const handleStatusFilter = (status) => {
-    setStatusFilter(status);
-    // TODO: Call API: GET /api/transactions?status=${status}
-    console.log("Status filter:", status);
-  };
-
-  const handleDateRangeFilter = (range) => {
-    setDateRangeFilter(range);
-    // TODO: Call API: GET /api/transactions?date_range=${range}
-    console.log("Date range filter:", range);
-  };
-
-  // TODO: Replace with CSV export functionality: Generate CSV from database query results
-  const handleExportCSV = () => {
-    console.log("Exporting CSV");
-    // TODO: Call API: GET /api/transactions/export?format=csv&filters=...
-    // TODO: Download CSV file
-    alert(
-      "Export CSV functionality - Replace with API call to GET /api/transactions/export?format=csv"
-    );
-  };
-
-  const filteredTransactions = fakeTransactions.filter((transaction) => {
-    const matchesSearch =
-      transaction.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      transaction.client.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      transaction.provider.toLowerCase().includes(searchQuery.toLowerCase());
-
-    const matchesStatus =
-      statusFilter === "All" || transaction.status === statusFilter;
-
-    return matchesSearch && matchesStatus;
+  
+  const [transactions, setTransactions] = useState([]);
+  const [stats, setStats] = useState({
+    total_volume: { value: 0 },
+    platform_fees: { value: 0 },
+    total_payouts: { value: 0 },
+    pending_transactions: { value: 0 },
   });
+  const [meta, setMeta] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [statsLoading, setStatsLoading] = useState(true);
 
-  const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
-  const paginatedTransactions = filteredTransactions.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  // Debounce search
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(searchQuery), 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    fetchStats();
+  }, []);
+
+  useEffect(() => {
+    fetchTransactions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, debouncedSearch, statusFilter, dateRangeFilter]);
+
+  async function fetchStats() {
+    setStatsLoading(true);
+    try {
+        const data = await adminStore.fetchTransactionStats();
+        setStats(data);
+    } catch(err) {
+        console.error("Failed to fetch stats", err);
+    } finally {
+        setStatsLoading(false);
+    }
+  }
+
+  async function fetchTransactions() {
+    setLoading(true);
+    try {
+        const params = {
+            page: currentPage,
+            per_page: 5,
+        };
+        if (debouncedSearch) params.search = debouncedSearch;
+        if (statusFilter !== 'All') params.status = statusFilter.toLowerCase();
+        if (dateRangeFilter !== 'All') params.date_range = dateRangeFilter;
+
+        const data = await adminStore.fetchTransactions(params);
+        setTransactions(data.data || []);
+        setMeta({
+            current_page: data.current_page,
+            last_page: data.last_page,
+            total: data.total,
+            from: data.from,
+            to: data.to
+        });
+    } catch (err) {
+        console.error("Failed to fetch transactions", err);
+    } finally {
+        setLoading(false);
+    }
+  }
+
+  const handleExportCSV = () => {
+    const params = {};
+    if (debouncedSearch) params.search = debouncedSearch;
+    if (statusFilter !== 'All') params.status = statusFilter.toLowerCase();
+    
+    // Trigger download
+    const url = adminStore.getExportTransactionsUrl(params);
+    window.location.href = url;
+  };
 
   return (
     <main className="flex-1 p-6 text-primary">
@@ -153,34 +134,34 @@ export default function PaymentHistory() {
       <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
         <StatCard
           title="Total Transaction Volume"
-          value={fakeSummaryData.totalVolume.value}
-          delta={fakeSummaryData.totalVolume.delta}
-          positive={fakeSummaryData.totalVolume.positive}
+          value={statsLoading ? "..." : `$${Number(stats.total_volume?.value || 0).toLocaleString()}`}
+          
+          positive={true}
         />
         <StatCard
-          title="Platform Fees (30 days)"
-          value={fakeSummaryData.platformFees.value}
-          delta={fakeSummaryData.platformFees.delta}
-          positive={fakeSummaryData.platformFees.positive}
+          title="Platform Fees"
+          value={statsLoading ? "..." : `$${Number(stats.platform_fees?.value || 0).toLocaleString()}`}
+          
+          positive={true}
         />
         <StatCard
-          title="Total Payouts"
-          value={fakeSummaryData.totalPayouts.value}
-          delta={fakeSummaryData.totalPayouts.delta}
-          positive={fakeSummaryData.totalPayouts.positive}
+          title="Net Payouts (Providers)"
+          value={statsLoading ? "..." : `$${Number(stats.total_payouts?.value || 0).toLocaleString()}`}
+          
+          positive={true}
         />
         <StatCard
           title="Pending Transactions"
-          value={fakeSummaryData.pendingTransactions.value}
-          delta={fakeSummaryData.pendingTransactions.delta}
-          positive={fakeSummaryData.pendingTransactions.positive}
+          value={statsLoading ? "..." : `$${Number(stats.pending_transactions?.value || 0).toLocaleString()}`}
+          
+          positive={false}
         />
       </section>
 
       {/* Search, Filters, and Export */}
       <div className="mb-6 space-y-4">
-        <div className="flex items-center gap-4">
-          <div className="relative flex-1">
+        <div className="flex flex-col md:flex-row items-center gap-4">
+          <div className="relative flex-1 w-full">
             <Search
               className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted"
               size={18}
@@ -188,39 +169,29 @@ export default function PaymentHistory() {
             <input
               type="text"
               value={searchQuery}
-              onChange={handleSearch}
-              placeholder="Search by ID, name, job..."
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search by ID, name..."
               className="w-full pl-10 pr-4 py-2 bg-card/80 border border-white/5 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
-          <div className="relative">
-            <select
-              value={typeFilter}
-              onChange={(e) => handleTypeFilter(e.target.value)}
-              className="appearance-none bg-card/80 border border-white/5 rounded-xl px-4 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option>Type: All</option>
-              <option>Type: Payment</option>
-              <option>Type: Refund</option>
-              <option>Type: Fee</option>
-            </select>
-            <ChevronDown
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-muted pointer-events-none"
+          <div className="relative w-full md:w-auto">
+            <Filter
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted"
               size={16}
             />
-          </div>
-
-          <div className="relative">
             <select
               value={statusFilter}
-              onChange={(e) => handleStatusFilter(e.target.value)}
-              className="appearance-none bg-card/80 border border-white/5 rounded-xl px-4 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onChange={(e) => {
+                  setStatusFilter(e.target.value);
+                  setCurrentPage(1);
+              }}
+              className="w-full md:w-auto appearance-none bg-card/80 border border-white/5 rounded-xl pl-10 pr-8 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option>Status: All</option>
-              <option>Status: Completed</option>
-              <option>Status: Pending</option>
-              <option>Status: Failed</option>
+              <option>All</option>
+              <option>Paid</option>
+              <option>Pending</option>
+              {/* <option>Failed</option> -- Schema/Controller might return failed, keeping option open */}
             </select>
             <ChevronDown
               className="absolute right-2 top-1/2 transform -translate-y-1/2 text-muted pointer-events-none"
@@ -228,13 +199,20 @@ export default function PaymentHistory() {
             />
           </div>
 
-          <div className="relative">
+          <div className="relative w-full md:w-auto">
+            <Calendar
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted"
+              size={16}
+            />
             <select
               value={dateRangeFilter}
-              onChange={(e) => handleDateRangeFilter(e.target.value)}
-              className="appearance-none bg-card/80 border border-white/5 rounded-xl px-4 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onChange={(e) => {
+                  setDateRangeFilter(e.target.value);
+                  setCurrentPage(1);
+              }}
+              className="w-full md:w-auto appearance-none bg-card/80 border border-white/5 rounded-xl pl-10 pr-8 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option>Date Range</option>
+              <option>All</option>
               <option>Last 7 days</option>
               <option>Last 30 days</option>
               <option>Last 90 days</option>
@@ -247,10 +225,10 @@ export default function PaymentHistory() {
 
           <button
             onClick={handleExportCSV}
-            className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 transition px-4 py-2 rounded-xl shadow-[var(--shadow-soft)]"
+            className="w-full md:w-auto inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 transition px-4 py-2 rounded-xl shadow-[var(--shadow-soft)]"
           >
             <Download size={16} />
-            <span className="text-sm font-medium">Export Data (CSV)</span>
+            <span className="text-sm font-medium">Export CSV</span>
           </button>
         </div>
       </div>
@@ -266,44 +244,65 @@ export default function PaymentHistory() {
                 <th className="py-3 font-medium">CLIENT</th>
                 <th className="py-3 font-medium">PROVIDER</th>
                 <th className="py-3 font-medium">AMOUNT</th>
-                <th className="py-3 font-medium">FEE</th>
+                <th className="py-3 font-medium">FEE (5%)</th>
                 <th className="py-3 font-medium">STATUS</th>
                 <th className="py-3 font-medium"></th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
-              {paginatedTransactions.map((transaction) => (
-                <tr key={transaction.id} className="hover:bg-white/5">
-                  <td className="py-4">
-                    <span className="text-xs bg-white/5 px-2 py-1 rounded-md font-mono">
-                      {transaction.id}
-                    </span>
-                  </td>
-                  <td className="py-4 text-muted">{transaction.date}</td>
-                  <td className="py-4 font-medium">{transaction.client}</td>
-                  <td className="py-4">{transaction.provider}</td>
-                  <td className="py-4 font-medium">
-                    ${transaction.amount.toFixed(2)}
-                  </td>
-                  <td className="py-4 text-muted">
-                    ${transaction.fee.toFixed(2)}
-                  </td>
-                  <td className="py-4">
-                    <StatusPill status={transaction.status} />
-                  </td>
-                  <td className="py-4">
-                    <button
-                      onClick={() => {
-                        console.log("Transaction actions:", transaction.id);
-                        // TODO: Open actions menu (view details, refund, etc.)
-                      }}
-                      className="text-muted hover:text-white"
-                    >
-                      <MoreVertical size={16} />
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              {loading ? (
+                  Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} />)
+              ) : transactions.length === 0 ? (
+                  <tr>
+                      <td colSpan="8" className="py-8 text-center text-muted">No transactions found matching your filters.</td>
+                  </tr>
+              ) : (
+                  transactions.map((transaction) => (
+                    <tr key={transaction.id} className="hover:bg-white/5">
+                      <td className="py-4">
+                        <span className="text-xs bg-white/5 px-2 py-1 rounded-md font-mono">
+                          {transaction.transaction_id || `ID-${transaction.id}`}
+                        </span>
+                      </td>
+                      <td className="py-4 text-muted">{new Date(transaction.created_at).toLocaleDateString()}</td>
+                      <td className="py-4 font-medium">
+                          <div className="flex items-center gap-2">
+                            <div className="h-8 w-8 rounded-full bg-blue-500/20 flex items-center justify-center text-xs font-medium text-blue-400">
+                                {(transaction.client?.name || 'U')[0].toUpperCase()}
+                            </div>
+                            <div>
+                                {transaction.client?.name || 'Unknown'}
+                                <div className="text-xs text-muted font-normal">{transaction.client?.email}</div>
+                            </div>
+                          </div>
+                      </td>
+                      <td className="py-4">
+                          <div className="flex items-center gap-2">
+                            <div className="h-8 w-8 rounded-full bg-purple-500/20 flex items-center justify-center text-xs font-medium text-purple-400">
+                                {(transaction.provider?.name || 'U')[0].toUpperCase()}
+                            </div>
+                            <span>{transaction.provider?.name || 'Unknown'}</span>
+                          </div>
+                      </td>
+                      <td className="py-4 font-medium">
+                        ${Number(transaction.amount).toFixed(2)}
+                      </td>
+                      <td className="py-4 text-muted">
+                        ${(Number(transaction.amount) * 0.05).toFixed(2)}
+                      </td>
+                      <td className="py-4">
+                        <StatusPill status={transaction.status} />
+                      </td>
+                      <td className="py-4">
+                        <button
+                          className="text-muted hover:text-white"
+                        >
+                          <MoreVertical size={16} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+              )}
             </tbody>
           </table>
         </div>
@@ -311,55 +310,22 @@ export default function PaymentHistory() {
         {/* Pagination */}
         <div className="mt-4 flex items-center justify-between">
           <p className="text-sm text-muted">
-            Showing {(currentPage - 1) * itemsPerPage + 1}-
-            {Math.min(currentPage * itemsPerPage, filteredTransactions.length)}{" "}
-            of {filteredTransactions.length}
+            Showing {meta.from || 0} to {meta.to || 0} of {meta.total || 0} results
           </p>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-              disabled={currentPage === 1}
+              disabled={currentPage === 1 || loading}
               className="px-4 py-1 rounded-md bg-card/80 text-muted hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Previous
             </button>
+            <span className="text-sm text-muted">
+                Page {meta.current_page || 1} of {meta.last_page || 1}
+            </span>
             <button
-              onClick={() => setCurrentPage(1)}
-              className={`px-3 py-1 rounded-md ${
-                currentPage === 1
-                  ? "bg-blue-600 text-white"
-                  : "bg-card/80 text-muted hover:text-white"
-              }`}
-            >
-              1
-            </button>
-            {totalPages > 1 && (
-              <button
-                onClick={() => setCurrentPage(2)}
-                className={`px-3 py-1 rounded-md ${
-                  currentPage === 2
-                    ? "bg-blue-600 text-white"
-                    : "bg-card/80 text-muted hover:text-white"
-                }`}
-              >
-                2
-              </button>
-            )}
-            {totalPages > 2 && (
-              <button
-                onClick={() => setCurrentPage(3)}
-                className={`px-3 py-1 rounded-md ${
-                  currentPage === 3
-                    ? "bg-blue-600 text-white"
-                    : "bg-card/80 text-muted hover:text-white"
-                }`}
-              >
-                3
-              </button>
-            )}
-            <button
-              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage((p) => (meta.last_page && p < meta.last_page ? p + 1 : p))}
+              disabled={!meta.last_page || currentPage >= meta.last_page || loading}
               className="px-4 py-1 rounded-md bg-card/80 text-muted hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Next

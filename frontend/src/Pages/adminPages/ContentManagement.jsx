@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { FileText, Zap, Shield, Info, ArrowRight } from "lucide-react";
 import adminStore from "../../store/adminStore";
+import toast, { Toaster } from 'react-hot-toast';
 
 // TODO: Replace with database query: SELECT * FROM content_pages WHERE page_type = ?
 const fakeContent = {
@@ -112,8 +113,8 @@ export default function ContentManagement() {
         status: "draft",
         title: pageMeta?.title || "",
       })
-      .then(() => alert("Draft saved"))
-      .catch((err) => alert("Failed to save draft"));
+      .then(() => toast.success("Draft saved"))
+      .catch((err) => toast.error("Failed to save draft"));
   };
 
   // TODO: Replace with database query: UPDATE content_pages SET content = ?, status = 'published', last_updated = NOW() WHERE page_type = ?
@@ -126,8 +127,8 @@ export default function ContentManagement() {
         status: "published",
         title: pageMeta?.title || "",
       })
-      .then(() => alert("Published"))
-      .catch(() => alert("Failed to publish"));
+      .then(() => toast.success("Published successfully"))
+      .catch(() => toast.error("Failed to publish"));
   };
 
   // TODO: Replace with database query: SELECT content FROM content_pages WHERE page_type = ? AND status = 'published'

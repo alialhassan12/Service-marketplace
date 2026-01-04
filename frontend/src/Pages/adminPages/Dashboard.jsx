@@ -12,58 +12,82 @@ export default function Dashboard() {
     jobs_count: 0,
     proposals_count: 0,
   });
+  const [revenueStats, setRevenueStats] = useState({});
+  const [revenueChartData, setRevenueChartData] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let mounted = true;
     setLoading(true);
-    adminStore
-      .fetchStats()
-      .then((data) => {
-        if (mounted) setStats(data);
-      })
-      .catch((err) => {
-        console.error("Failed to load stats", err);
-      })
-      .finally(() => mounted && setLoading(false));
+
+    const loadData = async () => {
+      try {
+        const [basicStats, tranStats, chartData] = await Promise.all([
+          adminStore.fetchStats(),
+          adminStore.fetchTransactionStats(),
+          adminStore.fetchRevenueChartData()
+        ]);
+        
+        if (mounted) {
+          setStats(basicStats);
+          setRevenueStats(tranStats);
+          setRevenueChartData(chartData);
+        }
+      } catch (err) {
+        console.error("Failed to load dashboard data", err);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+
+    loadData();
     return () => (mounted = false);
   }, []);
+
+  const handleDownloadReport = () => {
+    window.print();
+  };
+
   return (
     <main className="flex-1 p-6 text-primary">
-      <Header />
+      <div className="flex justify-between items-center mb-6">
+        <Header />
+        <button 
+          onClick={handleDownloadReport}
+          className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
+        >
+          Download Report
+        </button>
+      </div>
 
       {/* Stats */}
       <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
         <StatCard
-          title="Active Users"
+          title="Users"
           value={loading ? "—" : stats.users_count}
-          delta="+2.5%"
           positive
         />
         <StatCard
           title="New Job Postings"
           value={loading ? "—" : stats.jobs_count}
-          delta="+10.1%"
           positive
         />
         <StatCard
-          title="Pending Proposals"
+          title="Proposals"
           value={loading ? "—" : stats.proposals_count}
-          delta="-1.2%"
           positive={false}
         />
         <StatCard
-          title="Revenue (Month)"
-          value="$25,840"
-          delta="+15.3%"
+          title="Total Revenue"
+          value={loading ? "—" : `$${Number(revenueStats.total_volume?.value || 0).toLocaleString()}`}
           positive
         />
       </section>
 
       {/* Charts */}
-      <section className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6 items-stretch">
+      <section className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6 items-stretch print:hidden">
         <div className="lg:col-span-2">
-          <ActivityChart />
+          <ActivityChart data={revenueChartData} />
         </div>
         <div>
           <DonutChart stats={stats} />
@@ -71,7 +95,9 @@ export default function Dashboard() {
       </section>
 
       {/* Table */}
-      <TransactionsTable />
+      <section className="print:block">
+         <TransactionsTable />
+      </section>
     </main>
   );
 }
