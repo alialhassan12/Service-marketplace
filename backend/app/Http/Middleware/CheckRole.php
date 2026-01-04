@@ -15,6 +15,8 @@ class CheckRole
      */
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
+        \Illuminate\Support\Facades\Log::info('CheckRole middleware hit', ['user' => $request->user() ? $request->user()->id : 'null', 'roles' => $roles, 'url' => $request->url()]);
+
         if(!$request->user()) {
             return response()->json(['message' => 'Unauthenticated.'], 401);
         }

@@ -11,6 +11,16 @@ const adminStore = {
     return res.data;
   },
 
+  async fetchUser(id) {
+    const res = await axiosInstance.get(`/admin/users/${id}`);
+    return res.data;
+  },
+
+  async createUser(data) {
+    const res = await axiosInstance.post("/admin/users", data);
+    return res.data;
+  },
+
   async deleteUser(id) {
     const res = await axiosInstance.delete(`/admin/users/${id}`);
     return res.data;
@@ -18,6 +28,11 @@ const adminStore = {
 
   async fetchJobs(params = {}) {
     const res = await axiosInstance.get("/admin/jobs", { params });
+    return res.data;
+  },
+
+  async createJob(data) {
+    const res = await axiosInstance.post("/admin/jobs", data);
     return res.data;
   },
 
@@ -54,10 +69,29 @@ const adminStore = {
     return res.data;
   },
 
-  
   async fetchJob(id) {
     const res = await axiosInstance.get(`/admin/jobs/${id}`);
     return res.data;
+  },
+
+  async fetchTransactions(params = {}) {
+    const res = await axiosInstance.get("/admin/transactions", { params });
+    return res.data;
+  },
+
+  async fetchTransactionStats() {
+    const res = await axiosInstance.get("/admin/transactions/stats");
+    return res.data;
+  },
+
+  async fetchRevenueChartData() {
+    const res = await axiosInstance.get("/admin/stats/revenue-chart");
+    return res.data;
+  },
+
+  getExportTransactionsUrl(params = {}) {
+    const queryString = new URLSearchParams(params).toString();
+    return `${axiosInstance.defaults.baseURL}/admin/transactions/export?${queryString}`;
   },
 };
 
