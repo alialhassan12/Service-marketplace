@@ -1,4 +1,4 @@
-import { Flex, Box, Text, TextField, Button, Avatar, ScrollArea, Separator, Card, Badge, IconButton, Skeleton, Dialog } from "@radix-ui/themes";
+import { Flex, Box, Text, TextField, Button, Avatar, ScrollArea, Separator, Card, Badge, IconButton, Skeleton, Dialog, Spinner } from "@radix-ui/themes";
 import { Search, Send, Plus, MoreVertical, ChevronLeft, MessageSquare, UserPlus, SearchCheck } from "lucide-react";
 import { useMessagesStore } from '../../store/messagesStore';
 import { useAuthStore } from '../../store/authStore';
@@ -37,12 +37,13 @@ export default function ClientMessagesPage() {
     const [messageInput, setMessageInput] = useState("");
     const [mobileView, setMobileView] = useState('list');
     const {authUser}=useAuthStore();
-    const {contacts,loadingContacts,getContacts,messages,loadingMessages,getMessages,sendMessage,loadingSendMessage,subscribeToMessages, addContact}=useMessagesStore();
+    const {contacts,loadingContacts,getContacts,messages,loadingMessages,getMessages,sendMessage,loadingSendMessage,subscribeToMessages, addContact,addingContact}=useMessagesStore();
     const {suggestedProviders, getSuggestedProviders, searchProvidersResults, searchProviders, searchingProviders} = useClientDashboardStore();
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [searchQueryNew, setSearchQueryNew] = useState("");
     const [searchContacts,setSearchContacts] = useState("");
+    const [addingContactId, setAddingContactId] = useState(null);
 
     const messagesEndRef = useRef(null);
 
@@ -95,14 +96,21 @@ export default function ClientMessagesPage() {
         const existingContact = contacts.find(c => c.id === provider.id);
         if (existingContact) {
             handleContactSelect(existingContact);
+            setIsDialogOpen(false);
+            setSearchQueryNew("");
         } else {
-            const success = await addContact(provider.id);
-            if (success) {
-                handleContactSelect(provider);
+            setAddingContactId(provider.id);
+            try {
+                const success = await addContact(provider.id);
+                if (success) {
+                    handleContactSelect(provider);
+                    setIsDialogOpen(false);
+                    setSearchQueryNew("");
+                }
+            } finally {
+                setAddingContactId(null);
             }
         }
-        setIsDialogOpen(false);
-        setSearchQueryNew("");
     };
 
     return (
@@ -186,16 +194,18 @@ export default function ClientMessagesPage() {
                                                                 <Flex justify="center" p="4"><Skeleton width="100%" height="20px" /></Flex>
                                                             ) : searchProvidersResults.length > 0 ? (
                                                                 searchProvidersResults.map(provider => (
-                                                                <Card key={provider.id} style={{ cursor: 'pointer' }} onClick={() => handleSelectProvider(provider)}>
-                                                                    <Flex gap="3" align="center">
-                                                                        <Avatar src={`http://localhost:8000/storage/${provider.profile_picture}`} fallback={provider.name[0]} radius="full" />
-                                                                        <Box style={{ flex: 1 }}>
-                                                                            <Text size="2" weight="bold">{provider.name}</Text>
-                                                                            <Text size="1" color="gray" style={{ display: 'block' }}>{provider.bio || 'Professional Provider'}</Text>
-                                                                        </Box>
-                                                                        <IconButton variant="ghost" color="blue"><UserPlus size={16} /></IconButton>
-                                                                    </Flex>
-                                                                </Card>
+                                                                    <Card key={provider.id} style={{ cursor: 'pointer', opacity: addingContactId ? (addingContactId === provider.id ? 1 : 0.5) : 1, pointerEvents: addingContactId ? 'none' : 'auto' }} onClick={() => handleSelectProvider(provider)}>
+                                                                        <Flex gap="3" align="center">
+                                                                            <Avatar src={`http://localhost:8000/storage/${provider.profile_picture}`} fallback={provider.name[0]} radius="full" />
+                                                                            <Box style={{ flex: 1 }}>
+                                                                                <Text size="2" weight="bold">{provider.name}</Text>
+                                                                                <Text size="1" color="gray" style={{ display: 'block' }}>{provider.bio || 'Professional Provider'}</Text>
+                                                                            </Box>
+                                                                            <IconButton variant="ghost" color="blue" disabled={addingContactId}>
+                                                                                {addingContactId === provider.id ? <Spinner size="1" /> : <UserPlus size={16} />}
+                                                                            </IconButton>
+                                                                        </Flex>
+                                                                    </Card>
                                                                 ))
                                                             ) : (
                                                                 <></>
@@ -205,14 +215,16 @@ export default function ClientMessagesPage() {
                                                         <>
                                                             <Text size="1" color="gray" weight="bold" mb="1">Suggested Providers</Text>
                                                             {suggestedProviders.map(provider => (
-                                                                <Card key={provider.id} style={{ cursor: 'pointer' }} onClick={() => handleSelectProvider(provider)}>
+                                                                <Card key={provider.id} style={{ cursor: 'pointer', opacity: addingContactId ? (addingContactId === provider.id ? 1 : 0.5) : 1, pointerEvents: addingContactId ? 'none' : 'auto' }} onClick={() => handleSelectProvider(provider)}>
                                                                     <Flex gap="3" align="center">
                                                                         <Avatar src={`http://localhost:8000/storage/${provider.profile_picture}`} fallback={provider.name[0]} radius="full" />
                                                                         <Box style={{ flex: 1 }}>
                                                                             <Text size="2" weight="bold">{provider.name}</Text>
                                                                             <Text size="1" color="gray" style={{ display: 'block' }}>{provider.bio || 'Professional Provider'}</Text>
                                                                         </Box>
-                                                                        <IconButton variant="ghost" color="blue"><UserPlus size={16} /></IconButton>
+                                                                        <IconButton variant="ghost" color="blue" disabled={addingContactId}>
+                                                                            {addingContactId === provider.id ? <Spinner size="1" /> : <UserPlus size={16} />}
+                                                                        </IconButton>
                                                                     </Flex>
                                                                 </Card>
                                                             ))}
