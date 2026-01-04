@@ -30,9 +30,12 @@ export const useAuthStore = create((set) => ({
     login: async (formData) => {
         set({ isLogging: true });
         try {
-            const response = await axiosInstance.post("/login", formData);
-            set({ authUser: response.data.user });
-            localStorage.setItem("token", response.data.token);
+            console.log("Attempting login with:", formData);
+            console.log("Sending JSON to /login");
+            const response=await axiosInstance.post("/login", formData);
+            console.log("Login response:", response.data);
+            set({authUser:response.data.user});
+            localStorage.setItem("token",response.data.token);
             toast.success(response.data.message);
             return { success: true, user: response.data.user };
         } catch (error) {
@@ -72,9 +75,11 @@ export const useAuthStore = create((set) => ({
     register: async (formData) => {
         set({ isLogging: true });
         try {
-            const response = await axiosInstance.post("/register", formData);
-            set({ authUser: response.data.user });
-            localStorage.setItem("token", response.data.token);
+            console.log("Attempting registration with:", formData);
+            const response=await axiosInstance.post("/register", formData);
+            console.log("Registration response:", response.data);
+            set({authUser:response.data.user});
+            localStorage.setItem("token",response.data.token);
             toast.success(response.data.message);
             return { success: true, user: response.data.user };
         } catch (error) {

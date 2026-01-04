@@ -1,64 +1,34 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Plus, Search, Eye, Edit, Trash2, ChevronDown } from "lucide-react";
-
-// TODO: Replace with database query: SELECT * FROM job_postings ORDER BY date_posted DESC
-const fakeJobs = [
-  {
-    id: 1,
-    jobTitle: "Senior UX Designer",
-    clientName: "Eleanor Vance",
-    datePosted: "Oct 24, 2023",
-    location: "Remote",
-    status: "Approved",
-  },
-  {
-    id: 2,
-    jobTitle: "Backend Developer (Python/Django)",
-    clientName: "Marcus Holloway",
-    datePosted: "Oct 23, 2023",
-    location: "New York, NY",
-    status: "Pending",
-  },
-  {
-    id: 3,
-    jobTitle: "Illustrator for Children's Book",
-    clientName: "Clara Oswald",
-    datePosted: "Oct 22, 2023",
-    location: "Remote",
-    status: "Rejected",
-  },
-  {
-    id: 4,
-    jobTitle: "Content Writer for Tech Blog",
-    clientName: "Aiden Pearce",
-    datePosted: "Oct 21, 2023",
-    location: "Remote",
-    status: "Approved",
-  },
-  {
-    id: 5,
-    jobTitle: "Plumber for Leaky Faucet",
-    clientName: "Jonas Kahnwald",
-    datePosted: "Oct 20, 2023",
-    location: "Winden, DE",
-    status: "Closed",
-  },
-];
+import adminStore from "../../store/adminStore";
+import JobViewModal from "../../components/adminDashboardComponents/JobViewModal";
 
 function StatusPill({ status }) {
   const statusMap = {
-    Approved: "bg-emerald-400/10 text-emerald-300",
-    Pending: "bg-amber-400/10 text-amber-300",
-    Rejected: "bg-rose-400/10 text-rose-300",
-    Closed: "bg-gray-400/10 text-gray-300",
+    open: "bg-emerald-400/10 text-emerald-300",
+    in_progress: "bg-blue-400/10 text-blue-300",
+    completed: "bg-green-400/10 text-green-300",
+    closed: "bg-gray-400/10 text-gray-300",
   };
+
+  const displayStatus =
+    status === "open"
+      ? "Open"
+      : status === "in_progress"
+      ? "In Progress"
+      : status === "completed"
+      ? "Completed"
+      : status === "closed"
+      ? "Closed"
+      : status;
+
   return (
     <span
       className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-        statusMap[status] || statusMap.Pending
+        statusMap[status] || statusMap.open
       }`}
     >
-      {status}
+      {displayStatus}
     </span>
   );
 }
@@ -70,7 +40,16 @@ export default function JobPostings() {
   const [dateFilter, setDateFilter] = useState("All");
   const [locationFilter, setLocationFilter] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  const [jobs, setJobs] = useState([]);
+  const [meta, setMeta] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [itemsPerPage] = useState(10);
+  const [selectedJob, setSelectedJob] = useState(null);
+
+  useEffect(() => {
+    fetchJobs();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, statusFilter]);
 
   // TODO: Replace with database query: INSERT INTO job_postings (title, client_id, description, ...) VALUES (...)
   const handleCreateNewJob = () => {
@@ -88,6 +67,61 @@ export default function JobPostings() {
     // TODO: Debounce and call API: GET /api/jobs?search=${searchQuery}
     console.log("Searching for:", e.target.value);
   };
+
+  async function fetchJobs(page = currentPage) {
+    setLoading(true);
+    setJobs([]);
+    try {
+      const params = { page };
+      if (statusFilter && statusFilter !== "All")
+        params.status = statusFilter.toLowerCase();
+      const data = await adminStore.fetchJobs(params);
+      setJobs(data.data);
+      setMeta({
+        from: data.from,
+        to: data.to,
+        total: data.total,
+        last_page: data.last_page,
+      });
+    } catch (err) {
+      console.error("Failed to fetch jobs", err);
+      alert("Failed to fetch jobs");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleDeleteJob(id) {
+    if (!confirm("Are you sure you want to delete this job?")) return;
+    try {
+      await adminStore.deleteJob(id);
+      alert("Job deleted");
+      fetchJobs();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete job");
+    }
+  }
+
+  async function handleApproveJob(id) {
+    try {
+      await adminStore.updateJobStatus(id, "approved");
+      alert("Job approved");
+      fetchJobs();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update job status");
+    }
+  }
+  async function handleViewJob(id) {
+    try {
+      const job = await adminStore.fetchJob(id);
+      setSelectedJob(job);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to load job details");
+    }
+  }
 
   // TODO: Replace with database queries filtered by status, type, date, location
   const handleStatusFilter = (status) => {
@@ -114,21 +148,8 @@ export default function JobPostings() {
     console.log("Location filter:", location);
   };
 
-  const filteredJobs = fakeJobs.filter((job) => {
-    const matchesSearch =
-      job.jobTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      job.clientName.toLowerCase().includes(searchQuery.toLowerCase());
-
-    const matchesStatus = statusFilter === "All" || job.status === statusFilter;
-
-    return matchesSearch && matchesStatus;
-  });
-
-  const totalPages = Math.ceil(filteredJobs.length / itemsPerPage);
-  const paginatedJobs = filteredJobs.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  const totalPages = meta?.last_page || 1;
+  const paginatedJobs = jobs;
 
   return (
     <main className="flex-1 p-6 text-primary">
@@ -174,28 +195,10 @@ export default function JobPostings() {
               className="appearance-none bg-card/80 border border-white/5 rounded-xl px-4 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option>Status: All</option>
-              <option>Status: Approved</option>
-              <option>Status: Pending</option>
-              <option>Status: Rejected</option>
+              <option>Status: Open</option>
+              <option>Status: in_progress</option>
+              <option>Status: Completed</option>
               <option>Status: Closed</option>
-            </select>
-            <ChevronDown
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-muted pointer-events-none"
-              size={16}
-            />
-          </div>
-
-          <div className="relative">
-            <select
-              value={jobTypeFilter}
-              onChange={(e) => handleJobTypeFilter(e.target.value)}
-              className="appearance-none bg-card/80 border border-white/5 rounded-xl px-4 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option>Job Type</option>
-              <option>Full-time</option>
-              <option>Part-time</option>
-              <option>Contract</option>
-              <option>Freelance</option>
             </select>
             <ChevronDown
               className="absolute right-2 top-1/2 transform -translate-y-1/2 text-muted pointer-events-none"
@@ -256,23 +259,31 @@ export default function JobPostings() {
             <tbody className="divide-y divide-white/5">
               {paginatedJobs.map((job) => (
                 <tr key={job.id} className="hover:bg-white/5">
-                  <td className="py-4 font-medium">{job.jobTitle}</td>
-                  <td className="py-4">{job.clientName}</td>
-                  <td className="py-4 text-muted">{job.datePosted}</td>
-                  <td className="py-4">{job.location}</td>
+                  <td className="py-4 font-medium">{job.title}</td>
+                  <td className="py-4">{job.client?.name || "Unknown"}</td>
+                  <td className="py-4 text-muted">
+                    {new Date(job.created_at).toLocaleDateString()}
+                  </td>
+                  <td className="py-4">
+                    {job.is_remote ? "Remote" : job.location}
+                  </td>
                   <td className="py-4">
                     <StatusPill status={job.status} />
                   </td>
                   <td className="py-4">
                     <div className="flex items-center gap-3">
                       <button
-                        onClick={() => {
-                          console.log("View job:", job.id);
-                          // TODO: GET /api/jobs/${job.id} and open view modal
-                        }}
+                        onClick={() => handleViewJob(job.id)}
                         className="text-blue-400 hover:text-blue-300"
                       >
                         <Eye size={16} />
+                      </button>
+                      <button
+                        onClick={() => handleApproveJob(job.id)}
+                        className="text-emerald-400 hover:text-emerald-300"
+                        title="Approve"
+                      >
+                        ✓
                       </button>
                       <button
                         onClick={() => {
@@ -309,8 +320,10 @@ export default function JobPostings() {
         {/* Pagination */}
         <div className="mt-4 flex items-center justify-between">
           <p className="text-sm text-muted">
-            Showing 1 to {paginatedJobs.length} of {filteredJobs.length} results
+            Showing {meta.from || 0} to {meta.to || 0} of {meta.total || 0}{" "}
+            results
           </p>
+
           <div className="flex items-center gap-2">
             <button
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
@@ -319,6 +332,7 @@ export default function JobPostings() {
             >
               &lt;
             </button>
+
             <button
               onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
@@ -329,6 +343,9 @@ export default function JobPostings() {
           </div>
         </div>
       </div>
+      {selectedJob && (
+        <JobViewModal job={selectedJob} onClose={() => setSelectedJob(null)} />
+      )}
     </main>
   );
 }

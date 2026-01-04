@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FileText, Zap, Shield, Info, ArrowRight } from "lucide-react";
+import adminStore from "../../store/adminStore";
 
 // TODO: Replace with database query: SELECT * FROM content_pages WHERE page_type = ?
 const fakeContent = {
@@ -64,10 +65,34 @@ const contentPages = [
 
 export default function ContentManagement() {
   const [selectedPage, setSelectedPage] = useState("faq");
-  const [content, setContent] = useState(fakeContent.faq.content);
+  const [content, setContent] = useState("");
   const [isDraft, setIsDraft] = useState(false);
+  const [pageMeta, setPageMeta] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const currentContent = fakeContent[selectedPage];
+  useEffect(() => {
+    loadContent(selectedPage);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedPage]);
+
+  async function loadContent(pageKey) {
+    setLoading(true);
+    try {
+      const data = await adminStore.fetchContent(pageKey);
+      setContent(data.content || "");
+      setIsDraft(data.status !== "published");
+      setPageMeta(data);
+    } catch (err) {
+      console.warn("Loading fallback content", err);
+      const fallback = fakeContent[pageKey];
+      setContent(fallback?.content || "");
+      setPageMeta(fallback);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const currentContent = pageMeta || fakeContent[selectedPage];
 
   // TODO: Replace with database query: SELECT content FROM content_pages WHERE page_type = ? AND status = 'published'
   const handlePageSelect = (pageKey) => {
@@ -81,29 +106,42 @@ export default function ContentManagement() {
   const handleSaveDraft = () => {
     console.log("Saving draft for:", selectedPage);
     setIsDraft(true);
-    // TODO: Call API: PUT /api/content/${selectedPage} with { content, status: 'draft' }
-    alert(
-      "Draft saved! Replace with API call to PUT /api/content/" + selectedPage
-    );
+    adminStore
+      .saveContent(selectedPage, {
+        content,
+        status: "draft",
+        title: pageMeta?.title || "",
+      })
+      .then(() => alert("Draft saved"))
+      .catch((err) => alert("Failed to save draft"));
   };
 
   // TODO: Replace with database query: UPDATE content_pages SET content = ?, status = 'published', last_updated = NOW() WHERE page_type = ?
   const handlePublish = () => {
     console.log("Publishing:", selectedPage);
     setIsDraft(false);
-    // TODO: Call API: PUT /api/content/${selectedPage} with { content, status: 'published' }
-    alert(
-      "Published! Replace with API call to PUT /api/content/" + selectedPage
-    );
+    adminStore
+      .saveContent(selectedPage, {
+        content,
+        status: "published",
+        title: pageMeta?.title || "",
+      })
+      .then(() => alert("Published"))
+      .catch(() => alert("Failed to publish"));
   };
 
   // TODO: Replace with database query: SELECT content FROM content_pages WHERE page_type = ? AND status = 'published'
   const handlePreview = () => {
     console.log("Previewing:", selectedPage);
-    // TODO: Open preview modal/window showing rendered content
-    alert(
-      "Preview functionality - Replace with preview modal showing rendered markdown/HTML"
+    // Very simple preview: open new window and write content as HTML
+    const w = window.open("", "_blank");
+    w.document.write(
+      `<pre style="white-space:pre-wrap; font-family:inherit">${content.replace(
+        /</g,
+        "&lt;"
+      )}</pre>`
     );
+    w.document.title = pageMeta?.title || selectedPage;
   };
 
   return (
@@ -164,7 +202,7 @@ export default function ContentManagement() {
                     Status: {currentContent.status}
                   </span>
                   <span className="text-muted">
-                    Last updated: {currentContent.lastUpdated}
+                    Last updated: {pageMeta?.updated_at ? new Date(pageMeta.updated_at).toLocaleDateString() : 'Never'}
                   </span>
                 </div>
               </div>

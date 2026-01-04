@@ -94,10 +94,10 @@ const useClientDashboardStore = create((set) => ({
         }
     },
     updatingProposalStatusId: null,
-    updateProposalState: async (jobId, proposal_id, state) => {
+    updateProposalState: async (jobId, proposal_id, state, provider_id, amount, description) => {
         set({ updatingProposalStatusId: proposal_id });
         try {
-            const response = await axiosInstance.put(`/jobs/${jobId}/proposal/${proposal_id}`, { proposal_id, state });
+            const response = await axiosInstance.put(`/jobs/${jobId}/proposal/${proposal_id}`, {job_id: jobId, proposal_id, state, provider_id, amount, description });
             toast.success(response.data.message);
             return true;
         } catch (error) {
@@ -153,6 +153,43 @@ const useClientDashboardStore = create((set) => ({
             return null;
         } finally {
             set({ updatingProfile: false })
+        }
+    },
+    acceptedProviders: [],
+    gettingAcceptedProviders: false,
+    getAcceptedProviders: async () => {
+        set({ gettingAcceptedProviders: true });
+        try {
+            const response = await axiosInstance.get('/client/accepted-providers');
+            set({ acceptedProviders: response.data.providers });
+            console.log(response.data.providers);
+            return true;
+        } catch (error) {
+            console.log(error);
+            toast.error(error.response?.data?.message);
+            return false;
+        } finally {
+            set({ gettingAcceptedProviders: false })
+        }
+    },
+    searchProvidersResults: [],
+    searchingProviders: false,
+    searchProviders: async (query) => {
+        if (!query.trim()) {
+            set({ searchProvidersResults: [] });
+            return;
+        }
+        set({ searchingProviders: true });
+        try {
+            const response = await axiosInstance.get(`/client/search-providers?query=${query}`);
+            set({ searchProvidersResults: response.data.providers });
+            return true;
+        } catch (error) {
+            console.log(error);
+            toast.error(error.response?.data?.message);
+            return false;
+        } finally {
+            set({ searchingProviders: false })
         }
     },
 }));

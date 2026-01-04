@@ -70,10 +70,10 @@ export default function ProviderBrowseJobs(){
 
     return(
         <div className="w-full p-6 md:p-10" data-aos="fade-up">
-            <Card size="4" className="shadow-sm">
+            <Card size="4" className="shadow-soft bg-card border-border-subtle">
                 <Flex direction="column" gap="6">
                     <Flex justify="between" align="center">
-                        <Heading size="6" weight="bold" className="text-gray-800">Browse Jobs</Heading>
+                        <Heading size="6" weight="bold" className="text-primary">Browse Jobs</Heading>
                     </Flex>
 
                     {/* Search Bar */}
@@ -93,20 +93,20 @@ export default function ProviderBrowseJobs(){
                         
                         {/* Location */}
                         <Box>
-                            <Text as="label" size="2" weight="medium" mb="2" className="block text-gray-700">Location</Text>
+                            <Text as="label" size="2" weight="medium" mb="2" className="block text-primary">Location</Text>
                             <TextField.Root disabled={isRemote} 
                                 value={filters.location}
                                 onChange={(e)=>setFilters({...filters,location:e.target.value, page: 1})}
                                 size="2" placeholder="e.g. Beirut, Lebanon">
                                 <TextField.Slot>
-                                    <MagnifyingGlassIcon height="16" width="16" />
+                                    <MagnifyingGlassIcon height="16" width="16" className="text-secondary" />
                                 </TextField.Slot>
                             </TextField.Root>
                         </Box>
 
                         {/* Date Posted */}
                         <Box>
-                            <Text as="label" size="2" weight="medium" mb="2" className="block text-gray-700">Date Posted</Text>
+                            <Text as="label" size="2" weight="medium" mb="2" className="block text-primary">Date Posted</Text>
                             <Select.Root defaultValue="any"
                                 value={filters.datePosted}
                                 onValueChange={(value)=>setFilters({...filters,datePosted:value, page: 1})}
@@ -124,8 +124,8 @@ export default function ProviderBrowseJobs(){
                         {/* Price Range */}
                         <Box className="w-full">
                             <Flex justify="between" mb="2">
-                                <Text size="2" weight="medium" className="text-gray-700">Price Range</Text>
-                                <Text size="2" className="text-gray-600">${range[0]} - ${range[1]}</Text>
+                                <Text size="2" weight="medium" className="text-primary">Price Range</Text>
+                                <Text size="2" className="text-secondary">${range[0]} - ${range[1]}</Text>
                             </Flex>
                             <Slider.Root
                                 className="relative flex items-center select-none touch-none w-full h-5"
@@ -135,11 +135,11 @@ export default function ProviderBrowseJobs(){
                                 max={5000}
                                 step={10}
                             >
-                                <Slider.Track className="bg-gray-200 relative grow rounded-full h-[4px]">
+                                <Slider.Track className="bg-hover-bg relative grow rounded-full h-[4px]">
                                     <Slider.Range className="absolute h-full rounded-full bg-indigo-600" />
                                 </Slider.Track>
-                                <Slider.Thumb className="block w-4 h-4 bg-white shadow-md border border-gray-300 rounded-full hover:scale-110 focus:outline-none transition-transform" />
-                                <Slider.Thumb className="block w-4 h-4 bg-white shadow-md border border-gray-300 rounded-full hover:scale-110 focus:outline-none transition-transform" />
+                                <Slider.Thumb className="block w-4 h-4 bg-white shadow-md border border-border-subtle rounded-full hover:scale-110 focus:outline-none transition-transform" />
+                                <Slider.Thumb className="block w-4 h-4 bg-white shadow-md border border-border-subtle rounded-full hover:scale-110 focus:outline-none transition-transform" />
                             </Slider.Root>
                         </Box>
 
@@ -151,7 +151,7 @@ export default function ProviderBrowseJobs(){
                                     onCheckedChange={()=>{setIsRemote(!isRemote);setFilters({...filters,remote:!isRemote, page: 1})}} 
                                     size="2"
                                 />
-                                <Text size="2" weight="medium" className="text-gray-700">Remote Only</Text>
+                                <Text size="2" weight="medium" className="text-primary">Remote Only</Text>
                             </Flex>
                         </Flex>
                     </Grid>
@@ -179,17 +179,17 @@ export default function ProviderBrowseJobs(){
                     <>
                         <Grid columns="1" gap="4">
                             {jobs.map((job) => (
-                                <Card key={job.id} size="3" className="hover:shadow-md transition-shadow duration-200 border-l-4 border-indigo-500">
+                                <Card key={job.id} size="3" className="hover:shadow-soft transition-all duration-200 border-l-4 border-indigo-500 bg-card">
                                     <Flex justify="between" align="center" wrap="wrap" gap="4">
                                         
                                         {/* Job Details */}
-                                        <Box className="space-y-2 flex-grow">
+                                        <Box className="space-y-2 grow">
                                             <Flex align="center" gap="3">
-                                                <Heading size="4" weight="bold" className="text-gray-900">{job.title}</Heading>
-                                                <Badge color="green" radius="full">{job.status}</Badge>
+                                                <Heading size="4" weight="bold" className="text-primary">{job.title}</Heading>
+                                                <Badge color="green" radius="full" variant="soft">{job.status}</Badge>
                                             </Flex>
                                             
-                                            <Flex gap="4" align="center" className="text-gray-500 text-sm">
+                                            <Flex gap="4" align="center" className="text-secondary text-sm">
                                                 <Flex align="center" gap="1">
                                                     <CalendarIcon />
                                                     <Text>{new Date(job.created_at || job.datePosted).toLocaleDateString()}</Text>
@@ -243,7 +243,7 @@ export default function ProviderBrowseJobs(){
                         )}
 
                         {jobs.length === 0 && (
-                            <Flex justify="center" p="8" className="text-gray-500">
+                            <Flex justify="center" p="8" className="text-secondary">
                                 <Text>No jobs found matching your criteria.</Text>
                             </Flex>
                         )}
@@ -268,7 +268,7 @@ export default function ProviderBrowseJobs(){
                     {selectedJob && (
                         <Flex direction="column" gap="4">
                             {/* Client Info */}
-                            <Flex align="center" gap="3" className="p-3 bg-gray-50 rounded-lg">
+                            <Flex align="center" gap="3" className="p-3 bg-hover-bg rounded-xl border border-border-subtle">
                                 <Avatar 
                                     src={selectedJob.client?.profile_picture} 
                                     fallback={selectedJob.client?.name?.[0] || 'C'}
@@ -276,10 +276,10 @@ export default function ProviderBrowseJobs(){
                                     size="3"
                                 />
                                 <Box>
-                                    <Text size="2" weight="bold" className="block text-gray-900">
+                                    <Text size="2" weight="bold" className="block text-primary">
                                         {selectedJob.client?.name}
                                     </Text>
-                                    <Text size="1" color="gray">
+                                    <Text size="1" className="text-secondary">
                                         Posted on {new Date(selectedJob.created_at).toLocaleDateString()}
                                     </Text>
                                 </Box>
@@ -304,9 +304,9 @@ export default function ProviderBrowseJobs(){
 
                             {/* Description */}
                             <Box>
-                                <Text size="3" weight="bold" className="block mb-2">Description</Text>
+                                <Text size="3" weight="bold" className="block mb-2 text-primary">Description</Text>
                                 <ScrollArea type="auto" scrollbars="vertical" style={{ maxHeight: 200 }}>
-                                    <Text as="p" size="3" className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+                                    <Text as="p" size="3" className="text-secondary leading-relaxed whitespace-pre-wrap">
                                         {selectedJob.description}
                                     </Text>
                                 </ScrollArea>

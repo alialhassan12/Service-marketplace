@@ -3,7 +3,7 @@
 namespace App\Http;
 
 use App\Http\Middleware\CheckRole;
-use App\Http\Middleware\Authenticate;
+use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
