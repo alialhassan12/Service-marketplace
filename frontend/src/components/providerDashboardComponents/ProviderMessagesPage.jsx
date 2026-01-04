@@ -42,7 +42,7 @@ export default function ProviderMessagesPage() {
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [searchQueryNew, setSearchQueryNew] = useState("");
-    const [searchContacts,setSearchContacts] = useState([]);
+    const [searchContacts,setSearchContacts] = useState("");
 
     const messagesEndRef = useRef(null);
 
