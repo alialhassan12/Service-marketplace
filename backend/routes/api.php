@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\authController;
 use App\Http\Controllers\jobsController;
+use App\Http\Controllers\messagesController;
 use App\Http\Controllers\StripePaymentController;
 use App\Http\Controllers\ProviderProfileController;
 use App\Http\Controllers\StripeWebhookController;
@@ -34,6 +35,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/jobs/status/{id}', [jobsController::class, 'updateJobStatus'])->name('updateJobStatus');
     Route::put('/jobs/{id}/proposal/{proposalId}', [jobsController::class, 'updateProposalState'])->name('updateProposalState');
     Route::get('/client/suggested-providers', [ProviderProfileController::class, 'getSuggestedProviders'])->name('getSuggestedProviders');
+    Route::get('/client/search-providers', [ProviderProfileController::class, 'searchProviders'])->name('searchProviders');
     Route::get('/client/provider-profile/{id}', [ProviderProfileController::class, 'show'])->name('showProviderProfile');
     Route::put('/client/update-profile', [ProviderProfileController::class, 'update'])->name('clientUpdateProfile');
     Route::get('/client/accepted-providers', [jobsController::class, 'getClientAcceptedProviders'])->name('getClientAcceptedProviders');
@@ -44,6 +46,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/provider/browseJobs', [ProviderProfileController::class, 'browseJobs'])->name('browseJobs');
     Route::post('/provider/submitProposal', [ProviderProfileController::class, 'submitProposal'])->name('submitProposal');
     Route::get('/provider/recommended-jobs', [jobsController::class, 'getRecomendedJobs'])->name('getRecomendedJobs');
+    Route::get('/provider/search-clients', [ProviderProfileController::class, 'searchClients'])->name('searchClients');
     Route::get('/provider/my-proposals', [ProviderProfileController::class, 'getMyProposals'])->name('getMyProposals');
 
     //payment routes
@@ -53,6 +56,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/payments/provider-history', [StripePaymentController::class, 'getProviderPaymentHistory']);
     Route::get('/payments/history', [StripePaymentController::class, 'paymentHistory']);
     Route::get('/payments/{id}', [StripePaymentController::class, 'getPayment']);
+
+    //message routes
+    Route::get('/messages/contacts', [messagesController::class, 'getContacts']);
+    Route::post('/messages/contacts/addContact', [messagesController::class, 'addContact']);
+    Route::get('/messages/{id}', [messagesController::class, 'getMessages']);
+    Route::post('/messages/sendMessage/{id}', [messagesController::class, 'sendMessage']);
 });
 
 Route::middleware(['auth:sanctum', 'checkRole:provider'])->prefix('provider')->group(function () {});

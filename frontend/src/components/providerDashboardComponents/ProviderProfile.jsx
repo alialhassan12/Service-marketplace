@@ -25,7 +25,7 @@ export default function ProviderProfile(){
     return(
         <div className="flex flex-col w-full p-4 md:p-8 gap-6" data-aos="fade-up">
             <div className="flex justify-between items-center">
-                <Heading size="8" className="text-gray-800">My Profile</Heading>
+                <Heading size="8" className="text-primary">My Profile</Heading>
                 <Button 
                     size="3" 
                     variant="solid" 
@@ -39,43 +39,43 @@ export default function ProviderProfile(){
             <div className="flex flex-col lg:flex-row gap-6">
                 {/* Left Column: Identity Card */}
                 <div className="w-full lg:w-1/3 flex flex-col gap-6">
-                    <div className="bg-white gap-2 rounded-3xl p-8 shadow-[0_2px_12px_rgba(0,0,0,0.08)] flex flex-col items-center text-center border border-gray-100">
+                    <div className="bg-card gap-2 rounded-3xl p-8 shadow-soft flex flex-col items-center text-center border border-border-subtle">
                         <div className="relative group">
                             {authUser?.profile_picture ? (
                                 <Avatar 
                                     sx={{ width: 140, height: 140 }} 
-                                    className="rounded-full shadow-lg border-4 border-white ring-2 ring-gray-100 object-cover" 
+                                    className="rounded-full shadow-lg border-4 border-card ring-2 ring-border-subtle object-cover" 
                                     src={`http://localhost:8000/storage/${authUser?.profile_picture}`}
                                 />
                             ) : (
                                 <Avatar 
                                     sx={{ width: 140, height: 140 }} 
-                                    className="rounded-full shadow-lg border-4 border-white ring-2 ring-gray-100 bg-linear-to-br from-teal-400 to-blue-500 text-5xl text-white font-bold"
+                                    className="rounded-full shadow-lg border-4 border-card ring-2 ring-border-subtle bg-linear-to-br from-teal-400 to-blue-500 text-5xl text-white font-bold"
                                 >
                                     {authUser?.name?.charAt(0)}
                                 </Avatar>
                             )}
                         </div>
                         
-                        <Heading size="6" className="mt-4 text-gray-900">{authUser?.name}</Heading>
-                        <Text size="2" color="gray" className="font-medium">Service Provider</Text>
+                        <Heading size="6" className="mt-4 text-primary">{authUser?.name}</Heading>
+                        <Text size="2" className="font-medium text-secondary">Service Provider</Text>
                         
                         <Separator size="4" className="my-1 w-full" />
                         
                         <div className="flex flex-col gap-2 w-full">
-                            <div className="flex items-center gap-3 text-gray-600 bg-gray-50 p-3 rounded-xl border border-gray-100">
+                            <div className="flex items-center gap-3 text-secondary bg-hover-bg p-3 rounded-xl border border-border-subtle">
                                 <EmailIcon className="text-teal-600" fontSize="small" />
                                 <Text size="2" className="break-all">{authUser?.email}</Text>
                             </div>
-                            <div className="flex items-center gap-3 text-gray-600 bg-gray-50 p-3 rounded-xl border border-gray-100">
+                            <div className="flex items-center gap-3 text-secondary bg-hover-bg p-3 rounded-xl border border-border-subtle">
                                 <PhoneIcon className="text-teal-600" fontSize="small" />
                                 <Text size="2">{authUser?.phone_number || "No phone added"}</Text>
                             </div>
-                            <div className="flex items-center gap-3 text-gray-600 bg-gray-50 p-3 rounded-xl border border-gray-100">
+                            <div className="flex items-center gap-3 text-secondary bg-hover-bg p-3 rounded-xl border border-border-subtle">
                                 <LocationOnIcon className="text-teal-600" fontSize="small" />
                                 <Text size="2">{authUser?.location || "No location added"}</Text>
                             </div>
-                            <div className="flex items-center gap-3 text-gray-600 bg-gray-50 p-3 rounded-xl border border-gray-100">
+                            <div className="flex items-center gap-3 text-secondary bg-hover-bg p-3 rounded-xl border border-border-subtle">
                                 <CalendarMonthIcon className="text-teal-600" fontSize="small" />
                                 <Text size="2">Joined {new Date(authUser?.created_at).toLocaleDateString()}</Text>
                             </div>
@@ -86,18 +86,18 @@ export default function ProviderProfile(){
                 {/* Right Column: Details */}
                 <div className="w-full lg:w-2/3 flex flex-col gap-6">
                     {/* Bio Section */}
-                    <div className="flex flex-col bg-white gap-2 rounded-3xl p-8 shadow-[0_2px_12px_rgba(0,0,0,0.08)] border border-gray-100 h-fit">
-                        <Heading size="5" className="text-gray-800 flex items-center gap-2">
+                    <div className="flex flex-col bg-card gap-2 rounded-3xl p-8 shadow-soft border border-border-subtle h-fit">
+                        <Heading size="5" className="text-primary flex items-center gap-2">
                             About Me
                         </Heading>
-                        <Text as="p" size="3" className="text-gray-600 leading-relaxed whitespace-pre-wrap">
+                        <Text as="p" size="3" className="text-secondary leading-relaxed whitespace-pre-wrap">
                             {authUser?.bio || "No bio information provided yet."}
                         </Text>
                     </div>
 
                     {/* Skills Section */}
-                    <div className="flex flex-col bg-white gap-2 rounded-3xl p-8 shadow-[0_2px_12px_rgba(0,0,0,0.08)] border border-gray-100 h-fit">
-                        <Heading size="5" className="text-gray-800">Skills & Expertise</Heading>
+                    <div className="flex flex-col bg-card gap-2 rounded-3xl p-8 shadow-soft border border-border-subtle h-fit">
+                        <Heading size="5" className="text-primary">Skills & Expertise</Heading>
                         <div className="flex flex-wrap gap-2 mt-2">
                             {skills.length > 0 ? (
                                 skills.map((skill, index) => (

@@ -18,8 +18,8 @@ return new class extends Migration
             $table->text('description');
             $table->string('location');
             $table->boolean('is_remote');
-            $table->string('budget');
-            $table->enum('status',['open','in_progress','completed','closed'])->default('open');
+            $table->decimal('budget', 10, 2);
+            $table->enum('status', ['open', 'in_progress', 'completed', 'closed'])->default('open');
             $table->timestamps();
         });
     }

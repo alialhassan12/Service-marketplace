@@ -96,6 +96,21 @@ const useProviderDashboardStore=create((set)=>({
         }finally{
             set({myProposalsLoading:false})
         }
+    },
+    searchClientsResult:[],
+    searchClientsLoading:false,
+    searchClients:async(query)=>{
+        set({searchClientsLoading:true});
+        try {
+            const response=await axiosInstance.get("/provider/search-clients", { params: { query } });
+            set({searchClientsResult:response.data.clients});
+            return true;
+        } catch (error) {
+            console.log(error);
+            return false;
+        }finally{
+            set({searchClientsLoading:false})
+        }
     }
 }));
 
