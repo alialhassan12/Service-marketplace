@@ -23,7 +23,7 @@ export default function ProviderMyProposals(){
 
     return(
         <div className="w-full p-6 md:p-10" data-aos="fade-up">
-            <Heading size="6" weight="bold" className="text-gray-800 ">My Proposals</Heading>
+            <Heading size="6" weight="bold" className="text-primary">My Proposals</Heading>
 
             {myProposalsLoading ? (
                 <Grid columns={{ initial: '1', md: '2', lg: '3' }} gap="4" className="mt-6">
@@ -40,21 +40,21 @@ export default function ProviderMyProposals(){
             ) : myProposalsData.length > 0 ? (
                 <Grid columns={{ initial: '1', md: '2', lg: '3' }} gap="4" className="mt-6">
                     {myProposalsData.map((proposal) => (
-                        <Card key={proposal.id} className="hover:shadow-md transition-shadow duration-200 border-t-4 border-gray-500" style={{ borderColor: proposal.status === 'accepted' ? 'var(--green-9)' : proposal.status === 'rejected' ? 'var(--red-9)' : 'var(--orange-9)' }}>
+                        <Card key={proposal.id} className="hover:shadow-soft transition-all duration-200 border-t-4 bg-card" style={{ borderColor: proposal.status === 'accepted' ? 'var(--green-9)' : proposal.status === 'rejected' ? 'var(--red-9)' : 'var(--orange-9)' }}>
                             <Flex direction="column" height="100%" justify="between" gap="4">
                                 <Box>
                                     <Flex justify="between" align="start" gap="2" mb="2">
-                                        <Heading size="4" weight="bold" className="text-gray-900 line-clamp-1">
+                                        <Heading size="4" weight="bold" className="text-primary line-clamp-1">
                                             {proposal.job?.title}
                                         </Heading>
                                         <Badge color={getStatusColor(proposal.status)} variant="soft" radius="full">
                                             {proposal.status}
                                         </Badge>
                                     </Flex>
-                                    <Text size="2" color="gray" className="line-clamp-2">
+                                    <Text size="2" className="line-clamp-2 text-secondary">
                                         {proposal.description}
                                     </Text>
-                                    <Text size="2" weight="bold" className="text-gray-700 mt-2 block">
+                                    <Text size="2" weight="bold" className="text-primary mt-2 block">
                                         Proposed: ${proposal.price}
                                     </Text>
                                 </Box>
@@ -71,14 +71,14 @@ export default function ProviderMyProposals(){
                     ))}
                 </Grid>
             ) : (
-                <div className="mt-6 text-center text-gray-500">You haven't submitted any proposals yet.</div>
+                <div className="mt-6 text-center text-secondary">You haven't submitted any proposals yet.</div>
             )}
 
             {/* Job Details Dialog */}
             <Dialog.Root open={!!selectedJob} onOpenChange={(open) => !open && setSelectedJob(null)}>
                 <Dialog.Content style={{ maxWidth: 600 }}>
                     <Flex justify="between" align="center" mb="4">
-                        <Dialog.Title size="6" weight="bold" mb="0">
+                        <Dialog.Title size="6" weight="bold" className="text-primary" mb="0">
                             {selectedJob?.title}
                         </Dialog.Title>
                         <Dialog.Close>
@@ -90,8 +90,8 @@ export default function ProviderMyProposals(){
                     
                     {selectedJob && (
                         <Flex direction="column" gap="4">
-                            {/* Client Info */}
-                            <Flex align="center" gap="3" className="p-3 bg-gray-50 rounded-lg">
+                             {/* Client Info */}
+                            <Flex align="center" gap="3" className="p-3 bg-hover-bg rounded-xl border border-border-subtle">
                                 <Avatar 
                                     src={selectedJob.client?.profile_picture ? `http://localhost:8000/storage/${selectedJob.client.profile_picture}` : undefined} 
                                     fallback={selectedJob.client?.name?.[0] || 'C'}
@@ -99,10 +99,10 @@ export default function ProviderMyProposals(){
                                     size="3"
                                 />
                                 <Box>
-                                    <Text size="2" weight="bold" className="block text-gray-900">
+                                    <Text size="2" weight="bold" className="block text-primary">
                                         {selectedJob.client?.name}
                                     </Text>
-                                    <Text size="1" color="gray">
+                                    <Text size="1" className="text-secondary">
                                         Posted on {new Date(selectedJob.created_at).toLocaleDateString()}
                                     </Text>
                                 </Box>
@@ -127,9 +127,9 @@ export default function ProviderMyProposals(){
 
                             {/* Description */}
                             <Box>
-                                <Text size="3" weight="bold" className="block mb-2">Description</Text>
+                                <Text size="3" weight="bold" className="block mb-2 text-primary">Description</Text>
                                 <ScrollArea type="auto" scrollbars="vertical" style={{ maxHeight: 200 }}>
-                                    <Text as="p" size="3" className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+                                    <Text as="p" size="3" className="text-secondary leading-relaxed whitespace-pre-wrap">
                                         {selectedJob.description}
                                     </Text>
                                 </ScrollArea>

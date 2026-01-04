@@ -11,7 +11,14 @@ export default {
         'bg-2': 'var(--color-bg-2)',
         'card': 'var(--color-card)',
         'muted': 'var(--color-muted)',
+        'primary': 'var(--text-primary)',
+        'secondary': 'var(--text-secondary)',
+        'border-subtle': 'var(--border-subtle)',
+        'hover-bg': 'var(--hover-bg)',
       },
+      boxShadow: {
+        'soft': 'var(--shadow-soft)',
+      }
     },
   },
   plugins: [],

@@ -1,4 +1,4 @@
-import { Flex, Box, Text, TextField, Button, Avatar, ScrollArea, Separator, Card, Badge, IconButton, Skeleton, Dialog } from "@radix-ui/themes";
+import { Flex, Box, Text, TextField, Button, Avatar, ScrollArea, Separator, Card, Badge, IconButton, Skeleton, Dialog, Spinner } from "@radix-ui/themes";
 import { Search, Send, Plus, MoreVertical, ChevronLeft, MessageSquare, UserPlus, SearchCheck } from "lucide-react";
 import { useMessagesStore } from '../../store/messagesStore';
 import { useAuthStore } from '../../store/authStore';
@@ -37,12 +37,13 @@ export default function ClientMessagesPage() {
     const [messageInput, setMessageInput] = useState("");
     const [mobileView, setMobileView] = useState('list');
     const {authUser}=useAuthStore();
-    const {contacts,loadingContacts,getContacts,messages,loadingMessages,getMessages,sendMessage,loadingSendMessage,subscribeToMessages, addContact}=useMessagesStore();
+    const {contacts,loadingContacts,getContacts,messages,loadingMessages,getMessages,sendMessage,loadingSendMessage,subscribeToMessages, addContact,addingContact}=useMessagesStore();
     const {suggestedProviders, getSuggestedProviders, searchProvidersResults, searchProviders, searchingProviders} = useClientDashboardStore();
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [searchQueryNew, setSearchQueryNew] = useState("");
     const [searchContacts,setSearchContacts] = useState("");
+    const [addingContactId, setAddingContactId] = useState(null);
 
     const messagesEndRef = useRef(null);
 
@@ -95,30 +96,32 @@ export default function ClientMessagesPage() {
         const existingContact = contacts.find(c => c.id === provider.id);
         if (existingContact) {
             handleContactSelect(existingContact);
+            setIsDialogOpen(false);
+            setSearchQueryNew("");
         } else {
-            const success = await addContact(provider.id);
-            if (success) {
-                handleContactSelect(provider);
+            setAddingContactId(provider.id);
+            try {
+                const success = await addContact(provider.id);
+                if (success) {
+                    handleContactSelect(provider);
+                    setIsDialogOpen(false);
+                    setSearchQueryNew("");
+                }
+            } finally {
+                setAddingContactId(null);
             }
         }
-        setIsDialogOpen(false);
-        setSearchQueryNew("");
     };
 
     return (
-        <Flex direction="column" style={{ height: '100vh', backgroundColor: 'var(--gray-2)', overflow: 'hidden' }}>
+        <Flex direction="column" className="h-screen bg-bg-1 overflow-hidden">
             <Box style={{ flex: 1, position: 'relative', display: 'flex', overflow: 'hidden' }}>
                 <Flex style={{ width: '100%', height: '100%' }}>
                     {/* Contacts List Sidebar */}
                     <Box 
-                        className="contact-list-container"
+                        className="contact-list-container flex flex-col shrink-0 bg-card border-r border-border-subtle"
                         style={{ 
                             width: '350px', 
-                            flexShrink: 0,
-                            borderRight: '1px solid var(--gray-5)', 
-                            display: mobileView === 'chat' ? 'none' : 'flex',
-                            flexDirection: 'column',
-                            backgroundColor: 'white',
                         }}
                     >
                         {/* CSS Hack for media query logic */}
@@ -138,9 +141,9 @@ export default function ClientMessagesPage() {
                             }
                         `}</style>
 
-                        <Box p="4" style={{ borderBottom: '1px solid var(--gray-5)' }}> 
+                        <Box p="4" className="border-b border-border-subtle"> 
                             <Flex justify="between" align="center" mb="4">
-                                <Text size="5" weight="bold">Messages</Text>
+                                <Text size="5" weight="bold" className="text-primary">Messages</Text>
                                 {/* Add new contact Dialog */}
                                 <Dialog.Root open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                                     <Dialog.Trigger>
@@ -186,16 +189,18 @@ export default function ClientMessagesPage() {
                                                                 <Flex justify="center" p="4"><Skeleton width="100%" height="20px" /></Flex>
                                                             ) : searchProvidersResults.length > 0 ? (
                                                                 searchProvidersResults.map(provider => (
-                                                                <Card key={provider.id} style={{ cursor: 'pointer' }} onClick={() => handleSelectProvider(provider)}>
-                                                                    <Flex gap="3" align="center">
-                                                                        <Avatar src={`http://localhost:8000/storage/${provider.profile_picture}`} fallback={provider.name[0]} radius="full" />
-                                                                        <Box style={{ flex: 1 }}>
-                                                                            <Text size="2" weight="bold">{provider.name}</Text>
-                                                                            <Text size="1" color="gray" style={{ display: 'block' }}>{provider.bio || 'Professional Provider'}</Text>
-                                                                        </Box>
-                                                                        <IconButton variant="ghost" color="blue"><UserPlus size={16} /></IconButton>
-                                                                    </Flex>
-                                                                </Card>
+                                                                    <Card key={provider.id} style={{ cursor: 'pointer', opacity: addingContactId ? (addingContactId === provider.id ? 1 : 0.5) : 1, pointerEvents: addingContactId ? 'none' : 'auto' }} onClick={() => handleSelectProvider(provider)}>
+                                                                        <Flex gap="3" align="center">
+                                                                            <Avatar src={`http://localhost:8000/storage/${provider.profile_picture}`} fallback={provider.name[0]} radius="full" />
+                                                                             <Box style={{ flex: 1 }}>
+                                                                                 <Text size="2" weight="bold" className="text-primary">{provider.name}</Text>
+                                                                                 <Text size="1" className="block text-secondary">{provider.bio || 'Professional Provider'}</Text>
+                                                                             </Box>
+                                                                            <IconButton variant="ghost" color="blue" disabled={addingContactId}>
+                                                                                {addingContactId === provider.id ? <Spinner size="1" /> : <UserPlus size={16} />}
+                                                                            </IconButton>
+                                                                        </Flex>
+                                                                    </Card>
                                                                 ))
                                                             ) : (
                                                                 <></>
@@ -205,14 +210,16 @@ export default function ClientMessagesPage() {
                                                         <>
                                                             <Text size="1" color="gray" weight="bold" mb="1">Suggested Providers</Text>
                                                             {suggestedProviders.map(provider => (
-                                                                <Card key={provider.id} style={{ cursor: 'pointer' }} onClick={() => handleSelectProvider(provider)}>
+                                                                <Card key={provider.id} style={{ cursor: 'pointer', opacity: addingContactId ? (addingContactId === provider.id ? 1 : 0.5) : 1, pointerEvents: addingContactId ? 'none' : 'auto' }} onClick={() => handleSelectProvider(provider)}>
                                                                     <Flex gap="3" align="center">
                                                                         <Avatar src={`http://localhost:8000/storage/${provider.profile_picture}`} fallback={provider.name[0]} radius="full" />
-                                                                        <Box style={{ flex: 1 }}>
-                                                                            <Text size="2" weight="bold">{provider.name}</Text>
-                                                                            <Text size="1" color="gray" style={{ display: 'block' }}>{provider.bio || 'Professional Provider'}</Text>
-                                                                        </Box>
-                                                                        <IconButton variant="ghost" color="blue"><UserPlus size={16} /></IconButton>
+                                                                         <Box style={{ flex: 1 }}>
+                                                                             <Text size="2" weight="bold" className="text-primary">{provider.name}</Text>
+                                                                             <Text size="1" className="block text-secondary">{provider.bio || 'Professional Provider'}</Text>
+                                                                         </Box>
+                                                                        <IconButton variant="ghost" color="blue" disabled={addingContactId}>
+                                                                            {addingContactId === provider.id ? <Spinner size="1" /> : <UserPlus size={16} />}
+                                                                        </IconButton>
                                                                     </Flex>
                                                                 </Card>
                                                             ))}
@@ -274,15 +281,15 @@ export default function ClientMessagesPage() {
                                                         </Box>
                                                         <Box style={{ flex: 1, minWidth: 0 }}>
                                                             <Flex justify="arround" align="center" gap="2">
-                                                                <Text weight="bold" size="2" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                                                    {contact.name}
-                                                                </Text>
-                                                                <Text color="gray" size="1" style={{ flexShrink: 0 }}>{contact.time}</Text>
-                                                            </Flex>
-                                                            <Flex justify="between" align="center" gap="2">
-                                                                <Text color="gray" size="2" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                                                {contact.lastMessage}
-                                                            </Text>
+                                                                 <Text weight="bold" size="2" className="text-primary" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                                                     {contact.name}
+                                                                 </Text>
+                                                                 <Text size="1" className="text-secondary shrink-0">{contact.time}</Text>
+                                                             </Flex>
+                                                             <Flex justify="between" align="center" gap="2">
+                                                                 <Text size="2" className="text-secondary" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                                                 {contact.lastMessage}
+                                                             </Text>
                                                             {contact.unread > 0 && (
                                                                 <Badge color="blue" variant="solid" radius="full" style={{ flexShrink: 0 }}>
                                                                     {contact.unread}
@@ -301,11 +308,11 @@ export default function ClientMessagesPage() {
                     </Box>
 
                     {/* Chat Area */}
-                    <Flex direction="column" className="chat-area-container" style={{ flex: 1, minWidth: 0, backgroundColor: 'white' }}>
+                    <Flex direction="column" className="chat-area-container flex-1 min-w-0 bg-card">
                         {selectedContact ? (
                             <>
                                 {/* Chat Header */}
-                                <Box p="3" className="chat-header-container" style={{ borderBottom: '1px solid var(--gray-5)', backgroundColor: 'var(--gray-1)' }}>
+                                <Box p="3" className="chat-header-container bg-bg-1 border-b border-border-subtle">
                                     <Flex justify="between" align="center"> 
                                         <Flex gap="3" align="center" >
                                             <IconButton 
@@ -322,8 +329,8 @@ export default function ClientMessagesPage() {
                                                 fallback={(selectedContact.name?.[0] || selectedContact.email?.[0] || '?').toUpperCase()}
                                                 radius="full"
                                             />
-                                            <Box>
-                                                <Text weight="bold" size="3">{selectedContact.name}</Text>
+                                             <Box>
+                                                <Text weight="bold" size="3" className="text-primary">{selectedContact.name}</Text>
                                             </Box>
                                         </Flex>
                                         <IconButton variant="ghost" color="gray">
@@ -333,7 +340,7 @@ export default function ClientMessagesPage() {
                                 </Box>
 
                                 {/* Message History */}
-                                <ScrollArea scrollbars="vertical" style={{ flex: 1, padding: '20px', backgroundColor: 'var(--gray-1)' }}>
+                                <ScrollArea scrollbars="vertical" style={{ flex: 1, padding: '20px' }} className="bg-bg-1">
                                     <Flex direction="column" gap="4">
                                         {loadingMessages ? (
                                             <>
@@ -356,15 +363,15 @@ export default function ClientMessagesPage() {
                                                             style={{
                                                                 maxWidth: '85%',
                                                                 borderRadius: 'var(--radius-4)',
-                                                                backgroundColor: authUser.id === msg.sender_id ? 'var(--accent-9)' : 'white',
-                                                                color: authUser.id === msg.sender_id ? 'white' : 'var(--gray-12)',
-                                                                boxShadow: 'var(--shadow-1)',
-                                                                border: authUser.id === msg.sender_id ? 'none' : '1px solid var(--gray-4)'
+                                                                backgroundColor: authUser.id === msg.sender_id ? 'var(--blue-9)' : 'var(--color-card)',
+                                                                color: authUser.id === msg.sender_id ? 'white' : 'var(--text-primary)',
+                                                                boxShadow: 'var(--shadow-soft)',
+                                                                border: authUser.id === msg.sender_id ? 'none' : '1px solid var(--border-subtle)'
                                                             }}
                                                         >
                                                             <Text size="2" style={{ wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}>{msg.message}</Text>
                                                         </Box>
-                                                        <Text size="1" color="gray" mt="1">{new Date(msg.created_at).toLocaleString()}</Text>
+                                                        <Text size="1" mt="1" className="text-secondary">{new Date(msg.created_at).toLocaleString()}</Text>
                                                     </Flex>
                                                 ))}
                                                 {loadingSendMessage && <MessageSkeleton isMe={true} />}
@@ -372,7 +379,7 @@ export default function ClientMessagesPage() {
                                             </>
                                         ) : (
                                             <Flex direction="column" align="center" justify="center" style={{ height: '100%', opacity: 0.5 }} mt="9">
-                                                <Text size="4" color="gray">Say hello to {selectedContact.name}!</Text>
+                                                <Text size="4" className="text-secondary">Say hello to {selectedContact.name}!</Text>
                                                 {loadingSendMessage && <MessageSkeleton isMe={true} />}
                                             </Flex>
                                         )}
@@ -380,7 +387,7 @@ export default function ClientMessagesPage() {
                                 </ScrollArea>
 
                                 {/* Input Area */}
-                                <Box p="4" style={{ borderTop: '1px solid var(--gray-5)', backgroundColor: 'white' }}>
+                                <Box p="4" className="bg-card border-t border-border-subtle">
                                     <Flex gap="3">
                                         <TextField.Root
                                             placeholder="Type a message..."
@@ -411,12 +418,12 @@ export default function ClientMessagesPage() {
                                 </Box>
                             </>
                         ) : (
-                            <Flex direction="column" align="center" justify="center" style={{ height: '100%', backgroundColor: 'var(--gray-1)' }}>
-                                <Box p="6" style={{ borderRadius: '50%', backgroundColor: 'var(--gray-3)', marginBottom: '16px' }}>
-                                    <MessageSquare size={48} color="var(--gray-9)" />
+                            <Flex direction="column" align="center" justify="center" style={{ height: '100%' }} className="bg-bg-1">
+                                <Box p="6" style={{ borderRadius: '50%' }} className="bg-hover-bg mb-4">
+                                    <MessageSquare size={48} className="text-secondary" />
                                 </Box>
-                                <Text size="5" weight="bold" color="gray">Your Messages</Text>
-                                <Text size="2" color="gray" mt="1">Select a conversation to start chatting.</Text>
+                                <Text size="5" weight="bold" className="text-primary">Your Messages</Text>
+                                <Text size="2" className="text-secondary mt-1">Select a conversation to start chatting.</Text>
                             </Flex>
                         )}
                     </Flex>

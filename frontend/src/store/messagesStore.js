@@ -58,7 +58,9 @@ export const useMessagesStore = create((set, get) => ({
             set({loadingSendMessage:false});
         }
     },
+    addingContact:false,
     addContact:async(receiver_id)=>{
+        set({addingContact:true});
         try {
             const response = await axiosInstance.post('/messages/contacts/addContact', { receiver_id });
             const messageData = response.data.contact_data;
@@ -76,6 +78,9 @@ export const useMessagesStore = create((set, get) => ({
         } catch (error) {
             console.log(error);
             return false;
+        }
+        finally{
+            set({addingContact:false});
         }
     },
 
