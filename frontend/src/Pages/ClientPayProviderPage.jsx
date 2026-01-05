@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from "react";
 import useClientDashboardStore from "../store/clientDashboardStore";
-import { Flex, Card, Text, Button, Avatar, Badge, Skeleton, Box, Dialog, Theme } from "@radix-ui/themes";
+import { Flex, Card, Text, Button, Avatar, Badge, Skeleton, Box, Dialog, Theme, Spinner } from "@radix-ui/themes";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import { useNavigate } from "react-router-dom";
 import { usePaymentStore } from "../store/paymentStore";
@@ -18,16 +18,19 @@ export default function ClientPayProviderPage() {
     const navigate = useNavigate();
     const { theme } = useTheme();
     const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
+    const [processingJobId, setProcessingJobId] = useState(null);
 
     useEffect(() => {
         getAcceptedProviders();
     }, [getAcceptedProviders]);
 
     const handlePayProvider = async(job_id, provider_id, amount, description) => {
+        setProcessingJobId(job_id);
         const success = await payProvider(job_id, provider_id, amount, description);
         if(success){
             setIsPaymentDialogOpen(true);
         }
+        setProcessingJobId(null);
     }
 
     return (
@@ -120,7 +123,7 @@ export default function ClientPayProviderPage() {
                                                         `Payment for job: ${job.job.title}`
                                                     )}
                                                 >
-                                                    {isCreating ? "Initializing..." : "Pay Now"}
+                                                    {isCreating && processingJobId === job.job_id ? <>Initializing... <Spinner/></> : "Pay Now"}
                                                 </Button>
                                             </Flex>
                                         </Flex>
