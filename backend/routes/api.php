@@ -77,6 +77,7 @@ Route::post('/webhook/stripe', [StripeWebhookController::class, 'handleWebhook']
 //admin routes
 Route::middleware(['auth:sanctum', 'checkRole:admin'])->prefix('admin')->group(function () {
     Route::get('/stats', [AdminController::class, 'stats']);
+    Route::put('/update-profile', [AdminController::class, 'updateAdminProfile']);
 
     Route::get('/users', [AdminController::class, 'getUsers']);
     Route::get('/users/{id}', [AdminController::class, 'getUser']);

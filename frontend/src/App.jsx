@@ -16,6 +16,7 @@ import { Toaster } from 'react-hot-toast';
 import { ThemeProvider } from "./contexts/ThemeContext";
 import ProviderUpdateProfile from './components/providerDashboardComponents/ProviderUpdateProfile';
 import ClientUpdateProfile from './components/clientDashboardComponents/ClientUpdateProfile';
+import AdminUpdateProfile from './components/adminDashboardComponents/AdminUpdateProfile';
 import Snowfall from "react-snowfall";
 import ViewProviderProfile from "./Pages/ViewProviderProfile";
 import ClientAcceptedProvidersToPay from "./Pages/ClientPayProviderPage";
@@ -87,6 +88,7 @@ function App() {
         <Route path="/job/:id" element={authUser ? <JobDetailsPage /> : <Navigate to="/login" />} />
         <Route path="/provider/update-profile" element={authUser?.role === 'provider' ? <ProviderUpdateProfile /> : <Navigate to="/" />} />
         <Route path="/client/update-profile" element={authUser?.role === 'client' ? <ClientUpdateProfile /> : <Navigate to="/" />} />
+        <Route path="/admin/update-profile" element={authUser?.role === 'admin' ? <AdminUpdateProfile /> : <Navigate to="/" />} />
         <Route path="/provider-profile/:id" element={authUser ? <ViewProviderProfile /> : <Navigate to="/" />} />
         <Route path="/client/pay-provider" element={authUser?.role === 'client' ? <ClientAcceptedProvidersToPay /> : <Navigate to="/" />} />
       </Routes>
