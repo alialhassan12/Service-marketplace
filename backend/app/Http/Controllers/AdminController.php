@@ -8,6 +8,7 @@ use App\Models\Proposal;
 use App\Models\User;
 use App\Models\ContentPage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
 {
@@ -441,5 +442,46 @@ class AdminController extends Controller
         };
 
         return response()->stream($callback, 200, $headers);
+    }
+
+    public function updateAdminProfile(Request $request){
+        $request->validate([
+            'name'=>'required',
+            'email'=>'required|email',
+            'phone_number'=>'required',
+            'location'=>'required',
+            'profile_picture'=>'image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+        $admin=auth('sanctum')->user();
+
+        if($admin->role!='admin'){
+            return response()->json([
+                'message'=>'Unauthorized'
+            ],401);
+        }
+        User::where('id',$admin->id)->update([
+            'name'=>$request->name,
+            'email'=>$request->email,
+            'phone_number'=>$request->phone_number,
+            'location'=>$request->location,
+        ]);
+        if ($request->hasFile('profile_picture')) {
+            $path = $request->file('profile_picture')->store('profile_pictures', 'public');
+
+            if ($admin->profile_picture) {
+                Storage::disk('public')->delete($admin->profile_picture);
+            }
+
+            $admin->profile_picture = $path;
+            User::where('id',$admin->id)->update([
+                'profile_picture'=>$admin->profile_picture,
+            ]);
+        }
+        
+
+        return response()->json([
+            'message'=>'Profile updated successfully',
+            'user'=>$admin
+        ],200);
     }
 }
