@@ -32,12 +32,11 @@ const MessageSkeleton = ({ isMe }) => (
 );
 
 export default function ClientMessagesPage() {
-    const [selectedContact, setSelectedContact] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
     const [messageInput, setMessageInput] = useState("");
     const [mobileView, setMobileView] = useState('list');
     const {authUser}=useAuthStore();
-    const {contacts,loadingContacts,getContacts,messages,loadingMessages,getMessages,sendMessage,loadingSendMessage,subscribeToMessages, addContact,addingContact}=useMessagesStore();
+    const {contacts,loadingContacts,getContacts,messages,loadingMessages,getMessages,sendMessage,loadingSendMessage,subscribeToMessages, addContact,addingContact,selectedContact,setSelectedContact}=useMessagesStore();
     const {suggestedProviders, getSuggestedProviders, searchProvidersResults, searchProviders, searchingProviders} = useClientDashboardStore();
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -61,6 +60,15 @@ export default function ClientMessagesPage() {
         }
     }, [messages]);
 
+
+    useEffect(() => {
+        if (selectedContact) {
+            setMobileView('chat');
+        } else {
+            setMobileView('list');
+        }
+    }, [selectedContact]);
+
     useEffect(() => {
         if (selectedContact && authUser) {
             const unsubscribe = subscribeToMessages(authUser.id, selectedContact.id);
@@ -70,10 +78,14 @@ export default function ClientMessagesPage() {
         }
     }, [selectedContact, authUser]);
 
+
     const handleContactSelect = (contact) => {
-        getMessages(contact.id);
+        // getMessages(contact.id);
+        if(selectedContact && contact.id === selectedContact.id && mobileView === 'chat'){
+            return;
+        }
         setSelectedContact(contact);
-        setMobileView('chat');
+        setMobileView('chat');  
     };
 
     const handleSendMessage=()=>{
