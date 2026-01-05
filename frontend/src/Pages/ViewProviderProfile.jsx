@@ -10,10 +10,12 @@ import Avatar from "@mui/material/Avatar";
 import { Theme, Button, Heading, Text, Skeleton, Separator, Badge } from "@radix-ui/themes";
 import { useTheme } from "../contexts/useTheme";
 import { ArrowLeftIcon, ChatBubbleIcon } from "@radix-ui/react-icons";
+import { useMessagesStore } from "../store/messagesStore";
 
 export default function ViewProviderProfile(){
     const {id} = useParams();
-    const {getProviderProfile,providerProfile,gettingProviderProfile}=useClientDashboardStore();
+    const {getProviderProfile,providerProfile,gettingProviderProfile,setPage}=useClientDashboardStore();
+    const {setSelectedContact}=useMessagesStore();
     const navigate = useNavigate();
     const { theme } = useTheme();
 
@@ -21,6 +23,12 @@ export default function ViewProviderProfile(){
         getProviderProfile(id);
     },[id]);
     
+    const handleOpenChat=()=>{
+        navigate(-1);
+        setPage("messages");
+        setSelectedContact(providerProfile);
+    }
+
     return(
         <Theme appearance={theme}>
             <div className="w-full min-h-screen bg-bg-1 p-6 md:p-10">
@@ -91,7 +99,8 @@ export default function ViewProviderProfile(){
                                 </div>
 
                                 <Skeleton loading={gettingProviderProfile} className="w-full mt-2">
-                                    <Button size="3" variant="solid" color="blue" className="w-full cursor-pointer transition mt-2">
+                                    <Button size="3" variant="solid" color="blue" className="w-full cursor-pointer transition mt-2"
+                                        onClick={handleOpenChat}>
                                         <ChatBubbleIcon />
                                         Contact Provider
                                     </Button>

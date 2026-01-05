@@ -6,6 +6,7 @@ import { useTheme } from '../contexts/useTheme';
 import { Select, Avatar, Text, Skeleton, Button, TextField as RadixTextField, Dialog as RadixDialog, Flex, Box, Switch as RadixSwitch, TextArea } from '@radix-ui/themes';
 import { ChatBubbleIcon, ArrowLeftIcon } from '@radix-ui/react-icons';
 import { Edit, Briefcase, DollarSign, MapPin, Calendar, ExternalLink } from "lucide-react";
+import { useMessagesStore } from '../store/messagesStore';
 
 
 const JobDetailsPage = () => {
@@ -25,7 +26,9 @@ const JobDetailsPage = () => {
             updateJobStatus,
             updatingJobStatus,
             updatedJobStatus,
-            updatedProposalStatus} = useClientDashboardStore();
+            updatedProposalStatus,
+            setPage} = useClientDashboardStore();
+    const {setSelectedContact}=useMessagesStore();
     const [openEdit,setOpenEdit]=useState(false);
     useEffect(() => {
         getJob(id);
@@ -54,6 +57,12 @@ const JobDetailsPage = () => {
             location:job?.location,
             budget:job?.budget,
         })
+    }
+
+    const handleOpenChat=(provider)=>{
+        navigate(-1);
+        setPage("messages");
+        setSelectedContact(provider);
     }
 
     //dialog handlers
@@ -254,7 +263,7 @@ const JobDetailsPage = () => {
                                         </div>
                                     </div>
                                     <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
-                                        <Button variant="soft" color="blue" onClick={(e) => { e.stopPropagation(); /* Add chat logic later */ }}>
+                                        <Button variant="soft" color="blue" onClick={() => { handleOpenChat(proposal.provider)}}>
                                             <ChatBubbleIcon />
                                             Chat
                                         </Button>

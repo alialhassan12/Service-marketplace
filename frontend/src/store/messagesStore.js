@@ -5,6 +5,11 @@ import { supabase } from '../lib/supabase';
 export const useMessagesStore = create((set, get) => ({
     contacts:[],
     loadingContacts:false,
+    selectedContact:null,
+    setSelectedContact:(state)=>{
+        get().getMessages(state.id);
+        set({selectedContact:state});
+    },
     getContacts:async()=>{
         set({loadingContacts:true});
         try {

@@ -32,12 +32,11 @@ const MessageSkeleton = ({ isMe }) => (
 );
 
 export default function ProviderMessagesPage() {
-    const [selectedContact, setSelectedContact] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
     const [messageInput, setMessageInput] = useState("");
     const [mobileView, setMobileView] = useState('list');
     const {authUser}=useAuthStore();
-    const {contacts,loadingContacts,getContacts,messages,loadingMessages,getMessages,sendMessage,loadingSendMessage,subscribeToMessages, addContact,addingContact}=useMessagesStore();
+    const {contacts,loadingContacts,getContacts,messages,loadingMessages,getMessages,sendMessage,loadingSendMessage,subscribeToMessages, addContact,addingContact,selectedContact,setSelectedContact}=useMessagesStore();
     const {searchClientsResult, searchClients, searchClientsLoading} = useProviderDashboardStore();
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -61,6 +60,15 @@ export default function ProviderMessagesPage() {
         }
     }, [messages]);
 
+
+    useEffect(() => {
+        if (selectedContact) {
+            setMobileView('chat');
+        } else {
+            setMobileView('list');
+        }
+    }, [selectedContact]);
+
     useEffect(() => {
         if (selectedContact && authUser) {
             const unsubscribe = subscribeToMessages(authUser.id, selectedContact.id);
@@ -70,8 +78,12 @@ export default function ProviderMessagesPage() {
         }
     }, [selectedContact, authUser]);
 
+
     const handleContactSelect = (contact) => {
-        getMessages(contact.id);
+        // getMessages(contact.id);
+        if(selectedContact && contact.id === selectedContact.id && mobileView === 'chat'){
+            return;
+        }
         setSelectedContact(contact);
         setMobileView('chat');
     };
@@ -189,10 +201,10 @@ export default function ProviderMessagesPage() {
                                                                     <Card key={client.id} style={{ cursor: 'pointer', opacity: addingContactId ? (addingContactId === client.id ? 1 : 0.5) : 1, pointerEvents: addingContactId ? 'none' : 'auto' }} onClick={() => handleSelectClient(client)}>
                                                                         <Flex gap="3" align="center">
                                                                             <Avatar src={`http://localhost:8000/storage/${client.profile_picture}`} fallback={client.name[0]} radius="full" />
-                                                                             <Box style={{ flex: 1 }}>
-                                                                                 <Text size="2" weight="bold" className="text-primary">{client.name}</Text>
-                                                                                 <Text size="1" className="block text-secondary">Client</Text>
-                                                                             </Box>
+                                                                            <Box style={{ flex: 1 }}>
+                                                                                <Text size="2" weight="bold" className="text-primary">{client.name}</Text>
+                                                                                <Text size="1" className="block text-secondary">Client</Text>
+                                                                            </Box>
                                                                             <IconButton variant="ghost" color="blue" disabled={addingContactId}>
                                                                                 {addingContactId === client.id ? <Spinner size="1" /> : <UserPlus size={16} />}
                                                                             </IconButton>
@@ -311,7 +323,7 @@ export default function ProviderMessagesPage() {
                                                 fallback={(selectedContact.name?.[0] || selectedContact.email?.[0] || '?').toUpperCase()}
                                                 radius="full"
                                             />
-                                             <Box>
+                                            <Box>
                                                 <Text weight="bold" size="3" className="text-primary">{selectedContact.name}</Text>
                                             </Box>
                                         </Flex>
