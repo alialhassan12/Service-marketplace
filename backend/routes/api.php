@@ -25,6 +25,8 @@ Route::middleware('auth:sanctum')->group(function () {
         return $request->user();   // <-- Returns DB user data
     })->name('checkForUser');
     Route::post('/logout', [authController::class, 'logout'])->name('logout');
+    Route::put('/reset-password', [authController::class, 'resetPassword'])->name('resetPassword');
+    Route::delete('/delete-account', [authController::class, 'deleteAccount'])->name('deleteAccount');
 
     //client routes
     Route::post('/jobs', [jobsController::class, 'addJob'])->name('addJob');

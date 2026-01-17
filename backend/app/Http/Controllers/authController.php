@@ -74,4 +74,41 @@ class authController extends Controller
             'message'=>'Logout successful'
         ],200);
     }
+
+    public function resetPassword(Request $request){
+        $request->validate([
+            'password'=>'required|min:6',
+            'password_confirmation'=>'required|same:password'
+        ]);
+
+        $user=auth('sanctum')->user();
+        if(!$user){
+            return response()->json([
+                'message'=>'User not found'
+            ],404);
+        }
+        
+        User::where('id',$user->id)->update([
+            'password'=>bcrypt($request->password)
+        ]);
+
+        return response()->json([
+            'message'=>'Password reset successfully'
+        ],200);
+    }
+
+    public function deleteAccount(Request $request){
+        $user=auth('sanctum')->user();
+        if(!$user){
+            return response()->json([
+                'message'=>'User not found'
+            ],404);
+        }
+        
+        User::where('id',$user->id)->delete();
+        
+        return response()->json([
+            'message'=>'Account deleted successfully'
+        ],200);
+    }
 }

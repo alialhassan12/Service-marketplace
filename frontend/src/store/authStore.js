@@ -90,4 +90,36 @@ export const useAuthStore = create((set) => ({
         }
     },
     setUser: (user) => set({ authUser: user }),
+
+    isResettingPassword:false,
+    resetPassword:async(password,password_confirmation)=>{
+        set({isResettingPassword:true});
+        try {
+            const response=await axiosInstance.put("/reset-password",{password,password_confirmation});
+            toast.success(response.data.message);
+            return {success:true}
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Something went wrong. Please try again.");
+            return {success:false}
+        } finally {
+            set({isResettingPassword:false})
+        }
+    },
+
+    isDeletingAccount:false,
+    deleteAccount:async()=>{
+        set({isDeletingAccount:true});
+        try{
+            const response=await axiosInstance.delete("/delete-account");
+            toast.success(response.data.message);
+            set({authUser:null});
+            localStorage.removeItem("token");
+            return {success:true}
+        }catch(error){
+            toast.error(error.response?.data?.message || "Something went wrong. Please try again.");
+            return {success:false};
+        }finally{
+            set({isDeletingAccount:false})
+        }
+    }
 }));
