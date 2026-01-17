@@ -46,7 +46,7 @@ export default function Settings() {
 
   // TODO: Replace with API call: PUT /api/settings
   const handleSave = () => {
-    console.log("Saving settings:", settings);
+
     // TODO: Call API: PUT /api/settings with settings data
     toast.success("Settings saved successfully!");
   };

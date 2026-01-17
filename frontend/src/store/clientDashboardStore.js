@@ -16,7 +16,6 @@ const useClientDashboardStore = create((set) => ({
             set({ myJobs: response.data.jobs });
             return true;
         } catch (error) {
-            console.log(error);
             toast.error(error.response?.data?.message);
             return false;
         } finally {
@@ -31,7 +30,6 @@ const useClientDashboardStore = create((set) => ({
             toast.success(response.data.message);
             return true;
         } catch (error) {
-            console.log(error);
             toast.error(error.response?.data?.message);
             return false;
         } finally {
@@ -51,7 +49,6 @@ const useClientDashboardStore = create((set) => ({
             set({ jobStatus: response.data.job.status });
             return true;
         } catch (error) {
-            console.log(error);
             toast.error(error.response?.data?.message);
             return false;
         } finally {
@@ -68,7 +65,6 @@ const useClientDashboardStore = create((set) => ({
             toast.success(response.data.message);
             return true;
         } catch (error) {
-            console.log(error);
             toast.error(error.response?.data?.message);
             return false;
         } finally {
@@ -86,7 +82,6 @@ const useClientDashboardStore = create((set) => ({
             toast.success(response.data.message);
             return true;
         } catch (error) {
-            console.log(error);
             toast.error(error.response?.data?.message);
             return false;
         } finally {
@@ -101,7 +96,6 @@ const useClientDashboardStore = create((set) => ({
             toast.success(response.data.message);
             return true;
         } catch (error) {
-            console.log(error);
             toast.error(error.response?.data?.message);
             return false;
         } finally {
@@ -117,7 +111,6 @@ const useClientDashboardStore = create((set) => ({
             set({ suggestedProviders: response.data.providers });
             return true;
         } catch (error) {
-            console.log(error);
             toast.error(error.response?.data?.message);
             return false;
         } finally {
@@ -133,7 +126,6 @@ const useClientDashboardStore = create((set) => ({
             set({ providerProfile: response.data.user });
             return true;
         } catch (error) {
-            console.log(error);
             toast.error(error.response?.data?.message);
             return false;
         } finally {
@@ -148,7 +140,6 @@ const useClientDashboardStore = create((set) => ({
             toast.success(response.data.message);
             return response.data.user;
         } catch (error) {
-            console.log(error);
             toast.error(error.response?.data?.message);
             return null;
         } finally {
@@ -162,10 +153,8 @@ const useClientDashboardStore = create((set) => ({
         try {
             const response = await axiosInstance.get('/client/accepted-providers');
             set({ acceptedProviders: response.data.providers });
-            console.log(response.data.providers);
             return true;
         } catch (error) {
-            console.log(error);
             toast.error(error.response?.data?.message);
             return false;
         } finally {
@@ -185,7 +174,6 @@ const useClientDashboardStore = create((set) => ({
             set({ searchProvidersResults: response.data.providers });
             return true;
         } catch (error) {
-            console.log(error);
             toast.error(error.response?.data?.message);
             return false;
         } finally {

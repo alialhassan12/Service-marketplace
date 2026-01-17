@@ -105,7 +105,7 @@ export default function ContentManagement() {
 
   // TODO: Replace with database query: UPDATE content_pages SET content = ?, status = 'draft' WHERE page_type = ?
   const handleSaveDraft = () => {
-    console.log("Saving draft for:", selectedPage);
+
     setIsDraft(true);
     adminStore
       .saveContent(selectedPage, {
@@ -119,7 +119,7 @@ export default function ContentManagement() {
 
   // TODO: Replace with database query: UPDATE content_pages SET content = ?, status = 'published', last_updated = NOW() WHERE page_type = ?
   const handlePublish = () => {
-    console.log("Publishing:", selectedPage);
+
     setIsDraft(false);
     adminStore
       .saveContent(selectedPage, {
@@ -133,7 +133,7 @@ export default function ContentManagement() {
 
   // TODO: Replace with database query: SELECT content FROM content_pages WHERE page_type = ? AND status = 'published'
   const handlePreview = () => {
-    console.log("Previewing:", selectedPage);
+
     // Very simple preview: open new window and write content as HTML
     const w = window.open("", "_blank");
     w.document.write(

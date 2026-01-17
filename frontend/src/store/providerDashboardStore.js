@@ -19,7 +19,6 @@ const useProviderDashboardStore=create((set)=>({
             set({updatedProfile:response.data.user});
             return response.data.user;
         } catch (error) {
-            console.log(error);
             toast.error(error.response?.data?.message);
             return false;
         }finally{
@@ -33,7 +32,7 @@ const useProviderDashboardStore=create((set)=>({
             set({providerProfile:response.data.user});
             return true;
         } catch (error) {
-            console.log(error);
+            toast.error(error.response?.data?.message);
             return false;
         }finally{
             set({providerProfileLoading:false})
@@ -46,7 +45,7 @@ const useProviderDashboardStore=create((set)=>({
             set({browseJobsData:response.data.jobs});
             return true;
         } catch (error) {
-            console.log(error);
+            toast.error(error.response?.data?.message);
             return false;
         }finally{
             set({browseJobsLoading:false})
@@ -60,7 +59,6 @@ const useProviderDashboardStore=create((set)=>({
             toast.success(response.data.message);
             return response.data;
         } catch (error) {
-            console.log(error);
             toast.error(error.response?.data?.message);
             return false;
         }finally{
@@ -76,7 +74,7 @@ const useProviderDashboardStore=create((set)=>({
             set({recommendedJobsData:response.data.jobs});
             return true;
         } catch (error) {
-            console.log(error);
+            toast.error(error.response?.data?.message);
             return false;
         }finally{
             set({recommendedJobsLoading:false})
@@ -91,7 +89,7 @@ const useProviderDashboardStore=create((set)=>({
             set({myProposalsData:response.data.proposals});
             return true;
         } catch (error) {
-            console.log(error);
+            toast.error(error.response?.data?.message);
             return false;
         }finally{
             set({myProposalsLoading:false})
@@ -106,7 +104,7 @@ const useProviderDashboardStore=create((set)=>({
             set({searchClientsResult:response.data.clients});
             return true;
         } catch (error) {
-            console.log(error);
+            toast.error(error.response?.data?.message);
             return false;
         }finally{
             set({searchClientsLoading:false})

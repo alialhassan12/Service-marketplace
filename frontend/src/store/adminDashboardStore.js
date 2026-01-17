@@ -11,7 +11,6 @@ const useAdminDashboardStore = create((set) => ({
             toast.success(response.data.message);
             return response.data.user;
         } catch (error) {
-            console.log(error);
             toast.error(error.response?.data?.message);
             return null;
         } finally {

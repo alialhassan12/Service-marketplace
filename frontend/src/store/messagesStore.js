@@ -15,10 +15,9 @@ export const useMessagesStore = create((set, get) => ({
         try {
             const response = await axiosInstance.get('/messages/contacts');
             set({contacts:response.data.contacts});
-            console.log(response.data.contacts);
             return true;
         } catch (error) {
-            console.log(error);
+            toast.error(error.response?.data?.message);
             return false;
         } finally {
             set({loadingContacts:false});
@@ -31,10 +30,9 @@ export const useMessagesStore = create((set, get) => ({
         try {
             const response = await axiosInstance.get('/messages/'+id);
             set({messages:response.data.messages});
-            console.log(response.data.messages);
             return true;
         } catch (error) {
-            console.log(error);
+            toast.error(error.response?.data?.message);
             return false;
         } finally {
             set({loadingMessages:false});
@@ -57,7 +55,7 @@ export const useMessagesStore = create((set, get) => ({
             
             return true;
         } catch (error) {
-            console.log(error);
+            toast.error(error.response?.data?.message);
             return false;
         } finally {
             set({loadingSendMessage:false});
@@ -81,7 +79,7 @@ export const useMessagesStore = create((set, get) => ({
             
             return true;
         } catch (error) {
-            console.log(error);
+            toast.error(error.response?.data?.message);
             return false;
         }
         finally{

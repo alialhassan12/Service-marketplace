@@ -27,7 +27,7 @@ export default function ProviderBrowseJobs(){
     useEffect(() => {
         browseJobs(filters);
     }, []);
-    console.log(browseJobsData);
+
 
     const submitFilters=()=>{
         browseJobs({...filters, page: 1});
