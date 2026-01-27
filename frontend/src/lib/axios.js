@@ -26,7 +26,7 @@ axiosInstance.interceptors.response.use(
             if (status === 401) {
                 // Unauthenticated - redirect to login
                 localStorage.removeItem('token');
-                window.location.href = '/login';
+                // window.location.href = '/login';
             }
             if (status === 403) {
                 // Forbidden - show an alert for now; a toast system would be better

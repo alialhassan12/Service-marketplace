@@ -26,7 +26,7 @@ export const useAuthStore = create((set) => ({
             set({ isChecking: false });
         }
     },
-
+    
     login: async (formData) => {
         set({ isLogging: true });
         try {
